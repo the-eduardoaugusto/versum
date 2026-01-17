@@ -1,0 +1,10 @@
+{
+  "name": "versum",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "d3veduardo",
+  "license": "ISC",
+  "packageManager": "pnpm@10.25.0"
+}

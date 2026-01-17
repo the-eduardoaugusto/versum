@@ -1,0 +1,23 @@
+{
+  "name": "api",
+  "private": true,
+  "version": "1.0.0",
+  "dependencies": {
+    "@prisma/client": "^6.19.2",
+    "azurajs": "2.5.2-4",
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.3",
+    "prisma": "^6.19.2",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/node": "^25.0.8",
+    "@types/pg": "^8.16.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "scripts": {
+    "dev": "tsx --watch src/index.ts --env-file .env"
+  }
+}
