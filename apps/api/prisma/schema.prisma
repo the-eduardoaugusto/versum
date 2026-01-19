@@ -1,18 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider        = "prisma-client"
-  output          = "../src/generated/prisma"
-  previewFeatures = []
+  provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRE_DATABASE_URL")
 }
 
 model User {
@@ -23,9 +15,9 @@ model User {
   bio            String?
   picture_url    String?
   created_at     DateTime        @default(now())
-  readings       Reading[]
   likes          Like[]
   marks          Mark[]
+  readings       Reading[]
   refresh_tokens Refresh_token[]
 }
 
@@ -47,15 +39,10 @@ model Magic_link {
   created_at DateTime @default(now())
 }
 
-enum Testament {
-  OLD
-  NEW
-}
-
 model Bible_book {
   id             String          @id @default(uuid())
-  name           String          @unique // "Gênesis", "Êxodo"...
-  order          Int             @unique // 1 para Gênesis, 2 para Êxodo...
+  name           String          @unique
+  order          Int             @unique
   testament      Testament
   total_chapters Int
   chapters       Bible_chapter[]
@@ -66,7 +53,7 @@ model Bible_book {
 model Bible_chapter {
   id           String        @id @default(uuid())
   book_id      String
-  number       Int // 1, 2, 3...
+  number       Int
   total_verses Int
   book         Bible_book    @relation(fields: [book_id], references: [id])
   verses       Bible_verse[]
@@ -78,20 +65,15 @@ model Bible_chapter {
 model Bible_verse {
   id         String        @id @default(uuid())
   chapter_id String
-  number     Int // 1, 2, 3...
-  text       String        @db.Text
+  number     Int
+  text       String
   chapter    Bible_chapter @relation(fields: [chapter_id], references: [id])
-  readings   Reading[]
   likes      Like[]
   marks      Mark[]
+  readings   Reading[]
 
   @@unique([chapter_id, number])
   @@index([chapter_id, number])
-}
-
-enum ReadingMode {
-  DISCOVERY
-  JOURNEY
 }
 
 model Reading {
@@ -123,8 +105,8 @@ model Mark {
   id            String      @id @default(uuid())
   user_id       String
   verse_id      String
-  selected_text String      @db.Text
-  anotacao      String?     @db.Text
+  selected_text String
+  anotacao      String?
   is_public     Boolean     @default(false)
   created_at    DateTime    @default(now())
   user          User        @relation(fields: [user_id], references: [id])
@@ -132,4 +114,14 @@ model Mark {
 
   @@index([user_id, is_public])
   @@index([verse_id])
+}
+
+enum Testament {
+  OLD
+  NEW
+}
+
+enum ReadingMode {
+  DISCOVERY
+  JOURNEY
 }

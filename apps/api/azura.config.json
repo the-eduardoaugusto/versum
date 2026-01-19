@@ -1,0 +1,29 @@
+{
+  "environment": "development",
+  "name": "My API",
+  "server": {
+    "port": 3000,
+    "cluster": false,
+    "ipHost": true,
+    "https": false,
+    "trustProxy": true,
+    "ipHeader": "x-forwarded-for"
+  },
+  "logging": {
+    "enabled": true,
+    "showDetails": true
+  },
+  "plugins": {
+    "cors": {
+      "enabled": true,
+      "origins": ["*"],
+      "methods": ["GET", "POST", "PUT", "DELETE", "PATCH"],
+      "allowedHeaders": ["Content-Type", "Authorization"]
+    },
+    "rateLimit": {
+      "enabled": false,
+      "limit": 100,
+      "timeframe": 60000
+    }
+  }
+}

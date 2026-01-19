@@ -1,7 +1,7 @@
 import { Body, Controller, Post, Res } from "azurajs/decorators";
 import { ResponseServer } from "azurajs/types";
 import { v } from "azurajs/validators";
-import { prisma } from "../../../libs/prisma";
+import { prisma } from "@/libs/prisma";
 import { randomBytes } from "crypto";
 import { hash } from "bcrypt";
 import { v4 as uuidV4 } from "uuid";

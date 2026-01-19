@@ -1,14 +1,33 @@
 import { SwaggerConfigType } from "@/swaggers/index";
-import { Testament } from "@/libs/prisma";
-class BibleBooksV1Swagger {
+class VersesV1Swagger {
   constructor() {}
 
-  getBooks: SwaggerConfigType = {
+  getVerses: SwaggerConfigType = {
     description:
-      "Retorna todos os livros bíblicos disponíveis. Esta rota possui cache de 300 segundos e rate limit de 60 requisições por minuto.",
-    tags: ["Public", "Bible", "Books"],
-    summary: "Lista todos os livros bíblicos.",
+      "Retorna todos os versículos de um capítulo bíblico específico. Esta rota possui cache de 300 segundos e rate limit de 60 requisições por minuto.",
+    tags: ["Public", "Bible", "Verses"],
+    summary: "Lista todos os versículos de um capítulo bíblico.",
     parameters: [
+      {
+        in: "path",
+        name: "bookOrder",
+        required: true,
+        description: "Número de ordem do livro bíblico (1-73)",
+        example: "1",
+        schema: {
+          type: "string",
+        },
+      },
+      {
+        in: "path",
+        name: "chapterNumber",
+        required: true,
+        description: "Número do capítulo (mínimo 1)",
+        example: "1",
+        schema: {
+          type: "string",
+        },
+      },
       {
         in: "query",
         name: "page",
@@ -21,18 +40,8 @@ class BibleBooksV1Swagger {
       {
         in: "query",
         name: "limit",
-        description: "Quantidade de livros por página",
+        description: "Quantidade de versículos por página",
         example: "10",
-        schema: {
-          type: "string",
-        },
-      },
-      {
-        in: "query",
-        name: "testament",
-        description:
-          "Filtro por testamento (OLD para Antigo Testamento, NEW para Novo Testamento)",
-        example: "OLD",
         schema: {
           type: "string",
         },
@@ -43,7 +52,7 @@ class BibleBooksV1Swagger {
         description: "Requisição inválida com parâmetros incorretos",
         example: {
           success: false,
-          error: "Página deve ser um número positivo",
+          error: "Informe números válidos para livro, capítulo e versículo.",
         },
         schema: {
           type: "object",
@@ -54,7 +63,28 @@ class BibleBooksV1Swagger {
             },
             error: {
               type: "string",
-              example: "Página deve ser um número positivo",
+              example:
+                "Informe números válidos para livro, capítulo e versículo.",
+            },
+          },
+        },
+      },
+      404: {
+        description: "Capítulo não encontrado",
+        example: {
+          success: false,
+          error: "Capítulo não encontrado nesse livro.",
+        },
+        schema: {
+          type: "object",
+          properties: {
+            success: {
+              type: "boolean",
+              example: false,
+            },
+            error: {
+              type: "string",
+              example: "Capítulo não encontrado nesse livro.",
             },
           },
         },
@@ -63,8 +93,7 @@ class BibleBooksV1Swagger {
         description: "Erro interno do servidor",
         example: {
           success: false,
-          message: "Erro ao buscar livros",
-          error: "Erro desconhecido",
+          error: "Erro ao buscar versículos!",
         },
         schema: {
           type: "object",
@@ -73,19 +102,15 @@ class BibleBooksV1Swagger {
               type: "boolean",
               example: false,
             },
-            message: {
-              type: "string",
-              example: "Erro ao buscar livros",
-            },
             error: {
               type: "string",
-              example: "Erro desconhecido",
+              example: "Erro ao buscar versículos!",
             },
           },
         },
       },
       200: {
-        description: "Lista de livros bíblicos buscada com sucesso",
+        description: "Lista de versículos buscada com sucesso",
         headers: {
           "X-RateLimit-Limit": {
             description:
@@ -108,7 +133,7 @@ class BibleBooksV1Swagger {
             schema: {
               type: "string",
               format: "date-time",
-              example: "2024-01-17T10:05:00.000Z",
+              example: "2024-01-19T10:05:00.000Z",
             },
           },
         },
@@ -116,24 +141,25 @@ class BibleBooksV1Swagger {
           success: true,
           data: [
             {
-              id: "0909fd62-060e-4960-a6f6-349ccd6420c1",
-              name: "Gênesis",
-              testament: Testament.OLD,
-              order: 0,
-              _count: {
-                chapters: 50,
-              },
+              id: "1234abcd-5678-90ef-ghij-klmnopqrstu1",
+              number: 1,
+              text: "No princípio, criou Deus os céus e a terra.",
+            },
+            {
+              id: "2345bcde-6789-01fg-hijk-lmnopqrstuv2",
+              number: 2,
+              text: "A terra era sem forma e vazia; havia trevas sobre a face do abismo...",
             },
           ],
-          cache: false,
           pagination: {
             currentPage: 1,
-            totalPages: 1,
-            totalItems: 66,
-            itemsPerPage: 66,
-            hasNextPage: false,
+            totalPages: 10,
+            totalItems: 31,
+            itemsPerPage: 10,
+            hasNextPage: true,
             hasPrevPage: false,
           },
+          cache: false,
         },
         schema: {
           type: "object",
@@ -150,29 +176,15 @@ class BibleBooksV1Swagger {
                   id: {
                     type: "string",
                     format: "uuid",
-                    example: "0909fd62-060e-4960-a6f6-349ccd6420c1",
+                    example: "1234abcd-5678-90ef-ghij-klmnopqrstu1",
                   },
-                  name: {
-                    type: "string",
-                    example: "Gênesis",
-                  },
-                  testament: {
-                    type: "string",
-                    enum: ["OLD", "NEW"],
-                    example: "OLD",
-                  },
-                  order: {
+                  number: {
                     type: "integer",
-                    example: 0,
+                    example: 1,
                   },
-                  _count: {
-                    type: "object",
-                    properties: {
-                      chapters: {
-                        type: "integer",
-                        example: 50,
-                      },
-                    },
+                  text: {
+                    type: "string",
+                    example: "No princípio, criou Deus os céus e a terra.",
                   },
                 },
               },
@@ -186,19 +198,19 @@ class BibleBooksV1Swagger {
                 },
                 totalPages: {
                   type: "integer",
-                  example: 1,
+                  example: 10,
                 },
                 totalItems: {
                   type: "integer",
-                  example: 66,
+                  example: 31,
                 },
                 itemsPerPage: {
                   type: "integer",
-                  example: 66,
+                  example: 10,
                 },
                 hasNextPage: {
                   type: "boolean",
-                  example: false,
+                  example: true,
                 },
                 hasPrevPage: {
                   type: "boolean",
@@ -216,7 +228,7 @@ class BibleBooksV1Swagger {
               format: "date-time",
               description:
                 "Data e hora em que o cache expirará (apenas quando cache é true)",
-              example: "2024-01-17T10:06:00.000Z",
+              example: "2024-01-19T10:06:00.000Z",
             },
           },
         },
@@ -244,7 +256,7 @@ class BibleBooksV1Swagger {
             schema: {
               type: "string",
               format: "date-time",
-              example: "2024-01-17T10:05:00.000Z",
+              example: "2024-01-19T10:05:00.000Z",
             },
           },
         },
@@ -271,18 +283,38 @@ class BibleBooksV1Swagger {
     },
   };
 
-  getBookByOrder: SwaggerConfigType = {
+  getVerseByNumber: SwaggerConfigType = {
     description:
-      "Retorna um livro bíblico específico pelo seu número de ordem (order). Esta rota possui cache de 300 segundos e rate limit de 60 requisições por minuto.",
-    tags: ["Public", "Bible", "Books"],
-    summary: "Obtém um livro bíblico pelo número de ordem.",
+      "Retorna um versículo específico da Bíblia. Esta rota possui cache de 300 segundos e rate limit de 60 requisições por minuto.",
+    tags: ["Public", "Bible", "Verses"],
+    summary: "Obtém um versículo bíblico pelo número.",
     parameters: [
       {
         in: "path",
         name: "bookOrder",
         required: true,
         description: "Número de ordem do livro bíblico (1-73)",
-        example: "0",
+        example: "1",
+        schema: {
+          type: "string",
+        },
+      },
+      {
+        in: "path",
+        name: "chapterNumber",
+        required: true,
+        description: "Número do capítulo (mínimo 1)",
+        example: "1",
+        schema: {
+          type: "string",
+        },
+      },
+      {
+        in: "path",
+        name: "verseNumber",
+        required: true,
+        description: "Número do versículo (mínimo 1)",
+        example: "1",
         schema: {
           type: "string",
         },
@@ -293,7 +325,7 @@ class BibleBooksV1Swagger {
         description: "Requisição inválida com parâmetros incorretos",
         example: {
           success: false,
-          error: "Informe o livro utilizando sua posição (1-73).",
+          error: "Informe números válidos para livro, capítulo e versículo.",
         },
         schema: {
           type: "object",
@@ -304,16 +336,17 @@ class BibleBooksV1Swagger {
             },
             error: {
               type: "string",
-              example: "Informe o livro utilizando sua posição (1-73).",
+              example:
+                "Informe números válidos para livro, capítulo e versículo.",
             },
           },
         },
       },
       404: {
-        description: "Livro bíblico não encontrado",
+        description: "Versículo não encontrado",
         example: {
           success: false,
-          message: "Livro não encontrado",
+          error: "Versículo não encontrado.",
         },
         schema: {
           type: "object",
@@ -322,9 +355,9 @@ class BibleBooksV1Swagger {
               type: "boolean",
               example: false,
             },
-            message: {
+            error: {
               type: "string",
-              example: "Livro não encontrado",
+              example: "Versículo não encontrado.",
             },
           },
         },
@@ -333,8 +366,7 @@ class BibleBooksV1Swagger {
         description: "Erro interno do servidor",
         example: {
           success: false,
-          message: "Erro ao buscar livro",
-          error: "Erro desconhecido",
+          error: "Erro ao buscar o versículo!",
         },
         schema: {
           type: "object",
@@ -343,19 +375,15 @@ class BibleBooksV1Swagger {
               type: "boolean",
               example: false,
             },
-            message: {
-              type: "string",
-              example: "Erro ao buscar livro",
-            },
             error: {
               type: "string",
-              example: "Erro desconhecido",
+              example: "Erro ao buscar o versículo!",
             },
           },
         },
       },
       200: {
-        description: "Livro bíblico buscado com sucesso",
+        description: "Versículo bíblico buscado com sucesso",
         headers: {
           "X-RateLimit-Limit": {
             description:
@@ -378,17 +406,16 @@ class BibleBooksV1Swagger {
             schema: {
               type: "string",
               format: "date-time",
-              example: "2024-01-17T10:05:00.000Z",
+              example: "2024-01-19T10:05:00.000Z",
             },
           },
         },
         example: {
           success: true,
           data: {
-            id: "0909fd62-060e-4960-a6f6-349ccd6420c1",
-            name: "Gênesis",
-            testament: Testament.OLD,
-            order: 0,
+            id: "1234abcd-5678-90ef-ghij-klmnopqrstu1",
+            number: 1,
+            text: "No princípio, criou Deus os céus e a terra.",
           },
           cache: false,
         },
@@ -405,20 +432,15 @@ class BibleBooksV1Swagger {
                 id: {
                   type: "string",
                   format: "uuid",
-                  example: "0909fd62-060e-4960-a6f6-349ccd6420c1",
+                  example: "1234abcd-5678-90ef-ghij-klmnopqrstu1",
                 },
-                name: {
-                  type: "string",
-                  example: "Gênesis",
-                },
-                testament: {
-                  type: "string",
-                  enum: ["OLD", "NEW"],
-                  example: "OLD",
-                },
-                order: {
+                number: {
                   type: "integer",
-                  example: 0,
+                  example: 1,
+                },
+                text: {
+                  type: "string",
+                  example: "No princípio, criou Deus os céus e a terra.",
                 },
               },
             },
@@ -453,7 +475,7 @@ class BibleBooksV1Swagger {
             schema: {
               type: "string",
               format: "date-time",
-              example: "2024-01-17T10:05:00.000Z",
+              example: "2024-01-19T10:05:00.000Z",
             },
           },
         },
@@ -481,4 +503,4 @@ class BibleBooksV1Swagger {
   };
 }
 
-export const bibleBooksV1Swagger = new BibleBooksV1Swagger();
+export const versesV1Swagger = new VersesV1Swagger();

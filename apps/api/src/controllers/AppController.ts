@@ -5,6 +5,6 @@ import { ResponseServer } from "azurajs/types";
 export class AppController {
   @Get()
   getRoot(@Res() res: ResponseServer) {
-    res.json({ message: "Ego sum via et veritas et vita!" });
+    res.send("Ego sum via et veritas et vita!");
   }
 }

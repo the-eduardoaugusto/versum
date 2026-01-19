@@ -3,22 +3,28 @@
   "private": true,
   "version": "1.0.0",
   "dependencies": {
-    "@prisma/client": "^6.19.2",
-    "azurajs": "2.5.3",
+    "@prisma/adapter-pg": "^7.2.0",
+    "@prisma/client": "^7.2.0",
+    "azurajs": "2.5.4",
     "bcrypt": "^6.0.0",
     "dotenv": "^17.2.3",
     "ioredis": "^5.9.2",
-    "prisma": "^6.19.2",
+    "pg": "^8.17.1",
     "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
     "@types/node": "^25.0.8",
     "@types/pg": "^8.16.0",
+    "prisma": "7.2.0",
+    "tsc-alias": "^1.8.16",
+    "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
   "scripts": {
-    "dev": "tsx --watch src/index.ts --env-file .env"
+    "dev": "tsx --watch src/index.ts --env-file .env",
+    "build": "tsup src --format esm",
+    "start": "node dist/index.mjs"
   }
 }

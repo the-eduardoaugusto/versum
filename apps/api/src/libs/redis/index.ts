@@ -1,12 +1,9 @@
 import { Redis } from "ioredis";
-import { env } from "../../env";
+import { env } from "@/env";
 import path from "path";
 import { readFileSync } from "fs";
 
-const certPath = path.resolve(
-  __dirname,
-  "../../../../../.certs/redis-certificate.pem",
-);
+const certPath = path.join(process.cwd(), env.REDIS_DATABASE_CERT_PATH);
 const cert = readFileSync(certPath, "utf-8");
 
 export const redis = new Redis(env.REDIS_DATABASE_URL, {

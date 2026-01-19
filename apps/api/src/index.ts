@@ -1,21 +1,21 @@
 import { AzuraClient } from "azurajs";
 import { applyDecorators } from "azurajs/decorators";
-import * as controllers from "./controllers";
-import { cachePublicRoutes, publicRoutesRateLimit } from "./middlewares";
-import { env } from "./env";
+import * as controllers from "@/controllers";
+import {
+  cachePublicRoutes,
+  debugRequests,
+  publicRoutesRateLimit,
+} from "@/middlewares";
+import { env } from "@/env";
 import { setupSwaggerWithControllers } from "azurajs/swagger";
-import path from "path";
-import { redis } from "./libs/redis";
+import { redis } from "@/libs/redis";
 import { logger } from "azurajs/logger";
-import { prisma } from "./libs/prisma";
+import { prisma } from "@/libs/prisma";
 
 const app = new AzuraClient();
-const appUrl = env.APP_URL || `http://localhost:${env.PORT}/`;
+const appUrl = env.APP_URL || `http://localhost:${env.PORT}`;
 
 applyDecorators(app, Object.values(controllers));
-
-app.use(publicRoutesRateLimit);
-app.use(cachePublicRoutes);
 
 setupSwaggerWithControllers(
   app,
@@ -31,6 +31,10 @@ setupSwaggerWithControllers(
   },
   Object.values(controllers),
 );
+
+app.use(debugRequests);
+app.use(publicRoutesRateLimit);
+app.use(cachePublicRoutes);
 
 app.listen(Number(env.PORT)).then(async () => {
   redis.on("connecting", () => {
@@ -65,7 +69,7 @@ app.listen(Number(env.PORT)).then(async () => {
       showTimestamp: true,
     });
   } catch (e) {
-    logger("fatal", " Error on try connect a Postgre Database! 🐘", {
+    logger("fatal", ` Error on try connect a Postgre Database! 🐘.\n${e}`, {
       timestampFormat: "time",
       showTimestamp: true,
     });

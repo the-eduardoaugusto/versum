@@ -1,8 +1,7 @@
 import { Controller, Get, Res } from "azurajs/decorators";
 import { ResponseServer } from "azurajs/types";
-import { prisma } from "../libs/prisma";
+import { prisma } from "@/libs/prisma";
 
-// Define a estrutura do JSON
 interface Versiculo {
   versiculo: number;
   texto: string;
@@ -24,137 +23,153 @@ interface Biblia {
 }
 
 @Controller("/seed")
-export class SeedDatabaseController {
+export class SeedDebugController {
   @Get()
   async seedDatabase(@Res() res: ResponseServer) {
+    console.log("🔥🔥🔥 === SEED DEBUG MODE ATIVADO === 🔥🔥🔥");
+
     try {
+      console.log("[1] Buscando JSON remoto...");
       const url =
         "https://raw.githubusercontent.com/fidalgobr/bibliaAveMariaJSON/refs/heads/main/bibliaAveMariaRAW.json";
 
-      console.log("Baixando JSON do GitHub...");
       const response = await fetch(url);
+      console.log(
+        "[1.1] Status resposta:",
+        response.status,
+        response.statusText,
+      );
 
-      if (!response.ok) {
-        throw new Error(
-          `Erro ao buscar JSON: ${response.status} ${response.statusText}`
-        );
-      }
+      if (!response.ok)
+        throw new Error(`Falha no fetch: ${response.statusText}`);
 
-      const bible: Biblia = (await response.json()) as Biblia;
-      console.log("JSON carregado com sucesso!");
+      console.log("[2] Convertendo JSON...");
+      const bible = (await response.json()) as Biblia;
+      console.log("[2.1] JSON OK, estrutura:");
+      console.dir(
+        {
+          AT: bible.antigoTestamento.length,
+          NT: bible.novoTestamento.length,
+        },
+        { depth: 1 },
+      );
 
-      // Limpa banco antes de popular (opcional - remova se não quiser)
-      console.log("Limpando banco de dados...");
-      await prisma.versiculo.deleteMany();
-      await prisma.capitulo.deleteMany();
-      await prisma.livro.deleteMany();
+      console.log("[3] Verificando livros já existentes no BD...");
+      const existingBooks = await prisma.bible_book.findMany();
+      console.log(`[3.1] Encontrados no BD: ${existingBooks.length}`);
 
-      let totalVersiculos = 0;
-      let ordemLivro = 1;
+      let createdBooks = 0;
+      let createdChapters = 0;
+      let createdVerses = 0;
 
-      // Processa Antigo Testamento
-      console.log("Processando Antigo Testamento...");
-      for (const livroData of bible.antigoTestamento) {
-        const livro = await prisma.livro.create({
-          data: {
-            nome: livroData.nome,
-            ordem: ordemLivro++,
-            testamento: "antigo",
-            totalCapitulos: livroData.capitulos.length,
-          },
-        });
+      const processLivro = async (
+        livroData: Livro,
+        ordem: number,
+        testament: "OLD" | "NEW",
+      ) => {
+        console.log(`\n📖 Livro: ${livroData.nome} (${testament})`);
 
-        for (const capituloData of livroData.capitulos) {
-          const capitulo = await prisma.capitulo.create({
+        const existing = existingBooks.find((b) => b.name === livroData.nome);
+        let livro;
+
+        if (existing) {
+          console.log("   [=] Já existe no BD");
+          livro = existing;
+        } else {
+          console.log("   [+] Criando livro...");
+          livro = await prisma.bible_book.create({
             data: {
-              livroId: livro.id,
-              numero: capituloData.capitulo,
-              totalVersiculos: capituloData.versiculos.length,
+              name: livroData.nome,
+              order: ordem,
+              testament,
+              total_chapters: livroData.capitulos.length,
             },
           });
+          createdBooks++;
+          console.log("   [✔] Livro criado ID:", livro.id);
+        }
 
-          // Prepara versículos do capítulo para inserção em batch
+        for (const capituloData of livroData.capitulos) {
+          console.log(`\n       👉 Capítulo ${capituloData.capitulo}`);
+
+          const existingChapter = await prisma.bible_chapter.findFirst({
+            where: { book_id: livro.id, number: capituloData.capitulo },
+          });
+
+          let capitulo;
+          if (existingChapter) {
+            console.log("          [=] Capítulo já existe");
+            capitulo = existingChapter;
+          } else {
+            console.log("          [+] Criando capítulo...");
+            capitulo = await prisma.bible_chapter.create({
+              data: {
+                book_id: livro.id,
+                number: capituloData.capitulo,
+                total_verses: capituloData.versiculos.length,
+              },
+            });
+            createdChapters++;
+            console.log("          [✔] Capítulo criado ID:", capitulo.id);
+          }
+
+          const beforeCount = await prisma.bible_verse.count({
+            where: { chapter_id: capitulo.id },
+          });
+
           const versiculos = capituloData.versiculos.map((vers) => ({
-            capituloId: capitulo.id,
-            numero: vers.versiculo,
-            texto: vers.texto,
+            chapter_id: capitulo.id,
+            number: vers.versiculo,
+            text: vers.texto,
           }));
 
-          await prisma.versiculo.createMany({
+          console.log(
+            `          [+] Inserindo versos (total: ${versiculos.length})...`,
+          );
+
+          await prisma.bible_verse.createMany({
             data: versiculos,
             skipDuplicates: true,
           });
 
-          totalVersiculos += versiculos.length;
-        }
-
-        console.log(
-          `✓ ${livroData.nome} - ${livroData.capitulos.length} capítulos`
-        );
-      }
-
-      // Processa Novo Testamento
-      console.log("\nProcessando Novo Testamento...");
-      for (const livroData of bible.novoTestamento) {
-        const livro = await prisma.livro.create({
-          data: {
-            nome: livroData.nome,
-            ordem: ordemLivro++,
-            testamento: "novo",
-            totalCapitulos: livroData.capitulos.length,
-          },
-        });
-
-        for (const capituloData of livroData.capitulos) {
-          const capitulo = await prisma.capitulo.create({
-            data: {
-              livroId: livro.id,
-              numero: capituloData.capitulo,
-              totalVersiculos: capituloData.versiculos.length,
-            },
+          const afterCount = await prisma.bible_verse.count({
+            where: { chapter_id: capitulo.id },
           });
 
-          // Prepara versículos do capítulo para inserção em batch
-          const versiculos = capituloData.versiculos.map((vers) => ({
-            capituloId: capitulo.id,
-            numero: vers.versiculo,
-            texto: vers.texto,
-          }));
+          const inserted = afterCount - beforeCount;
+          createdVerses += inserted;
 
-          await prisma.versiculo.createMany({
-            data: versiculos,
-            skipDuplicates: true,
-          });
-
-          totalVersiculos += versiculos.length;
+          console.log(
+            `          [✔] Antes: ${beforeCount} Depois: ${afterCount} (+=${inserted})`,
+          );
         }
+      };
 
-        console.log(
-          `✓ ${livroData.nome} - ${livroData.capitulos.length} capítulos`
-        );
+      console.log("\n🚀 Processando Antigo Testamento...");
+      let ordem = 1;
+      for (const livro of bible.antigoTestamento) {
+        await processLivro(livro, ordem++, "OLD");
       }
 
-      console.log("\n=== Seed finalizado! ===");
-      console.log(`Total de livros: ${ordemLivro - 1}`);
-      console.log(`Total de versículos: ${totalVersiculos}`);
+      console.log("\n✝️ Processando Novo Testamento...");
+      for (const livro of bible.novoTestamento) {
+        await processLivro(livro, ordem++, "NEW");
+      }
+
+      console.log("\n🎉 FINALIZADO!");
+      console.log("📚 Livros criados:", createdBooks);
+      console.log("📄 Capítulos criados:", createdChapters);
+      console.log("✍️ Versículos criados:", createdVerses);
 
       return res.status(200).json({
-        success: true,
-        message: "Seed finalizado com sucesso!",
-        stats: {
-          totalLivros: ordemLivro - 1,
-          totalVersiculos,
-          antigoTestamento: bible.antigoTestamento.length,
-          novoTestamento: bible.novoTestamento.length,
-        },
+        ok: true,
+        createdBooks,
+        createdChapters,
+        createdVerses,
       });
-    } catch (error) {
-      console.error("Erro no seed:", error);
-      return res.status(500).json({
-        success: false,
-        message: "Erro ao fazer seed do banco de dados",
-        error: error instanceof Error ? error.message : "Erro desconhecido",
-      });
+    } catch (err: any) {
+      console.error("💀 ERRO GERAL 💀:", err);
+      return res.status(500).json({ ok: false, error: err.message });
     }
   }
 }

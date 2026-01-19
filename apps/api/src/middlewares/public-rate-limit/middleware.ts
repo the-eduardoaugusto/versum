@@ -1,9 +1,4 @@
-import {
-  NextFunction,
-  RequestHandler,
-  RequestServer,
-  ResponseServer,
-} from "azurajs/types";
+import { RequestHandler } from "azurajs/types";
 
 interface RateLimitRecord {
   count: number;

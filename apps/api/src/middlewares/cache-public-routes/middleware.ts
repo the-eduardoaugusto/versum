@@ -1,5 +1,5 @@
 import { NextFunction, RequestServer, ResponseServer } from "azurajs/types";
-import { redis } from "../../libs/redis";
+import { redis } from "@/libs/redis";
 
 export async function cachePublicRoutes(
   req: RequestServer,
@@ -11,6 +11,7 @@ export async function cachePublicRoutes(
     return next();
   }
 
+  if (!req.url.split("/").includes("public")) return next();
   const key = `cache:${req.url}`;
 
   try {
@@ -21,13 +22,11 @@ export async function cachePublicRoutes(
       const cacheExpireAt = new Date(Date.now() + ttl * 1000).toISOString();
       return res.json({ ...JSON.parse(cached), cache: true, cacheExpireAt });
     }
-
     const originalJson = res.json.bind(res);
     res.json = function (data: any) {
       redis.setex(key, 300, JSON.stringify(data));
       return originalJson({ ...data, cache: false });
     };
-
     next();
   } catch (error) {
     next();
