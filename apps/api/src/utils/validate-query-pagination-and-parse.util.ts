@@ -1,5 +1,10 @@
 import { BadRequestError } from "./error-model";
 
+export interface Pagination {
+  page?: string;
+  limit?: string;
+}
+
 export function validateQueryPaginationAndParse({
   page,
   limit,

@@ -1,12 +1,7 @@
 import { BibleChapterRepository } from "@/repositories";
 import { prisma, Prisma } from "@/libs/prisma";
-import { validateQueryPaginationAndParse } from "@/utils";
+import { Pagination, validateQueryPaginationAndParse } from "@/utils";
 import { PaginationViewModel } from "@/viewmodels";
-
-export interface Pagination {
-  page?: string;
-  limit?: string;
-}
 
 export interface FetchChaptersParams {
   bookId: string;
@@ -21,11 +16,16 @@ export class BibleChaptersService {
     this.chapterRepository = repository ?? new BibleChapterRepository(prisma);
   }
 
-  async fetchChapters({ bookId, page = "1", limit = "10" }: Partial<Pagination> & { bookId: string }) {
-    const { limit: parsedLimit, page: parsedPage } = validateQueryPaginationAndParse({
-      page,
-      limit,
-    });
+  async fetchChapters({
+    bookId,
+    page = "1",
+    limit = "10",
+  }: Partial<Pagination> & { bookId: string }) {
+    const { limit: parsedLimit, page: parsedPage } =
+      validateQueryPaginationAndParse({
+        page,
+        limit,
+      });
 
     const skip = (parsedPage - 1) * parsedLimit;
 
