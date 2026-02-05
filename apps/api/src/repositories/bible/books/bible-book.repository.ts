@@ -1,30 +1,13 @@
 import { BaseRepository } from "../../base.repository";
 import { PrismaClient } from "@/libs/prisma";
-import type {
-  BibleBook,
-  BibleBookFindManyArgs,
-  BibleBookCountArgs,
-  BibleBookUncheckedCreateInput,
-  Testament,
-} from "@/libs/prisma";
-
-export interface CreateBibleBookInput {
-  name: string;
-  order: number;
-  testament: Testament;
-  totalChapters: number;
-}
-
-export interface UpdateBibleBookInput {
-  name?: string;
-  testament?: Testament;
-  totalChapters?: number;
-}
+import type { BibleBook, Prisma, Testament } from "@/libs/prisma";
 
 export class BibleBookRepository extends BaseRepository<
   BibleBook,
-  BibleBookUncheckedCreateInput,
-  UpdateBibleBookInput
+  Prisma.BibleBookUncheckedCreateInput,
+  Prisma.BibleBookUncheckedUpdateInput,
+  Prisma.BibleBookFindManyArgs,
+  Prisma.BibleBookCountArgs
 > {
   constructor(prisma: PrismaClient) {
     super(prisma, prisma.bibleBook);
@@ -51,16 +34,16 @@ export class BibleBookRepository extends BaseRepository<
     args,
   }: {
     testament: Testament;
-    args?: Omit<BibleBookFindManyArgs, "where">;
+    args?: Omit<Prisma.BibleBookFindManyArgs, "where">;
   }): Promise<BibleBook[]> {
-    return this.prisma.bibleBook.findMany({
+    return await this.prisma.bibleBook.findMany({
       where: { testament },
       ...args,
     });
   }
 
   async findWithChapters({ bookId }: { bookId: string }) {
-    return this.prisma.bibleBook.findUnique({
+    return await this.prisma.bibleBook.findUnique({
       where: { id: bookId },
       include: {
         chapters: {
@@ -71,9 +54,9 @@ export class BibleBookRepository extends BaseRepository<
   }
 
   async findAllOrderedByOrder(
-    args?: Omit<BibleBookFindManyArgs, "orderBy">,
+    args?: Omit<Prisma.BibleBookFindManyArgs, "orderBy">,
   ): Promise<BibleBook[]> {
-    return this.prisma.bibleBook.findMany({
+    return await this.prisma.bibleBook.findMany({
       orderBy: { order: "asc" },
       ...args,
     });

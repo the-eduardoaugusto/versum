@@ -1,30 +1,40 @@
 import { BibleBookRepository } from "@/repositories";
-import { prisma } from "@/libs/prisma";
-import { Testament, type BibleBookFindManyArgs } from "@/libs/prisma/index";
+import { Prisma, prisma } from "@/libs/prisma";
+import { Testament } from "@/libs/prisma/index";
 import { BadRequestError } from "@/utils/error-model";
+import { validateQueryPaginationAndParse } from "@/utils";
+import { PaginationViewModel } from "@/viewmodels";
 
-export interface FetchBooksParams {
-  page: number;
-  limit: number;
-  testament?: Testament;
+export interface Pagination {
+  page?: string;
+  limit?: string;
 }
 
 export class BibleBooksService {
   private bookRepository: BibleBookRepository;
 
-  constructor() {
-    this.bookRepository = new BibleBookRepository(prisma);
+  constructor(repository?: BibleBookRepository) {
+    this.bookRepository = repository ?? new BibleBookRepository(prisma);
   }
 
-  async fetchBooks({ page, limit, testament }: FetchBooksParams) {
-    // Validar testamento
+  async fetchBooks({
+    page = "1",
+    limit = "10",
+    testament,
+  }: Partial<Pagination> & { testament?: Testament }) {
     if (testament && !Object.values(Testament).includes(testament)) {
       throw new BadRequestError("Testament must be 'OLD' or 'NEW'");
     }
 
-    const skip = (page - 1) * limit;
+    const { limit: parsedLimit, page: parsedPage } =
+      validateQueryPaginationAndParse({
+        page,
+        limit,
+      });
 
-    const where: BibleBookFindManyArgs["where"] = {};
+    const skip = (parsedPage - 1) * parsedLimit;
+
+    const where: Prisma.BibleBookFindManyArgs["where"] = {};
     if (testament) {
       where.testament = testament;
     }
@@ -33,32 +43,73 @@ export class BibleBooksService {
       this.bookRepository.findMany({
         where,
         skip,
-        take: limit,
+        take: parsedLimit,
         orderBy: { order: "asc" },
       }),
       this.bookRepository.count({ where }),
     ]);
 
-    const totalPages = Math.ceil(totalBooks / limit);
+    const totalPages = Math.ceil(totalBooks / parsedLimit);
 
     return {
       books,
-      pagination: {
-        currentPage: page,
+      pagination: new PaginationViewModel({
+        currentPage: parsedPage,
         totalPages,
         totalItems: totalBooks,
-        itemsPerPage: limit,
-        hasNextPage: page < totalPages,
-        hasPrevPage: page > 1,
-      },
+        itemsPerPage: parsedLimit,
+        hasNextPage: parsedPage < totalPages,
+        hasPrevPage: parsedPage > 1,
+      }),
     };
   }
 
   async fetchBookById({ bookId }: { bookId: string }) {
-    return this.bookRepository.findById(bookId);
+    return await this.bookRepository.findById(bookId);
   }
 
   async fetchBookByOrder({ bookOrder }: { bookOrder: number }) {
-    return this.bookRepository.findByOrder({ bookOrder });
+    return await this.bookRepository.findByOrder({ bookOrder });
+  }
+
+  async fetchBookByTestament({
+    testament,
+    limit = "10",
+    page = "1",
+  }: { testament: Testament } & Partial<Pagination>) {
+    const { limit: parsedLimit, page: parsedPage } =
+      validateQueryPaginationAndParse({
+        page,
+        limit,
+      });
+
+    const [books, totalBooks] = await Promise.all([
+      this.bookRepository.findByTestament({
+        testament,
+        args: {
+          skip: (parsedPage - 1) * parsedLimit,
+          take: parsedLimit,
+        },
+      }),
+      this.bookRepository.count({
+        where: {
+          testament,
+        },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(totalBooks / parsedLimit);
+
+    return {
+      books,
+      pagination: new PaginationViewModel({
+        currentPage: parsedPage,
+        totalPages,
+        totalItems: totalBooks,
+        itemsPerPage: parsedLimit,
+        hasNextPage: parsedPage < totalPages,
+        hasPrevPage: parsedPage > 1,
+      }),
+    };
   }
 }

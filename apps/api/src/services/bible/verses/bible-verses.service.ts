@@ -1,9 +1,5 @@
 import { BibleVerseRepository } from "@/repositories";
-import {
-  prisma,
-  type BibleVerseFindManyArgs,
-  type BibleVerseCountArgs,
-} from "@/libs/prisma";
+import { prisma, Prisma } from "@/libs/prisma";
 
 export interface FetchVersesParams {
   chapterId: string;
@@ -14,21 +10,21 @@ export interface FetchVersesParams {
 export class BibleVersesService {
   private verseRepository: BibleVerseRepository;
 
-  constructor() {
-    this.verseRepository = new BibleVerseRepository(prisma);
+  constructor(repository: BibleVerseRepository) {
+    this.verseRepository = repository ?? new BibleVerseRepository(prisma);
   }
 
   async fetchVerses({ chapterId, page, limit }: FetchVersesParams) {
     const skip = (page - 1) * limit;
 
-    const args: BibleVerseFindManyArgs = {
+    const args: Prisma.BibleVerseFindManyArgs = {
       where: { chapterId },
       skip,
       take: limit,
       orderBy: { number: "asc" },
     };
 
-    const countArgs: BibleVerseCountArgs = { where: { chapterId } };
+    const countArgs: Prisma.BibleVerseCountArgs = { where: { chapterId } };
 
     const [verses, totalVerses] = await Promise.all([
       this.verseRepository.findMany(args),

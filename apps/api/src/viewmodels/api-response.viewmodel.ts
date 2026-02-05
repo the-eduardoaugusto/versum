@@ -1,3 +1,5 @@
+import { PaginationViewModel } from "./pagination.viewmodel";
+
 export abstract class BaseViewModel<T> {
   constructor(data: T) {
     Object.assign(this, data);
@@ -5,35 +7,6 @@ export abstract class BaseViewModel<T> {
 
   toJSON(): T {
     return JSON.parse(JSON.stringify(this));
-  }
-}
-
-export class PaginationViewModel {
-  currentPage: number;
-  totalPages: number;
-  totalItems: number;
-  itemsPerPage: number;
-  hasNextPage: boolean;
-  hasPrevPage: boolean;
-
-  constructor(pagination: any) {
-    this.currentPage = pagination.currentPage;
-    this.totalPages = pagination.totalPages;
-    this.totalItems = pagination.totalItems;
-    this.itemsPerPage = pagination.itemsPerPage;
-    this.hasNextPage = pagination.hasNextPage;
-    this.hasPrevPage = pagination.hasPrevPage;
-  }
-
-  toJSON() {
-    return {
-      currentPage: this.currentPage,
-      totalPages: this.totalPages,
-      totalItems: this.totalItems,
-      itemsPerPage: this.itemsPerPage,
-      hasNextPage: this.hasNextPage,
-      hasPrevPage: this.hasPrevPage,
-    };
   }
 }
 
