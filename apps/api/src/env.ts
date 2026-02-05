@@ -9,6 +9,8 @@ const envSchema = v.object({
   PORT: v.string(),
   NODE_ENV: v.string(),
   APP_URL: v.string().optional(),
+  ENCRYPT_SECRET: v.string(),
+  RESEND_API_KEY: v.string(),
 });
 
 export const env = envSchema.parse(process.env);

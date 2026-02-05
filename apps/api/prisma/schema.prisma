@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
 
@@ -8,123 +8,130 @@ datasource db {
 }
 
 model User {
-  id            String         @id @default(uuid())
-  username      String         @unique
-  name          String
-  email         String         @unique
-  bio           String?
-  pictureUrl    String?        @map("picture_url")
-  createdAt     DateTime       @default(now()) @map("created_at")
+  id            String         @id @default(uuid()) @db.Uuid
+  username      String         @unique @db.VarChar(50)
+  name          String         @db.VarChar(100)
+  email         String         @unique @db.VarChar(255)
+  bio           String?        @db.VarChar(500)
+  pictureUrl    String?        @map("picture_url") @db.VarChar(500)
+  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
   likes         Like[]
   marks         Mark[]
   readings      Reading[]
   refreshTokens RefreshToken[]
 
+  @@index([username])
+  @@index([email])
   @@map("users")
 }
 
 model RefreshToken {
-  id        String   @id @default(uuid())
-  userId    String   @map("user_id")
-  token     String   @unique
-  expiresAt DateTime @map("expires_at")
-  createdAt DateTime @default(now()) @map("created_at")
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  token     String   @unique @db.VarChar(500)
+  expiresAt DateTime @map("expires_at") @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
+  @@index([expiresAt])
   @@map("refresh_tokens")
 }
 
 model MagicLink {
-  id        String   @id @default(uuid())
-  email     String
-  token     String   @unique
-  expiresAt DateTime @map("expires_at")
-  used      Boolean  @default(false)
-  createdAt DateTime @default(now()) @map("created_at")
+  id            String    @id @default(uuid()) @db.Uuid
+  publicId      String    @unique @default(uuid())
+  email         String    @db.VarChar(255)
+  token         String    @unique @db.VarChar(500)
+  usedAt        DateTime? @map("used_at")
+  invalidatedAt DateTime? @map("invalidated_at")
+  expiresAt     DateTime  @map("expires_at") @db.Timestamptz(3)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
 
+  @@index([email, publicId])
+  @@index([expiresAt])
   @@map("magic_links")
 }
 
 model BibleBook {
-  id            String         @id @default(uuid())
-  name          String         @unique
-  order         Int            @unique
+  id            String         @id @default(uuid()) @db.Uuid
+  name          String         @unique @db.VarChar(100)
+  order         Int            @unique @db.SmallInt
   testament     Testament
-  totalChapters Int            @map("total_chapters")
+  totalChapters Int            @map("total_chapters") @db.SmallInt
   chapters      BibleChapter[]
 
-  @@index([order])
+  @@index([testament, order])
   @@map("bible_books")
 }
 
 model BibleChapter {
-  id          String       @id @default(uuid())
-  bookId      String       @map("book_id")
-  number      Int
-  totalVerses Int          @map("total_verses")
-  book        BibleBook    @relation(fields: [bookId], references: [id])
+  id          String       @id @default(uuid()) @db.Uuid
+  bookId      String       @map("book_id") @db.Uuid
+  number      Int          @db.SmallInt
+  totalVerses Int          @map("total_verses") @db.SmallInt
+  book        BibleBook    @relation(fields: [bookId], references: [id], onDelete: Cascade)
   verses      BibleVerse[]
 
   @@unique([bookId, number])
-  @@index([bookId, number])
   @@map("bible_chapters")
 }
 
 model BibleVerse {
-  id        String       @id @default(uuid())
-  chapterId String       @map("chapter_id")
-  number    Int
-  text      String
-  chapter   BibleChapter @relation(fields: [chapterId], references: [id])
+  id        String       @id @default(uuid()) @db.Uuid
+  chapterId String       @map("chapter_id") @db.Uuid
+  number    Int          @db.SmallInt
+  text      String       @db.Text
+  chapter   BibleChapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
   likes     Like[]
   marks     Mark[]
   readings  Reading[]
 
   @@unique([chapterId, number])
-  @@index([chapterId, number])
   @@map("bible_verses")
 }
 
 model Reading {
-  id      String      @id @default(uuid())
-  userId  String      @map("user_id")
-  verseId String      @map("verse_id")
+  id      String      @id @default(uuid()) @db.Uuid
+  userId  String      @map("user_id") @db.Uuid
+  verseId String      @map("verse_id") @db.Uuid
   mode    ReadingMode
-  readAt  DateTime    @default(now()) @map("read_at")
-  user    User        @relation(fields: [userId], references: [id])
-  verse   BibleVerse  @relation(fields: [verseId], references: [id])
+  readAt  DateTime    @default(now()) @map("read_at") @db.Timestamptz(3)
+  user    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verse   BibleVerse  @relation(fields: [verseId], references: [id], onDelete: Cascade)
 
-  @@index([userId, readAt])
+  @@index([userId, readAt(sort: Desc)])
   @@index([verseId])
   @@map("readings")
 }
 
 model Like {
-  id        String     @id @default(uuid())
-  userId    String     @map("user_id")
-  verseId   String     @map("verse_id")
-  createdAt DateTime   @default(now()) @map("created_at")
-  user      User       @relation(fields: [userId], references: [id])
-  verse     BibleVerse @relation(fields: [verseId], references: [id])
+  id        String     @id @default(uuid()) @db.Uuid
+  userId    String     @map("user_id") @db.Uuid
+  verseId   String     @map("verse_id") @db.Uuid
+  createdAt DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verse     BibleVerse @relation(fields: [verseId], references: [id], onDelete: Cascade)
 
   @@unique([userId, verseId])
-  @@index([userId])
+  @@index([verseId])
   @@map("likes")
 }
 
 model Mark {
-  id           String     @id @default(uuid())
-  userId       String     @map("user_id")
-  verseId      String     @map("verse_id")
-  selectedText String     @map("selected_text")
-  annotation   String?    @map("anotacao")
+  id           String     @id @default(uuid()) @db.Uuid
+  userId       String     @map("user_id") @db.Uuid
+  verseId      String     @map("verse_id") @db.Uuid
+  selectedText String     @map("selected_text") @db.Text
+  annotation   String?    @map("annotation") @db.Text
   isPublic     Boolean    @default(false) @map("is_public")
-  createdAt    DateTime   @default(now()) @map("created_at")
-  user         User       @relation(fields: [userId], references: [id])
-  verse        BibleVerse @relation(fields: [verseId], references: [id])
+  createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verse        BibleVerse @relation(fields: [verseId], references: [id], onDelete: Cascade)
 
-  @@index([userId, isPublic])
+  @@index([userId, createdAt(sort: Desc)])
   @@index([verseId])
+  @@index([isPublic])
   @@map("marks")
 }
 
@@ -136,4 +143,11 @@ enum Testament {
 enum ReadingMode {
   DISCOVERY
   JOURNEY
+}
+
+enum MagicLinkStatus {
+  PENDING
+  USED
+  EXPIRED
+  INVALIDATED
 }

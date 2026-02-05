@@ -1,4 +1,4 @@
-export { BaseRepository } from "./base.repository";
-export { BibleBookRepository } from "./bible-book.repository";
-export { BibleChapterRepository } from "./bible-chapter.repository";
-export { BibleVerseRepository } from "./bible-verse.repository";
+export * from "./base.repository";
+export * from "./bible/books/bible-book.repository";
+export * from "./bible/chapters/bible-chapter.repository";
+export * from "./bible/verses/bible-verse.repository";

@@ -14,6 +14,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import * as THREE from "three";
+import { AboutSection } from "../components/common/about-section/about-section";
 
 export default function Home() {
   const { changeColor } = useChangeNavColors();
@@ -86,7 +87,9 @@ export default function Home() {
   useGSAP(() => {
     if (!canvasRef.current || !heroRef.current) return;
 
-    const lenis = new Lenis();
+    const lenis = new Lenis({
+      syncTouch: true,
+    });
 
     function raf(time: number) {
       lenis.raf(time);
@@ -122,7 +125,7 @@ export default function Home() {
         uResolution: {
           value: new THREE.Vector2(
             heroRef.current.offsetWidth,
-            heroRef.current.offsetHeight
+            heroRef.current.offsetHeight,
           ),
         },
         uColor: { value: new THREE.Vector3(rgb.r, rgb.g, rgb.b) },
@@ -165,7 +168,7 @@ export default function Home() {
       const maxScroll = heroHeight - windowHeight;
       const progress = Math.max(
         0,
-        Math.min((scroll / maxScroll) * CONFIG.speed, 1.1)
+        Math.min((scroll / maxScroll) * CONFIG.speed, 1.1),
       );
 
       material.uniforms.uProgress.value = progress;
@@ -180,17 +183,6 @@ export default function Home() {
     gsap.set(words, { opacity: 0 });
 
     if (isLoading) return;
-
-    ScrollTrigger.create({
-      trigger: "#about",
-      start: "top 0%",
-      end: "bottom 0%",
-      onEnter: () => changeColor("PRIMARY_NAVBAR_COLOR"),
-      onLeave: () => changeColor("SECONDARY_NAVBAR_COLOR"),
-
-      onEnterBack: () => changeColor("PRIMARY_NAVBAR_COLOR"),
-      onLeaveBack: () => changeColor("SECONDARY_NAVBAR_COLOR"),
-    });
 
     const heroTextScrollTrigger = ScrollTrigger.create({
       trigger: "#hero-content",
@@ -225,7 +217,9 @@ export default function Home() {
           if (index == 0) {
             const current = Math.max(
               0,
-              parseFloat(gsap.getProperty("#hero-header", "opacity").toString())
+              parseFloat(
+                gsap.getProperty("#hero-header", "opacity").toString(),
+              ),
             );
             const next = Math.max(0, 1 - opacity);
 
@@ -256,7 +250,7 @@ export default function Home() {
   }, [isLoading]);
 
   return (
-    <main>
+    <main className="w-screen overflow-x-hidden">
       <LoadingScreen isLoading={isLoading} setIsLoading={setIsLoading} />
       <>
         <section
@@ -299,13 +293,9 @@ export default function Home() {
                 href="/login"
                 className="text-amber-50 text-lg flex items-end
               justify-center text-center gap-4 font-instrument-sans
-              z-99 group transition-all duration-300 hover:scale-105"
+              z-99 group "
               >
-                <ArrowElbowDownRightIcon
-                  weight="duotone"
-                  size={24}
-                  className="mt-2 transition-transform duration-300 group-hover:translate-x-1 group-hover:translate-y-1"
-                />
+                <ArrowElbowDownRightIcon weight="duotone" size={24} />
                 <span className="relative hover:cursor-pointer">
                   Começar agora
                   <div
@@ -318,12 +308,12 @@ export default function Home() {
                 href="/login"
                 className="text-amber-50 text-lg flex items-end
               justify-center text-center gap-4 font-instrument-sans
-              z-99 group transition-all duration-300 hover:scale-105"
+              z-99 group"
               >
                 <ArrowElbowDownRightIcon
                   weight="duotone"
                   size={24}
-                  className="mt-2 transition-transform duration-300 group-hover:translate-x-1 group-hover:translate-y-1"
+                  className="mt-2"
                 />
                 <span className="relative hover:cursor-pointer">
                   Apoie o projeto
@@ -357,17 +347,7 @@ export default function Home() {
             <p>— Salmos 23:4</p>
           </div>
         </section>
-        <div
-          id="about"
-          className="relative w-full h-svh flex justify-center items-center
-      bg-[#151513] text-[#F4EAD8]"
-        >
-          <h2 className="w-[100%-4rem] lg:w-4/10 text-center">
-            O Versum nasceu pra ajudar pessoas a manterem constância na leitura
-            da Bíblia, de forma simples e contínua, respeitando o ritmo de cada
-            um e valorizando a reflexão acima da pressa.
-          </h2>
-        </div>
+        <AboutSection />
       </>
     </main>
   );

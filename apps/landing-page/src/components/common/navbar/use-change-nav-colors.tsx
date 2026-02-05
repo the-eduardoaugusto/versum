@@ -14,22 +14,17 @@ type DeafultColorType = keyof typeof defaultColors;
 export function useChangeNavColors(onListen?: (color: string) => void) {
   const changeColor = (color: string) => {
     const usingDefualtColor = Object.keys(defaultColors).includes(color);
-    if (
-      color === lastColor ||
-      (usingDefualtColor &&
-        defaultColors[color as DeafultColorType] == lastColor)
-    )
-      return;
     const selectedColor = usingDefualtColor
       ? defaultColors[color as DeafultColorType]
       : color;
 
+    // ✅ Removi a checagem que impedia a mudança
+    // Agora sempre emite o evento
     const event = new CustomEvent(EVENT_NAME, {
       detail: { color: selectedColor },
     });
 
     console.log(`Emitindo: de ${lastColor} para ${selectedColor}!`);
-    lastColor = selectedColor;
     window.dispatchEvent(event);
   };
 
@@ -40,15 +35,16 @@ export function useChangeNavColors(onListen?: (color: string) => void) {
       const evt = e as CustomEvent<{ color: string }>;
       const next = evt.detail.color;
 
+      // ✅ Só atualiza se for diferente
       if (next !== lastColor) {
         console.log(`Mudando de ${lastColor} para ${next}!`);
         lastColor = next;
+        onListen(next);
       }
-
-      onListen(next);
     };
 
-    if (lastColor != defaultColors["PRIMARY_NAVBAR_COLOR"]) onListen(lastColor);
+    // ✅ Chama onListen com a cor atual ao montar
+    onListen(lastColor);
 
     window.addEventListener(EVENT_NAME, handler);
     return () => window.removeEventListener(EVENT_NAME, handler);
