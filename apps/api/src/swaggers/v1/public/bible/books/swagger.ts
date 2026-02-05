@@ -43,28 +43,7 @@ class BibleBooksV1Swagger {
         description: "Invalid request with incorrect parameters",
         example: {
           success: false,
-          error: "Page must be a positive number",
-        },
-        schema: {
-          type: "object",
-          properties: {
-            success: {
-              type: "boolean",
-              example: false,
-            },
-            error: {
-              type: "string",
-              example: "Page must be a positive number",
-            },
-          },
-        },
-      },
-      500: {
-        description: "Internal server error",
-        example: {
-          success: false,
-          message: "Error fetching books",
-          error: "Unknown error",
+          message: "Page must be a positive number",
         },
         schema: {
           type: "object",
@@ -75,11 +54,27 @@ class BibleBooksV1Swagger {
             },
             message: {
               type: "string",
-              example: "Error fetching books",
+              example: "Page must be a positive number",
             },
-            error: {
+          },
+        },
+      },
+      500: {
+        description: "Internal server error",
+        example: {
+          success: false,
+          message: "Internal Server Error",
+        },
+        schema: {
+          type: "object",
+          properties: {
+            success: {
+              type: "boolean",
+              example: false,
+            },
+            message: {
               type: "string",
-              example: "Unknown error",
+              example: "Internal Server Error",
             },
           },
         },
@@ -198,18 +193,6 @@ class BibleBooksV1Swagger {
                 },
               },
             },
-            cache: {
-              type: "boolean",
-              description: "Indicates if the response was returned from cache",
-              example: false,
-            },
-            cacheExpireAt: {
-              type: "string",
-              format: "date-time",
-              description:
-                "Date and time when the cache will expire (only when cache is true)",
-              example: "2024-01-17T10:06:00.000Z",
-            },
           },
         },
       },
@@ -241,13 +224,18 @@ class BibleBooksV1Swagger {
           },
         },
         example: {
-          error: "You have made too many requests to a public route!",
+          success: false,
+          message: "You have made too many requests to a public route!",
           retryAfter: 45,
         },
         schema: {
           type: "object",
           properties: {
-            error: {
+            success: {
+              type: "boolean",
+              example: false,
+            },
+            message: {
               type: "string",
               example: "You have made too many requests to a public route!",
             },
@@ -285,7 +273,7 @@ class BibleBooksV1Swagger {
         description: "Invalid request with incorrect parameters",
         example: {
           success: false,
-          error: "Provide the book using its position (1-73).",
+          message: "Provide the book using its position (1-73).",
         },
         schema: {
           type: "object",
@@ -294,7 +282,7 @@ class BibleBooksV1Swagger {
               type: "boolean",
               example: false,
             },
-            error: {
+            message: {
               type: "string",
               example: "Provide the book using its position (1-73).",
             },
@@ -325,8 +313,7 @@ class BibleBooksV1Swagger {
         description: "Internal server error",
         example: {
           success: false,
-          message: "Error fetching book",
-          error: "Unknown error",
+          message: "Internal Server Error",
         },
         schema: {
           type: "object",
@@ -337,11 +324,7 @@ class BibleBooksV1Swagger {
             },
             message: {
               type: "string",
-              example: "Error fetching book",
-            },
-            error: {
-              type: "string",
-              example: "Unknown error",
+              example: "Internal Server Error",
             },
           },
         },
@@ -449,13 +432,18 @@ class BibleBooksV1Swagger {
           },
         },
         example: {
-          error: "You have made too many requests to a public route!",
+          success: false,
+          message: "You have made too many requests to a public route!",
           retryAfter: 45,
         },
         schema: {
           type: "object",
           properties: {
-            error: {
+            success: {
+              type: "boolean",
+              example: false,
+            },
+            message: {
               type: "string",
               example: "You have made too many requests to a public route!",
             },

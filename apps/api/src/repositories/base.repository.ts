@@ -1,22 +1,29 @@
 import { PrismaClient } from "@/libs/prisma/index";
 
 /**
+ * Interface que define os métodos que um model do Prisma precisa ter
+ */
+interface PrismaModel<T, CreateInput, UpdateInput> {
+  create(args: { data: CreateInput }): Promise<T>;
+  findUnique(args: { where: { id: string } }): Promise<T | null>;
+  findMany(args?: unknown): Promise<T[]>;
+  update(args: { where: { id: string }; data: UpdateInput }): Promise<T>;
+  delete(args: { where: { id: string } }): Promise<T>;
+  count(args?: unknown): Promise<number>;
+}
+
+/**
  * Base Repository com operações CRUD comuns
  * Genérico para reutilizar lógica em todos os repositories
  */
-export abstract class BaseRepository<
-  T,
-  CreateInput,
-  UpdateInput,
-  FindManyArgs extends Record<string, unknown> = Record<string, unknown>,
-  CountArgs extends Record<string, unknown> = Record<string, unknown>,
-> {
+export abstract class BaseRepository<T, CreateInput, UpdateInput> {
   protected prisma: PrismaClient;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  protected model: any;
+  protected model: PrismaModel<T, CreateInput, UpdateInput>;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  constructor(prismaClient: PrismaClient, model: any) {
+  constructor(
+    prismaClient: PrismaClient,
+    model: PrismaModel<T, CreateInput, UpdateInput>,
+  ) {
     this.prisma = prismaClient;
     this.model = model;
   }
@@ -29,22 +36,19 @@ export abstract class BaseRepository<
     return this.model.findUnique({ where: { id } });
   }
 
-  async findMany(args?: FindManyArgs): Promise<T[]> {
+  async findMany(args?: unknown): Promise<T[]> {
     return this.model.findMany(args);
   }
 
   async update(id: string, data: UpdateInput): Promise<T> {
-    return this.model.update({
-      where: { id },
-      data,
-    });
+    return this.model.update({ where: { id }, data });
   }
 
   async delete(id: string): Promise<T> {
     return this.model.delete({ where: { id } });
   }
 
-  async count(args?: CountArgs): Promise<number> {
+  async count(args?: unknown): Promise<number> {
     return this.model.count(args);
   }
 }

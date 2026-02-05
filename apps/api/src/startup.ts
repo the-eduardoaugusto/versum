@@ -138,9 +138,6 @@ export class ApplicationStartup {
     }
   }
 
-  /**
-   * Inicializa a aplicação
-   */
   async initialize(middlewares: any[] = []): Promise<void> {
     this.registerDecorators();
     this.setupSwagger();

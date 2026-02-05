@@ -43,7 +43,7 @@ class ChaptersV1Swagger {
         description: "Invalid request with incorrect parameters",
         example: {
           success: false,
-          error: "Provide the book using its position (1-73).",
+          message: "Provide the book using its position (1-73).",
         },
         schema: {
           type: "object",
@@ -52,7 +52,7 @@ class ChaptersV1Swagger {
               type: "boolean",
               example: false,
             },
-            error: {
+            message: {
               type: "string",
               example: "Provide the book using its position (1-73).",
             },
@@ -83,8 +83,7 @@ class ChaptersV1Swagger {
         description: "Internal server error",
         example: {
           success: false,
-          message: "Error fetching chapters",
-          error: "Unknown error",
+          message: "Internal Server Error",
         },
         schema: {
           type: "object",
@@ -95,11 +94,7 @@ class ChaptersV1Swagger {
             },
             message: {
               type: "string",
-              example: "Error fetching chapters",
-            },
-            error: {
-              type: "string",
-              example: "Unknown error",
+              example: "Internal Server Error",
             },
           },
         },
@@ -213,18 +208,6 @@ class ChaptersV1Swagger {
                 },
               },
             },
-            cache: {
-              type: "boolean",
-              description: "Indicates if the response was returned from cache",
-              example: false,
-            },
-            cacheExpireAt: {
-              type: "string",
-              format: "date-time",
-              description:
-                "Date and time when the cache will expire (only when cache is true)",
-              example: "2024-01-19T10:06:00.000Z",
-            },
           },
         },
       },
@@ -256,13 +239,18 @@ class ChaptersV1Swagger {
           },
         },
         example: {
-          error: "You have made too many requests to a public route!",
+          success: false,
+          message: "You have made too many requests to a public route!",
           retryAfter: 45,
         },
         schema: {
           type: "object",
           properties: {
-            error: {
+            success: {
+              type: "boolean",
+              example: false,
+            },
+            message: {
               type: "string",
               example: "You have made too many requests to a public route!",
             },
@@ -310,7 +298,7 @@ class ChaptersV1Swagger {
         description: "Invalid request with incorrect parameters",
         example: {
           success: false,
-          error:
+          message:
             "Provide the chapter number using its position (Minimum 1).",
         },
         schema: {
@@ -320,7 +308,7 @@ class ChaptersV1Swagger {
               type: "boolean",
               example: false,
             },
-            error: {
+            message: {
               type: "string",
               example:
                 "Provide the chapter number using its position (Minimum 1).",
@@ -352,8 +340,7 @@ class ChaptersV1Swagger {
         description: "Internal server error",
         example: {
           success: false,
-          message: "Error fetching chapter",
-          error: "Unknown error",
+          message: "Internal Server Error",
         },
         schema: {
           type: "object",
@@ -364,11 +351,7 @@ class ChaptersV1Swagger {
             },
             message: {
               type: "string",
-              example: "Error fetching chapter",
-            },
-            error: {
-              type: "string",
-              example: "Unknown error",
+              example: "Internal Server Error",
             },
           },
         },
@@ -471,13 +454,18 @@ class ChaptersV1Swagger {
           },
         },
         example: {
-          error: "You have made too many requests to a public route!",
+          success: false,
+          message: "You have made too many requests to a public route!",
           retryAfter: 45,
         },
         schema: {
           type: "object",
           properties: {
-            error: {
+            success: {
+              type: "boolean",
+              example: false,
+            },
+            message: {
               type: "string",
               example: "You have made too many requests to a public route!",
             },

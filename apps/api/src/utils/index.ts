@@ -1,1 +1,1 @@
-export * from "./validate-query-pagination/util";
+export * from "./validate-query-pagination.util";

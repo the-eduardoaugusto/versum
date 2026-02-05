@@ -52,7 +52,7 @@ class VersesV1Swagger {
         description: "Requisição inválida com parâmetros incorretos",
         example: {
           success: false,
-          error: "Informe números válidos para livro, capítulo e versículo.",
+          message: "Informe números válidos para livro, capítulo e versículo.",
         },
         schema: {
           type: "object",
@@ -61,7 +61,7 @@ class VersesV1Swagger {
               type: "boolean",
               example: false,
             },
-            error: {
+            message: {
               type: "string",
               example:
                 "Informe números válidos para livro, capítulo e versículo.",
@@ -73,7 +73,7 @@ class VersesV1Swagger {
         description: "Capítulo não encontrado",
         example: {
           success: false,
-          error: "Capítulo não encontrado nesse livro.",
+          message: "Capítulo não encontrado nesse livro.",
         },
         schema: {
           type: "object",
@@ -82,7 +82,7 @@ class VersesV1Swagger {
               type: "boolean",
               example: false,
             },
-            error: {
+            message: {
               type: "string",
               example: "Capítulo não encontrado nesse livro.",
             },
@@ -93,7 +93,7 @@ class VersesV1Swagger {
         description: "Erro interno do servidor",
         example: {
           success: false,
-          error: "Erro ao buscar versículos!",
+          message: "Internal Server Error",
         },
         schema: {
           type: "object",
@@ -102,9 +102,9 @@ class VersesV1Swagger {
               type: "boolean",
               example: false,
             },
-            error: {
+            message: {
               type: "string",
-              example: "Erro ao buscar versículos!",
+              example: "Internal Server Error",
             },
           },
         },
@@ -224,63 +224,55 @@ class VersesV1Swagger {
                 },
               },
             },
-            cache: {
-              type: "boolean",
-              description: "Indica se a resposta foi retornada do cache",
-              example: false,
-            },
-            cacheExpireAt: {
-              type: "string",
-              format: "date-time",
-              description:
-                "Data e hora em que o cache expirará (apenas quando cache é true)",
-              example: "2024-01-19T10:06:00.000Z",
-            },
           },
         },
       },
       429: {
-        description: "Limite de requisições excedido para rotas públicas",
+        description: "Request limit exceeded for public routes",
         headers: {
           "X-RateLimit-Limit": {
-            description:
-              "Número máximo de requisições permitidas por janela de tempo",
+            description: "Maximum number of requests allowed per time window",
             schema: {
               type: "string",
               example: "60",
             },
           },
           "X-RateLimit-Remaining": {
-            description: "Número de requisições restantes (0 quando excedido)",
+            description: "Number of remaining requests (0 when exceeded)",
             schema: {
               type: "string",
               example: "0",
             },
           },
           "X-RateLimit-Reset": {
-            description: "Data e hora em que o limite será resetado",
+            description: "Date and time when the limit will be reset",
             schema: {
               type: "string",
               format: "date-time",
-              example: "2024-01-19T10:05:00.000Z",
+              example: "2024-01-17T10:05:00.000Z",
             },
           },
         },
         example: {
-          error: "Você fez muitas requisições para uma rota pública!",
+          success: false,
+          message: "You have made too many requests to a public route!",
           retryAfter: 45,
         },
         schema: {
           type: "object",
           properties: {
-            error: {
+            success: {
+              type: "boolean",
+              example: false,
+            },
+            message: {
               type: "string",
-              example: "Você fez muitas requisições para uma rota pública!",
+              example: "You have made too many requests to a public route!",
             },
             retryAfter: {
               type: "integer",
               description:
-                "Número de segundos a aguardar antes de fazer outra requisição",
+                "Number of seconds to wait before making another request",
               example: 45,
             },
           },
@@ -331,7 +323,7 @@ class VersesV1Swagger {
         description: "Requisição inválida com parâmetros incorretos",
         example: {
           success: false,
-          error: "Informe números válidos para livro, capítulo e versículo.",
+          message: "Informe números válidos para livro, capítulo e versículo.",
         },
         schema: {
           type: "object",
@@ -340,7 +332,7 @@ class VersesV1Swagger {
               type: "boolean",
               example: false,
             },
-            error: {
+            message: {
               type: "string",
               example:
                 "Informe números válidos para livro, capítulo e versículo.",
@@ -352,7 +344,7 @@ class VersesV1Swagger {
         description: "Versículo não encontrado",
         example: {
           success: false,
-          error: "Versículo não encontrado.",
+          message: "Versículo não encontrado.",
         },
         schema: {
           type: "object",
@@ -361,7 +353,7 @@ class VersesV1Swagger {
               type: "boolean",
               example: false,
             },
-            error: {
+            message: {
               type: "string",
               example: "Versículo não encontrado.",
             },
@@ -372,7 +364,7 @@ class VersesV1Swagger {
         description: "Erro interno do servidor",
         example: {
           success: false,
-          error: "Erro ao buscar o versículo!",
+          message: "Internal Server Error",
         },
         schema: {
           type: "object",
@@ -381,9 +373,9 @@ class VersesV1Swagger {
               type: "boolean",
               example: false,
             },
-            error: {
+            message: {
               type: "string",
-              example: "Erro ao buscar o versículo!",
+              example: "Internal Server Error",
             },
           },
         },
@@ -459,47 +451,51 @@ class VersesV1Swagger {
         },
       },
       429: {
-        description: "Limite de requisições excedido para rotas públicas",
+        description: "Request limit exceeded for public routes",
         headers: {
           "X-RateLimit-Limit": {
-            description:
-              "Número máximo de requisições permitidas por janela de tempo",
+            description: "Maximum number of requests allowed per time window",
             schema: {
               type: "string",
               example: "60",
             },
           },
           "X-RateLimit-Remaining": {
-            description: "Número de requisições restantes (0 quando excedido)",
+            description: "Number of remaining requests (0 when exceeded)",
             schema: {
               type: "string",
               example: "0",
             },
           },
           "X-RateLimit-Reset": {
-            description: "Data e hora em que o limite será resetado",
+            description: "Date and time when the limit will be reset",
             schema: {
               type: "string",
               format: "date-time",
-              example: "2024-01-19T10:05:00.000Z",
+              example: "2024-01-17T10:05:00.000Z",
             },
           },
         },
         example: {
-          error: "Você fez muitas requisições para uma rota pública!",
+          success: false,
+          message: "You have made too many requests to a public route!",
           retryAfter: 45,
         },
         schema: {
           type: "object",
           properties: {
-            error: {
+            success: {
+              type: "boolean",
+              example: false,
+            },
+            message: {
               type: "string",
-              example: "Você fez muitas requisições para uma rota pública!",
+              example: "You have made too many requests to a public route!",
             },
             retryAfter: {
               type: "integer",
               description:
-                "Número de segundos a aguardar antes de fazer outra requisição",
+                "Number of seconds to wait before making another request",
               example: 45,
             },
           },
