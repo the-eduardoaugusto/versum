@@ -1,0 +1,2672 @@
+diff --git a/.vscode/settings.json b/.vscode/settings.json
+index 97f0e81..7a625f1 100644
+--- a/.vscode/settings.json
++++ b/.vscode/settings.json
+@@ -1,3 +1,3 @@
+ {
+-  "prisma.pinToPrisma6": true
++  "prisma.pinToPrisma6": false
+ }
+diff --git a/apps/api/prisma/schema.prisma b/apps/api/prisma/schema.prisma
+index c926396..4e36c41 100644
+--- a/apps/api/prisma/schema.prisma
++++ b/apps/api/prisma/schema.prisma
+@@ -1,5 +1,5 @@
+ generator client {
+-  provider = "prisma-client"
++  provider = "prisma-client-js"
+   output   = "../generated/prisma"
+ }
+ 
+@@ -8,123 +8,130 @@ datasource db {
+ }
+ 
+ model User {
+-  id            String         @id @default(uuid())
+-  username      String         @unique
+-  name          String
+-  email         String         @unique
+-  bio           String?
+-  pictureUrl    String?        @map("picture_url")
+-  createdAt     DateTime       @default(now()) @map("created_at")
++  id            String         @id @default(uuid()) @db.Uuid
++  username      String         @unique @db.VarChar(50)
++  name          String         @db.VarChar(100)
++  email         String         @unique @db.VarChar(255)
++  bio           String?        @db.VarChar(500)
++  pictureUrl    String?        @map("picture_url") @db.VarChar(500)
++  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+   likes         Like[]
+   marks         Mark[]
+   readings      Reading[]
+   refreshTokens RefreshToken[]
+ 
++  @@index([username])
++  @@index([email])
+   @@map("users")
+ }
+ 
+ model RefreshToken {
+-  id        String   @id @default(uuid())
+-  userId    String   @map("user_id")
+-  token     String   @unique
+-  expiresAt DateTime @map("expires_at")
+-  createdAt DateTime @default(now()) @map("created_at")
++  id        String   @id @default(uuid()) @db.Uuid
++  userId    String   @map("user_id") @db.Uuid
++  token     String   @unique @db.VarChar(500)
++  expiresAt DateTime @map("expires_at") @db.Timestamptz(3)
++  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
++  @@index([userId])
++  @@index([expiresAt])
+   @@map("refresh_tokens")
+ }
+ 
+ model MagicLink {
+-  id        String   @id @default(uuid())
+-  email     String
+-  token     String   @unique
+-  expiresAt DateTime @map("expires_at")
+-  used      Boolean  @default(false)
+-  createdAt DateTime @default(now()) @map("created_at")
+-
++  id            String    @id @default(uuid()) @db.Uuid
++  publicId      String    @unique @default(uuid())
++  email         String    @db.VarChar(255)
++  token         String    @unique @db.VarChar(500)
++  usedAt        DateTime? @map("used_at")
++  invalidatedAt DateTime? @map("invalidated_at")
++  expiresAt     DateTime  @map("expires_at") @db.Timestamptz(3)
++  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(3)
++
++  @@index([email, publicId])
++  @@index([expiresAt])
+   @@map("magic_links")
+ }
+ 
+ model BibleBook {
+-  id            String         @id @default(uuid())
+-  name          String         @unique
+-  order         Int            @unique
++  id            String         @id @default(uuid()) @db.Uuid
++  name          String         @unique @db.VarChar(100)
++  order         Int            @unique @db.SmallInt
+   testament     Testament
+-  totalChapters Int            @map("total_chapters")
++  totalChapters Int            @map("total_chapters") @db.SmallInt
+   chapters      BibleChapter[]
+ 
+-  @@index([order])
++  @@index([testament, order])
+   @@map("bible_books")
+ }
+ 
+ model BibleChapter {
+-  id          String       @id @default(uuid())
+-  bookId      String       @map("book_id")
+-  number      Int
+-  totalVerses Int          @map("total_verses")
+-  book        BibleBook    @relation(fields: [bookId], references: [id])
++  id          String       @id @default(uuid()) @db.Uuid
++  bookId      String       @map("book_id") @db.Uuid
++  number      Int          @db.SmallInt
++  totalVerses Int          @map("total_verses") @db.SmallInt
++  book        BibleBook    @relation(fields: [bookId], references: [id], onDelete: Cascade)
+   verses      BibleVerse[]
+ 
+   @@unique([bookId, number])
+-  @@index([bookId, number])
+   @@map("bible_chapters")
+ }
+ 
+ model BibleVerse {
+-  id        String       @id @default(uuid())
+-  chapterId String       @map("chapter_id")
+-  number    Int
+-  text      String
+-  chapter   BibleChapter @relation(fields: [chapterId], references: [id])
++  id        String       @id @default(uuid()) @db.Uuid
++  chapterId String       @map("chapter_id") @db.Uuid
++  number    Int          @db.SmallInt
++  text      String       @db.Text
++  chapter   BibleChapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+   likes     Like[]
+   marks     Mark[]
+   readings  Reading[]
+ 
+   @@unique([chapterId, number])
+-  @@index([chapterId, number])
+   @@map("bible_verses")
+ }
+ 
+ model Reading {
+-  id      String      @id @default(uuid())
+-  userId  String      @map("user_id")
+-  verseId String      @map("verse_id")
++  id      String      @id @default(uuid()) @db.Uuid
++  userId  String      @map("user_id") @db.Uuid
++  verseId String      @map("verse_id") @db.Uuid
+   mode    ReadingMode
+-  readAt  DateTime    @default(now()) @map("read_at")
+-  user    User        @relation(fields: [userId], references: [id])
+-  verse   BibleVerse  @relation(fields: [verseId], references: [id])
++  readAt  DateTime    @default(now()) @map("read_at") @db.Timestamptz(3)
++  user    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
++  verse   BibleVerse  @relation(fields: [verseId], references: [id], onDelete: Cascade)
+ 
+-  @@index([userId, readAt])
++  @@index([userId, readAt(sort: Desc)])
+   @@index([verseId])
+   @@map("readings")
+ }
+ 
+ model Like {
+-  id        String     @id @default(uuid())
+-  userId    String     @map("user_id")
+-  verseId   String     @map("verse_id")
+-  createdAt DateTime   @default(now()) @map("created_at")
+-  user      User       @relation(fields: [userId], references: [id])
+-  verse     BibleVerse @relation(fields: [verseId], references: [id])
++  id        String     @id @default(uuid()) @db.Uuid
++  userId    String     @map("user_id") @db.Uuid
++  verseId   String     @map("verse_id") @db.Uuid
++  createdAt DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
++  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
++  verse     BibleVerse @relation(fields: [verseId], references: [id], onDelete: Cascade)
+ 
+   @@unique([userId, verseId])
+-  @@index([userId])
++  @@index([verseId])
+   @@map("likes")
+ }
+ 
+ model Mark {
+-  id           String     @id @default(uuid())
+-  userId       String     @map("user_id")
+-  verseId      String     @map("verse_id")
+-  selectedText String     @map("selected_text")
+-  annotation   String?    @map("anotacao")
++  id           String     @id @default(uuid()) @db.Uuid
++  userId       String     @map("user_id") @db.Uuid
++  verseId      String     @map("verse_id") @db.Uuid
++  selectedText String     @map("selected_text") @db.Text
++  annotation   String?    @map("annotation") @db.Text
+   isPublic     Boolean    @default(false) @map("is_public")
+-  createdAt    DateTime   @default(now()) @map("created_at")
+-  user         User       @relation(fields: [userId], references: [id])
+-  verse        BibleVerse @relation(fields: [verseId], references: [id])
++  createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
++  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
++  verse        BibleVerse @relation(fields: [verseId], references: [id], onDelete: Cascade)
+ 
+-  @@index([userId, isPublic])
++  @@index([userId, createdAt(sort: Desc)])
+   @@index([verseId])
++  @@index([isPublic])
+   @@map("marks")
+ }
+ 
+@@ -137,3 +144,10 @@ enum ReadingMode {
+   DISCOVERY
+   JOURNEY
+ }
++
++enum MagicLinkStatus {
++  PENDING
++  USED
++  EXPIRED
++  INVALIDATED
++}
+diff --git a/apps/api/src/controllers/AppController.ts b/apps/api/src/controllers/AppController.ts
+deleted file mode 100644
+index 5150234..0000000
+--- a/apps/api/src/controllers/AppController.ts
++++ /dev/null
+@@ -1,14 +0,0 @@
+-import { Controller, Get, Res } from "azurajs/decorators";
+-import { ResponseServer } from "azurajs/types";
+-
+-@Controller("/")
+-export class AppController {
+-  @Get()
+-  getRoot(@Res() res: ResponseServer) {
+-    res.json({
+-      latin: "Ego sum via et veritas et vita!",
+-      ptBR: "Eu sou o caminho, a verdade e a vida!",
+-      enUS: "I am the way, the truth, and the life!",
+-    });
+-  }
+-}
+diff --git a/apps/api/src/controllers/SeedDatabase.ts b/apps/api/src/controllers/SeedDatabase.ts
+deleted file mode 100644
+index 51828dc..0000000
+--- a/apps/api/src/controllers/SeedDatabase.ts
++++ /dev/null
+@@ -1,287 +0,0 @@
+-import { Controller, Get, Res } from "azurajs/decorators";
+-import { ResponseServer } from "azurajs/types";
+-import { prisma } from "@/libs/prisma";
+-
+-interface Versiculo {
+-  versiculo: number;
+-  texto: string;
+-}
+-
+-interface Capitulo {
+-  capitulo: number;
+-  versiculos: Versiculo[];
+-}
+-
+-interface Livro {
+-  nome: string;
+-  capitulos: Capitulo[];
+-}
+-
+-interface Biblia {
+-  antigoTestamento: Livro[];
+-  novoTestamento: Livro[];
+-}
+-
+-@Controller("/seed")
+-export class SeedDebugController {
+-  private readonly WEBHOOK_URL =
+-    "https://discord.com/api/webhooks/1463937488962850837/kc9xkCsbzsXASyoxiMQDkWh3aQLsvejHYIf9CK6eABrg6QlGOdAjHHpg0MT5LO38zf6R";
+-
+-  private messageId: string | null = null;
+-  private logs: string[] = [];
+-  private startTime: Date = new Date();
+-  private endTime: Date | null = null;
+-  private hasError: boolean = false;
+-
+-  private formatDate(date: Date): string {
+-    const day = String(date.getDate()).padStart(2, "0");
+-    const month = String(date.getMonth() + 1).padStart(2, "0");
+-    const year = date.getFullYear();
+-    const hours = String(date.getHours()).padStart(2, "0");
+-    const minutes = String(date.getMinutes()).padStart(2, "0");
+-
+-    return `${day}/${month}/${year} - ${hours}h${minutes}`;
+-  }
+-
+-  private async addLog(message: string) {
+-    this.logs.push(message);
+-    await this.updateDiscordMessage();
+-  }
+-
+-  private async updateDiscordMessage() {
+-    const logsText = this.logs.join("\n");
+-    // Limita o tamanho da descrição pra não estourar o limite do Discord (4096 caracteres)
+-    const truncatedLogs =
+-      logsText.length > 3800 ? "...\n" + logsText.slice(-3800) : logsText;
+-
+-    const embed = {
+-      title: `Logs do seed ${this.startTime.toISOString()}`,
+-      description: `**Logs:**\n\`\`\`\n${truncatedLogs}\n\`\`\``,
+-      fields: [
+-        {
+-          name: "Começou em:",
+-          value: this.formatDate(this.startTime),
+-          inline: true,
+-        },
+-        {
+-          name: "Terminou em:",
+-          value: this.endTime ? this.formatDate(this.endTime) : "Em andamento",
+-          inline: true,
+-        },
+-        {
+-          name: "Houve erros?:",
+-          value: this.hasError ? "Sim" : "Não",
+-          inline: true,
+-        },
+-      ],
+-      color: this.hasError ? 0xe74c3c : this.endTime ? 0x2ecc71 : 0xffaa00,
+-      timestamp: new Date().toISOString(),
+-    };
+-
+-    try {
+-      if (!this.messageId) {
+-        // Primeira mensagem - cria
+-        const response = await fetch(this.WEBHOOK_URL + "?wait=true", {
+-          method: "POST",
+-          headers: { "Content-Type": "application/json" },
+-          body: JSON.stringify({ embeds: [embed] }),
+-        });
+-
+-        const data = (await response.json()) as { id: string };
+-        this.messageId = data.id;
+-      } else {
+-        // Mensagem já existe - edita
+-        await fetch(`${this.WEBHOOK_URL}/messages/${this.messageId}`, {
+-          method: "PATCH",
+-          headers: { "Content-Type": "application/json" },
+-          body: JSON.stringify({ embeds: [embed] }),
+-        });
+-      }
+-    } catch (err) {
+-      console.error("Erro ao atualizar Discord:", err);
+-    }
+-  }
+-
+-  @Get()
+-  async seedDatabase(@Res() res: ResponseServer) {
+-    this.startTime = new Date();
+-    this.logs = [];
+-    this.endTime = null;
+-    this.hasError = false;
+-    this.messageId = null;
+-
+-    console.log("🔥🔥🔥 === SEED DEBUG MODE ATIVADO === 🔥🔥🔥");
+-    await this.addLog("🔥 SEED INICIADO");
+-
+-    try {
+-      console.log("[1] Buscando JSON remoto...");
+-      await this.addLog("📡 Buscando JSON remoto...");
+-
+-      const url =
+-        "https://raw.githubusercontent.com/fidalgobr/bibliaAveMariaJSON/refs/heads/main/bibliaAveMariaRAW.json";
+-      const response = await fetch(url);
+-
+-      console.log(
+-        "[1.1] Status resposta:",
+-        response.status,
+-        response.statusText,
+-      );
+-
+-      if (!response.ok)
+-        throw new Error(`Falha no fetch: ${response.statusText}`);
+-
+-      console.log("[2] Convertendo JSON...");
+-      const bible = (await response.json()) as Biblia;
+-
+-      console.log("[2.1] JSON OK, estrutura:");
+-      console.dir(
+-        {
+-          AT: bible.antigoTestamento.length,
+-          NT: bible.novoTestamento.length,
+-        },
+-        { depth: 1 },
+-      );
+-
+-      await this.addLog(
+-        `✅ JSON OK - AT: ${bible.antigoTestamento.length} livros | NT: ${bible.novoTestamento.length} livros`,
+-      );
+-
+-      console.log("[3] Verificando livros já existentes no BD...");
+-      const existingBooks = await prisma.bibleBook.findMany();
+-      console.log(`[3.1] Encontrados no BD: ${existingBooks.length}`);
+-      await this.addLog(`🔍 Livros existentes no BD: ${existingBooks.length}`);
+-
+-      let createdBooks = 0;
+-      let createdChapters = 0;
+-      let createdVerses = 0;
+-
+-      const processLivro = async (
+-        livroData: Livro,
+-        ordem: number,
+-        testament: "OLD" | "NEW",
+-      ) => {
+-        console.log(`\n📖 Livro: ${livroData.nome} (${testament})`);
+-
+-        const existing = existingBooks.find((b) => b.name === livroData.nome);
+-        let livro;
+-
+-        if (existing) {
+-          console.log("   [=] Já existe no BD");
+-          livro = existing;
+-        } else {
+-          console.log("   [+] Criando livro...");
+-          livro = await prisma.bibleBook.create({
+-            data: {
+-              name: livroData.nome,
+-              order: ordem,
+-              testament,
+-              totalChapters: livroData.capitulos.length,
+-            },
+-          });
+-          createdBooks++;
+-          console.log("   [✔] Livro criado ID:", livro.id);
+-          await this.addLog(
+-            `📖 [${testament}] ${livroData.nome} - ${livroData.capitulos.length} caps`,
+-          );
+-        }
+-
+-        for (const capituloData of livroData.capitulos) {
+-          console.log(`\n       👉 Capítulo ${capituloData.capitulo}`);
+-
+-          const existingChapter = await prisma.bibleChapter.findFirst({
+-            where: { bookId: livro.id, number: capituloData.capitulo },
+-          });
+-
+-          let capitulo;
+-          if (existingChapter) {
+-            console.log("          [=] Capítulo já existe");
+-            capitulo = existingChapter;
+-          } else {
+-            console.log("          [+] Criando capítulo...");
+-            capitulo = await prisma.bibleChapter.create({
+-              data: {
+-                bookId: livro.id,
+-                number: capituloData.capitulo,
+-                totalVerses: capituloData.versiculos.length,
+-              },
+-            });
+-            createdChapters++;
+-            console.log("          [✔] Capítulo criado ID:", capitulo.id);
+-          }
+-
+-          const beforeCount = await prisma.bibleVerse.count({
+-            where: { chapterId: capitulo.id },
+-          });
+-
+-          const versiculos = capituloData.versiculos.map((vers) => ({
+-            chapterId: capitulo.id,
+-            number: vers.versiculo,
+-            text: vers.texto,
+-          }));
+-
+-          console.log(
+-            `          [+] Inserindo versos (total: ${versiculos.length})...`,
+-          );
+-
+-          await prisma.bibleVerse.createMany({
+-            data: versiculos,
+-            skipDuplicates: true,
+-          });
+-
+-          const afterCount = await prisma.bibleVerse.count({
+-            where: { chapterId: capitulo.id },
+-          });
+-
+-          const inserted = afterCount - beforeCount;
+-          createdVerses += inserted;
+-
+-          console.log(
+-            `          [✔] Antes: ${beforeCount} Depois: ${afterCount} (+=${inserted})`,
+-          );
+-        }
+-      };
+-
+-      console.log("\n🚀 Processando Antigo Testamento...");
+-      await this.addLog("📜 Processando Antigo Testamento...");
+-
+-      let ordem = 1;
+-      for (const livro of bible.antigoTestamento) {
+-        await processLivro(livro, ordem++, "OLD");
+-      }
+-
+-      console.log("\n✝️ Processando Novo Testamento...");
+-      await this.addLog("✝️ Processando Novo Testamento...");
+-
+-      for (const livro of bible.novoTestamento) {
+-        await processLivro(livro, ordem++, "NEW");
+-      }
+-
+-      this.endTime = new Date();
+-
+-      console.log("\n🎉 FINALIZADO!");
+-      console.log("📚 Livros criados:", createdBooks);
+-      console.log("📄 Capítulos criados:", createdChapters);
+-      console.log("✍️ Versículos criados:", createdVerses);
+-
+-      await this.addLog(`🎉 FINALIZADO!`);
+-      await this.addLog(
+-        `📊 Livros: ${createdBooks} | Capítulos: ${createdChapters} | Versículos: ${createdVerses}`,
+-      );
+-
+-      return res.status(200).json({
+-        ok: true,
+-        createdBooks,
+-        createdChapters,
+-        createdVerses,
+-      });
+-    } catch (err: any) {
+-      this.hasError = true;
+-      this.endTime = new Date();
+-
+-      console.error("💀 ERRO GERAL 💀:", err);
+-      await this.addLog(`❌ ERRO: ${err.message}`);
+-
+-      return res.status(500).json({ ok: false, error: err.message });
+-    }
+-  }
+-}
+diff --git a/apps/api/src/controllers/index.ts b/apps/api/src/controllers/index.ts
+index aee5ccf..1aba081 100644
+--- a/apps/api/src/controllers/index.ts
++++ b/apps/api/src/controllers/index.ts
+@@ -1,5 +1,5 @@
+-export * from "./AppController";
+-export * from "./v1/public/bible/books/BooksController";
+-export * from "./v1/public/bible/books/chapters/ChaptersController";
+-export * from "./v1/public/bible/books/chapters/verses/VersesController";
+-// export * from "./SeedDatabase";
++export * from "./app.controller";
++export * from "./v1/public/bible/books/books.controller";
++export * from "./v1/public/bible/books/chapters/chapters.controller";
++export * from "./v1/public/bible/books/chapters/verses/verses.controller";
++export * from "./seed-database.controller";
+diff --git a/apps/api/src/controllers/v1/public/bible/books/BooksController.ts b/apps/api/src/controllers/v1/public/bible/books/BooksController.ts
+deleted file mode 100644
+index 58a523a..0000000
+--- a/apps/api/src/controllers/v1/public/bible/books/BooksController.ts
++++ /dev/null
+@@ -1,119 +0,0 @@
+-import { Controller, Get, Param, Query, Res } from "azurajs/decorators";
+-import { ResponseServer } from "azurajs/types";
+-import { BibleBooksService } from "@/services";
+-import { validateQueryPagination } from "@/utils";
+-import { v } from "azurajs/validators";
+-import { Swagger } from "azurajs/swagger";
+-import { bibleBooksV1Swagger } from "@/swaggers";
+-import {
+-  BibleBookViewModel,
+-  PaginationViewModel,
+-  ApiResponseViewModel,
+-  ApiErrorViewModel,
+-} from "@/viewmodels";
+-import { Testament } from "@/libs/prisma/index";
+-
+-@Controller("/api/v1/public/bible/books")
+-export class BibleBooksV1Controller {
+-  private booksService: BibleBooksService;
+-
+-  constructor() {
+-    this.booksService = new BibleBooksService();
+-  }
+-
+-  @Get()
+-  @Swagger(bibleBooksV1Swagger.getBooks)
+-  async getBooks(
+-    @Query("page") page: string | undefined,
+-    @Query("limit") limit: string | undefined,
+-    @Query("testament") testament: string | undefined,
+-    @Res() res: ResponseServer,
+-  ) {
+-    try {
+-      const { page: parsedPage, limit: parsedLimit } = validateQueryPagination({
+-        page,
+-        limit,
+-      });
+-
+-      // Validate testament if provided
+-      let testamentValue: Testament | undefined;
+-      if (testament) {
+-        if (!Object.values(Testament).includes(testament as Testament)) {
+-          const errorResponse = new ApiErrorViewModel(
+-            "Testament must be 'OLD' or 'NEW'",
+-            "INVALID_TESTAMENT",
+-          );
+-          return res.status(400).json(errorResponse.toJSON());
+-        }
+-        testamentValue = testament as Testament;
+-      }
+-
+-      const result = await this.booksService.fetchBooks({
+-        page: parsedPage,
+-        limit: parsedLimit,
+-        testament: testamentValue,
+-      });
+-
+-      const bookViewModels = result.books.map((book) =>
+-        new BibleBookViewModel(book).toJSON(),
+-      );
+-      const paginationViewModel = new PaginationViewModel(result.pagination);
+-      const response = new ApiResponseViewModel(
+-        bookViewModels,
+-        paginationViewModel,
+-      );
+-
+-      return res.status(200).json(response.toJSON());
+-    } catch (error) {
+-      console.error("Error listing books:", error);
+-      const errorResponse = new ApiErrorViewModel(
+-        "Error fetching books",
+-        "INTERNAL_ERROR",
+-      );
+-      return res.status(500).json(errorResponse.toJSON());
+-    }
+-  }
+-
+-  @Get("/:bookOrder")
+-  @Swagger(bibleBooksV1Swagger.getBookByOrder)
+-  async getBook(
+-    @Param("bookOrder") bookOrder: string,
+-    @Res() res: ResponseServer,
+-  ) {
+-    const parseBookOrder = v
+-      .number()
+-      .max(73)
+-      .min(1)
+-      .safeParse(Number(bookOrder));
+-    if (!parseBookOrder.success) {
+-      return res.status(400).json({
+-        success: false,
+-        error: "Provide the book using its position (1-73).",
+-      });
+-    }
+-
+-    try {
+-      const book = await this.booksService.fetchBookByOrder({
+-        bookOrder: parseBookOrder.data,
+-      });
+-
+-      if (!book) {
+-        return res.status(404).json({
+-          success: false,
+-          message: "Book not found",
+-        });
+-      }
+-
+-      return res.status(200).json({
+-        success: true,
+-        data: new BibleBookViewModel(book).toJSON(),
+-      });
+-    } catch (e) {
+-      return res.status(500).json({
+-        success: false,
+-        message: "Error fetching book",
+-        error: e instanceof Error ? e.message : "Unknown error",
+-      });
+-    }
+-  }
+-}
+diff --git a/apps/api/src/controllers/v1/public/bible/books/chapters/ChaptersController.ts b/apps/api/src/controllers/v1/public/bible/books/chapters/ChaptersController.ts
+deleted file mode 100644
+index 3e9b0bd..0000000
+--- a/apps/api/src/controllers/v1/public/bible/books/chapters/ChaptersController.ts
++++ /dev/null
+@@ -1,138 +0,0 @@
+-import { Controller, Get, Param, Query, Res } from "azurajs/decorators";
+-import { ResponseServer } from "azurajs/types";
+-import { validateQueryPagination } from "@/utils";
+-import { v } from "azurajs/validators";
+-import { BibleChaptersService, BibleBooksService } from "@/services";
+-import {
+-  BibleChapterViewModel,
+-  PaginationViewModel,
+-  ApiResponseViewModel,
+-  ApiErrorViewModel,
+-} from "@/viewmodels";
+-import { Swagger } from "azurajs/swagger";
+-import { chaptersV1Swagger } from "@/swaggers";
+-
+-@Controller("/api/v1/public/bible/books/:bookOrder/chapters")
+-export class ChaptersController {
+-  private chaptersService: BibleChaptersService;
+-  private booksService: BibleBooksService;
+-
+-  constructor() {
+-    this.chaptersService = new BibleChaptersService();
+-    this.booksService = new BibleBooksService();
+-  }
+-
+-  @Get()
+-  @Swagger(chaptersV1Swagger.getChapters)
+-  async getChapters(
+-    @Param("bookOrder") bookOrder: string,
+-    @Res() res: ResponseServer,
+-    @Query("page") page: string | undefined,
+-    @Query("limit") limit: string | undefined,
+-  ) {
+-    const parseBookOrder = v
+-      .number()
+-      .max(73)
+-      .min(1)
+-      .safeParse(Number(bookOrder));
+-
+-    if (!parseBookOrder.success) {
+-      const errorResponse = new ApiErrorViewModel(
+-        "Provide the book using its position (1-73).",
+-        "INVALID_BOOK_ORDER",
+-      );
+-      return res.status(400).json(errorResponse.toJSON());
+-    }
+-
+-    try {
+-      const { page: parsedPage, limit: parsedLimit } = validateQueryPagination({
+-        page,
+-        limit,
+-      });
+-
+-      // Get book by order to find its ID
+-      const book = await this.booksService.fetchBookByOrder({
+-        bookOrder: parseBookOrder.data,
+-      });
+-      if (!book) {
+-        const errorResponse = new ApiErrorViewModel(
+-          "Book not found.",
+-          "BOOK_NOT_FOUND",
+-        );
+-        return res.status(404).json(errorResponse.toJSON());
+-      }
+-
+-      const result = await this.chaptersService.fetchChapters({
+-        bookId: book.id,
+-        page: parsedPage,
+-        limit: parsedLimit,
+-      });
+-
+-      const chapterViewModels = result.chapters.map((chapter) =>
+-        new BibleChapterViewModel(chapter).toJSON(),
+-      );
+-      const paginationViewModel = new PaginationViewModel(result.pagination);
+-      const response = new ApiResponseViewModel(
+-        chapterViewModels,
+-        paginationViewModel,
+-      );
+-
+-      return res.status(200).json(response.toJSON());
+-    } catch (error) {
+-      console.error("Error listing chapters:", error);
+-      const errorResponse = new ApiErrorViewModel(
+-        "Error fetching chapters",
+-        "INTERNAL_ERROR",
+-      );
+-      return res.status(500).json(errorResponse.toJSON());
+-    }
+-  }
+-
+-  @Get("/:chapterNumber")
+-  @Swagger(chaptersV1Swagger.getChapterByNumber)
+-  async getChapterByNumber(
+-    @Param("chapterNumber") chapterNumber: string,
+-    @Param("bookOrder") bookOrder: string,
+-    @Res() res: ResponseServer,
+-  ) {
+-    const parseChapterNumber = v
+-      .number()
+-      .min(1)
+-      .safeParse(Number(chapterNumber));
+-    const parseBookOrder = v.number().min(1).safeParse(Number(bookOrder));
+-
+-    if (!parseChapterNumber.success || !parseBookOrder.success) {
+-      const errorResponse = new ApiErrorViewModel(
+-        "Provide valid numbers for book and chapter.",
+-        "INVALID_PARAMETERS",
+-      );
+-      return res.status(400).json(errorResponse.toJSON());
+-    }
+-
+-    try {
+-      const chapter = await this.chaptersService.fetchChapterByBookAndNumber({
+-        bookOrder: parseBookOrder.data,
+-        chapterNumber: parseChapterNumber.data,
+-      });
+-
+-      if (!chapter) {
+-        const errorResponse = new ApiErrorViewModel(
+-          "Chapter not found",
+-          "NOT_FOUND",
+-        );
+-        return res.status(404).json(errorResponse.toJSON());
+-      }
+-
+-      const viewModel = new BibleChapterViewModel(chapter).toJSON();
+-      const response = new ApiResponseViewModel(viewModel);
+-      return res.status(200).json(response.toJSON());
+-    } catch (error) {
+-      console.error("Error fetching chapter:", error);
+-      const errorResponse = new ApiErrorViewModel(
+-        "Error fetching chapter",
+-        "INTERNAL_ERROR",
+-      );
+-      return res.status(500).json(errorResponse.toJSON());
+-    }
+-  }
+-}
+diff --git a/apps/api/src/controllers/v1/public/bible/books/chapters/verses/VersesController.ts b/apps/api/src/controllers/v1/public/bible/books/chapters/verses/VersesController.ts
+deleted file mode 100644
+index c9a95c5..0000000
+--- a/apps/api/src/controllers/v1/public/bible/books/chapters/verses/VersesController.ts
++++ /dev/null
+@@ -1,164 +0,0 @@
+-import { Controller, Get, Param, Query, Res } from "azurajs/decorators";
+-import { ResponseServer } from "azurajs/types";
+-import { v } from "azurajs/validators";
+-import {
+-  BibleVersesService,
+-  BibleBooksService,
+-  BibleChaptersService,
+-} from "@/services";
+-import { validateQueryPagination } from "@/utils";
+-import {
+-  BibleVerseViewModel,
+-  PaginationViewModel,
+-  ApiResponseViewModel,
+-  ApiErrorViewModel,
+-} from "@/viewmodels";
+-import { Swagger } from "azurajs/swagger";
+-import { versesV1Swagger } from "@/swaggers/v1/public/bible/books/chapters/verses/swagger";
+-
+-@Controller(
+-  "/api/v1/public/bible/books/:bookOrder/chapters/:chapterNumber/verses",
+-)
+-export class VersesController {
+-  private versesService: BibleVersesService;
+-  private booksService: BibleBooksService;
+-  private chaptersService: BibleChaptersService;
+-
+-  constructor() {
+-    this.versesService = new BibleVersesService();
+-    this.booksService = new BibleBooksService();
+-    this.chaptersService = new BibleChaptersService();
+-  }
+-
+-  @Get()
+-  @Swagger(versesV1Swagger.getVerses)
+-  async getVerses(
+-    @Param("bookOrder") bookOrder: string,
+-    @Param("chapterNumber") chapterNumber: string,
+-    @Query("page") page: string | undefined,
+-    @Query("limit") limit: string | undefined,
+-    @Res() res: ResponseServer,
+-  ) {
+-    const parsedBook = v.number().min(1).max(73).safeParse(Number(bookOrder));
+-    const parsedChapter = v.number().min(1).safeParse(Number(chapterNumber));
+-
+-    if (!parsedBook.success) {
+-      const errorResponse = new ApiErrorViewModel(
+-        "Provide the book using its position (1-73).",
+-        "INVALID_BOOK_ORDER",
+-      );
+-      return res.status(400).json(errorResponse.toJSON());
+-    }
+-
+-    if (!parsedChapter.success) {
+-      const errorResponse = new ApiErrorViewModel(
+-        "Provide a valid chapter number (>=1).",
+-        "INVALID_CHAPTER_NUMBER",
+-      );
+-      return res.status(400).json(errorResponse.toJSON());
+-    }
+-
+-    try {
+-      const { page: parsedPage, limit: parsedLimit } = validateQueryPagination({
+-        page,
+-        limit,
+-      });
+-
+-      const chapter = await this.chaptersService.fetchChapterByBookAndNumber({
+-        bookOrder: parsedBook.data,
+-        chapterNumber: parsedChapter.data,
+-      });
+-      if (!chapter) {
+-        const errorResponse = new ApiErrorViewModel(
+-          "Chapter not found.",
+-          "CHAPTER_NOT_FOUND",
+-        );
+-        return res.status(404).json(errorResponse.toJSON());
+-      }
+-
+-      const result = await this.versesService.fetchVerses({
+-        chapterId: chapter.id,
+-        page: parsedPage,
+-        limit: parsedLimit,
+-      });
+-
+-      const verseViewModels = result.verses.map((verse) =>
+-        new BibleVerseViewModel(verse).toJSON(),
+-      );
+-      const paginationViewModel = new PaginationViewModel(result.pagination);
+-      const response = new ApiResponseViewModel(
+-        verseViewModels,
+-        paginationViewModel,
+-      );
+-
+-      return res.status(200).json(response.toJSON());
+-    } catch (error) {
+-      console.error("Error fetching verses:", error);
+-      const errorResponse = new ApiErrorViewModel(
+-        "Error fetching verses",
+-        "INTERNAL_ERROR",
+-      );
+-      return res.status(500).json(errorResponse.toJSON());
+-    }
+-  }
+-
+-  @Get("/:verseNumber")
+-  @Swagger(versesV1Swagger.getVerseByNumber)
+-  async getVerseByNumber(
+-    @Param("bookOrder") bookOrder: string,
+-    @Param("chapterNumber") chapterNumber: string,
+-    @Param("verseNumber") verseNumber: string,
+-    @Res() res: ResponseServer,
+-  ) {
+-    const parsedBook = v.number().min(1).max(73).safeParse(Number(bookOrder));
+-    const parsedChapter = v.number().min(1).safeParse(Number(chapterNumber));
+-    const parsedVerse = v.number().min(1).safeParse(Number(verseNumber));
+-
+-    if (!parsedBook.success || !parsedChapter.success || !parsedVerse.success) {
+-      const errorResponse = new ApiErrorViewModel(
+-        "Provide valid numbers for book, chapter, and verse.",
+-        "INVALID_PARAMETERS",
+-      );
+-      return res.status(400).json(errorResponse.toJSON());
+-    }
+-
+-    try {
+-      const chapter = await this.chaptersService.fetchChapterByBookAndNumber({
+-        bookOrder: parsedBook.data,
+-        chapterNumber: parsedChapter.data,
+-      });
+-
+-      if (!chapter) {
+-        const errorResponse = new ApiErrorViewModel(
+-          "Chapter not found.",
+-          "NOT_FOUND",
+-        );
+-        return res.status(404).json(errorResponse.toJSON());
+-      }
+-
+-      const verse = await this.versesService.fetchVerseByNumber({
+-        chapterId: chapter?.id,
+-        verseNumber: parsedVerse.data,
+-      });
+-
+-      if (!verse) {
+-        const errorResponse = new ApiErrorViewModel(
+-          "Verse not found.",
+-          "NOT_FOUND",
+-        );
+-        return res.status(404).json(errorResponse.toJSON());
+-      }
+-
+-      const viewModel = new BibleVerseViewModel(verse).toJSON();
+-      const response = new ApiResponseViewModel(viewModel);
+-      return res.status(200).json(response.toJSON());
+-    } catch (error) {
+-      console.error("Error fetching verse:", error);
+-      const errorResponse = new ApiErrorViewModel(
+-        "Error fetching verse",
+-        "INTERNAL_ERROR",
+-      );
+-      return res.status(500).json(errorResponse.toJSON());
+-    }
+-  }
+-}
+diff --git a/apps/api/src/index.ts b/apps/api/src/index.ts
+index 54d5081..9a02c1f 100644
+--- a/apps/api/src/index.ts
++++ b/apps/api/src/index.ts
+@@ -1,16 +1,10 @@
+ import { AzuraClient } from "azurajs";
+ import * as controllersModule from "@/controllers";
+-import {
+-  cachePublicRoutes,
+-  debugRequests,
+-  publicRoutesRateLimit,
+-} from "@/middlewares";
+ import { ApplicationStartup } from "@/startup";
++import * as middlewaresIndex from "@/middlewares";
+ 
+-// Instancia o cliente Azura
+ const app = new AzuraClient();
+-// Configurar middlewares
+-const middlewares = [debugRequests, publicRoutesRateLimit, cachePublicRoutes];
++const middlewares = Object.values(middlewaresIndex);
+ 
+ // Extract controller values from the module
+ const controllers = Object.values(controllersModule);
+diff --git a/apps/api/src/libs/prisma/index.ts b/apps/api/src/libs/prisma/index.ts
+index f4afe6d..dbc7db6 100644
+--- a/apps/api/src/libs/prisma/index.ts
++++ b/apps/api/src/libs/prisma/index.ts
+@@ -1,4 +1,34 @@
+ export { prisma } from "./client";
+ export * from "../../../generated/prisma/client";
+-export * from "../../../generated/prisma/models";
+-export * from "../../../generated/prisma/enums";
++
++// Exportar tipos adicionais necessários do namespace Prisma
++import { Prisma } from "../../../generated/prisma/client";
++
++export type BibleBookFindManyArgs = Prisma.BibleBookFindManyArgs;
++export type BibleBookCountArgs = Prisma.BibleBookCountArgs;
++export type BibleBookUncheckedCreateInput =
++  Prisma.BibleBookUncheckedCreateInput;
++
++export type BibleChapterFindManyArgs = Prisma.BibleChapterFindManyArgs;
++export type BibleChapterCountArgs = Prisma.BibleChapterCountArgs;
++export type BibleChapterUncheckedCreateInput =
++  Prisma.BibleChapterUncheckedCreateInput;
++
++export type BibleVerseFindManyArgs = Prisma.BibleVerseFindManyArgs;
++export type BibleVerseCountArgs = Prisma.BibleVerseCountArgs;
++export type BibleVerseUncheckedCreateInput =
++  Prisma.BibleVerseUncheckedCreateInput;
++
++export type MagicLinkUncheckedCreateInput =
++  Prisma.MagicLinkUncheckedCreateInput;
++export type MagicLinkUncheckedUpdateInput =
++  Prisma.MagicLinkUncheckedUpdateInput;
++
++export type UserUncheckedCreateInput = Prisma.UserUncheckedCreateInput;
++export type UserUncheckedUpdateInput = Prisma.UserUncheckedUpdateInput;
++
++export type RefreshTokenUncheckedCreateInput =
++  Prisma.RefreshTokenUncheckedCreateInput;
++export type RefreshTokenUncheckedUpdateInput =
++  Prisma.RefreshTokenUncheckedUpdateInput;
++export type RefreshTokenScalarFieldEnum = Prisma.RefreshTokenScalarFieldEnum;
+diff --git a/apps/api/src/libs/redis/index.ts b/apps/api/src/libs/redis/index.ts
+index 8d9a3d0..bbc46ae 100644
+--- a/apps/api/src/libs/redis/index.ts
++++ b/apps/api/src/libs/redis/index.ts
+@@ -1,18 +1,2 @@
+-import { Redis } from "ioredis";
+-import { env } from "@/env";
+-import path from "path";
+-import { readFileSync } from "fs";
+-
+-const certPath = path.join(process.cwd(), env.REDIS_DATABASE_CERT_PATH);
+-const cert = readFileSync(certPath, "utf-8");
+-
+-export const redis = new Redis(env.REDIS_DATABASE_URL, {
+-  maxRetriesPerRequest: null,
+-  enableReadyCheck: true,
+-  tls: {
+-    key: cert,
+-    cert,
+-    ca: cert,
+-    rejectUnauthorized: false,
+-  },
+-});
++export * from "./client";
++export * from "./connection";
+diff --git a/apps/api/src/middlewares/cache-public-routes/middleware.ts b/apps/api/src/middlewares/cache-public-routes/middleware.ts
+deleted file mode 100644
+index 61ff3a1..0000000
+--- a/apps/api/src/middlewares/cache-public-routes/middleware.ts
++++ /dev/null
+@@ -1,37 +0,0 @@
+-import { NextFunction, RequestServer, ResponseServer } from "azurajs/types";
+-import { redis } from "@/libs/redis";
+-import { logger } from "azurajs/logger";
+-
+-export async function cachePublicRoutes(
+-  req: RequestServer,
+-  res: ResponseServer,
+-  next?: NextFunction,
+-) {
+-  if (!next || !req.url) return;
+-  const ignoreCache =
+-    req.hostname == "localhost" && req.query["ignoreCache"] === "true";
+-  if (req.method !== "GET" || ignoreCache) {
+-    return next();
+-  }
+-
+-  if (!req.url.split("/").includes("public")) return next();
+-  const key = `cache:${req.url}`;
+-
+-  try {
+-    const cached = await redis.get(key);
+-
+-    if (cached) {
+-      const ttl = await redis.ttl(key);
+-      const cacheExpireAt = new Date(Date.now() + ttl * 1000).toISOString();
+-      return res.json({ ...JSON.parse(cached), cache: true, cacheExpireAt });
+-    }
+-    const originalJson = res.json.bind(res);
+-    res.json = function (data: any) {
+-      redis.setex(key, 300, JSON.stringify(data));
+-      return originalJson({ ...data, cache: false });
+-    };
+-    next();
+-  } catch (error) {
+-    next();
+-  }
+-}
+diff --git a/apps/api/src/middlewares/debug-requests/middleware.ts b/apps/api/src/middlewares/debug-requests/middleware.ts
+deleted file mode 100644
+index a802ae3..0000000
+--- a/apps/api/src/middlewares/debug-requests/middleware.ts
++++ /dev/null
+@@ -1,11 +0,0 @@
+-import { logger } from "azurajs/logger";
+-import { NextFunction, RequestServer, ResponseServer } from "azurajs/types";
+-
+-export async function debugRequests(
+-  req: RequestServer,
+-  _res: ResponseServer,
+-  next?: NextFunction,
+-) {
+-  logger("debug", `${req.method}  ${req.url}`);
+-  if (next) next();
+-}
+diff --git a/apps/api/src/middlewares/index.ts b/apps/api/src/middlewares/index.ts
+index 4953e55..d2e2405 100644
+--- a/apps/api/src/middlewares/index.ts
++++ b/apps/api/src/middlewares/index.ts
+@@ -1,3 +1,4 @@
+-export * from "./public-rate-limit/middleware";
+-export * from "./cache-public-routes/middleware";
+-export * from "./debug-requests/middleware";
++export { cachePublicRoutes } from "./cache-public-routes.middleware";
++export { debugRequests } from "./debug-requests.middleware";
++export { publicRoutesRateLimit } from "./public-route-rate-limit.middleware";
++// export { errorHandlerMiddleware } from "./error-handler.middleware";
+diff --git a/apps/api/src/middlewares/public-rate-limit/middleware.ts b/apps/api/src/middlewares/public-rate-limit/middleware.ts
+deleted file mode 100644
+index c940827..0000000
+--- a/apps/api/src/middlewares/public-rate-limit/middleware.ts
++++ /dev/null
+@@ -1,67 +0,0 @@
+-import { RequestHandler } from "azurajs/types";
+-
+-interface RateLimitRecord {
+-  count: number;
+-  resetAt: number;
+-}
+-
+-const store = new Map<string, RateLimitRecord>();
+-
+-class PublicRoutesRateLimit {
+-  windowMs: number;
+-  maxReqPerWindow: number;
+-
+-  constructor(windowMs?: number, maxReqPerWindow?: number) {
+-    this.windowMs = windowMs || 60 * 1000;
+-    this.maxReqPerWindow = maxReqPerWindow || 60;
+-    this.middleware = this.middleware.bind(this);
+-  }
+-
+-  middleware: RequestHandler = (req, res, next) => {
+-    if (!next || !req.url) {
+-      throw new Error(
+-        "Function 'next' is not mounted or url of req is undefined/null.",
+-      );
+-    }
+-
+-    const pathParts = req.url.split("/").filter((i) => i !== "");
+-
+-    const isPublicRoute =
+-      pathParts[0] === "api" && pathParts.includes("public");
+-
+-    if (!isPublicRoute) return next();
+-
+-    const key = req.ip;
+-    const now = Date.now();
+-
+-    let record = store.get(key);
+-    if (!record || now > record.resetAt) {
+-      record = {
+-        count: 1,
+-        resetAt: now + this.windowMs,
+-      };
+-      store.set(key, record);
+-      return next();
+-    }
+-
+-    record.count++;
+-
+-    res.setHeader("X-RateLimit-Limit", this.maxReqPerWindow.toString());
+-    res.setHeader(
+-      "X-RateLimit-Remaining",
+-      Math.max(0, this.maxReqPerWindow - record.count).toString(),
+-    );
+-    res.setHeader("X-RateLimit-Reset", new Date(record.resetAt).toISOString());
+-
+-    if (record.count > this.maxReqPerWindow) {
+-      return res.status(429).json({
+-        error: "Você fez muitas requisições para uma rota pública!",
+-        retryAfter: Math.ceil((record.resetAt - now) / 1000),
+-      });
+-    }
+-
+-    next();
+-  };
+-}
+-
+-export const publicRoutesRateLimit = new PublicRoutesRateLimit().middleware;
+diff --git a/apps/api/src/public/html/api-docs.html b/apps/api/src/public/html/api-docs.html
+index f7f8d07..37ff93e 100644
+--- a/apps/api/src/public/html/api-docs.html
++++ b/apps/api/src/public/html/api-docs.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html>
+   <head>
+-    <title>Versum API - Sistine Chapel Theme</title>
++    <title>Versum API</title>
+     <meta charset="utf-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1" />
+ 
+diff --git a/apps/api/src/repositories/base.repository.ts b/apps/api/src/repositories/base.repository.ts
+index b9f7cd1..86603c2 100644
+--- a/apps/api/src/repositories/base.repository.ts
++++ b/apps/api/src/repositories/base.repository.ts
+@@ -1,22 +1,29 @@
+ import { PrismaClient } from "@/libs/prisma/index";
+ 
++/**
++ * Interface que define os métodos que um model do Prisma precisa ter
++ */
++interface PrismaModel<T, CreateInput, UpdateInput> {
++  create(args: { data: CreateInput }): Promise<T>;
++  findUnique(args: { where: { id: string } }): Promise<T | null>;
++  findMany(args?: unknown): Promise<T[]>;
++  update(args: { where: { id: string }; data: UpdateInput }): Promise<T>;
++  delete(args: { where: { id: string } }): Promise<T>;
++  count(args?: unknown): Promise<number>;
++}
++
+ /**
+  * Base Repository com operações CRUD comuns
+  * Genérico para reutilizar lógica em todos os repositories
+  */
+-export abstract class BaseRepository<
+-  T,
+-  CreateInput,
+-  UpdateInput,
+-  FindManyArgs extends Record<string, unknown> = Record<string, unknown>,
+-  CountArgs extends Record<string, unknown> = Record<string, unknown>,
+-> {
++export abstract class BaseRepository<T, CreateInput, UpdateInput> {
+   protected prisma: PrismaClient;
+-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+-  protected model: any;
++  protected model: PrismaModel<T, CreateInput, UpdateInput>;
+ 
+-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+-  constructor(prismaClient: PrismaClient, model: any) {
++  constructor(
++    prismaClient: PrismaClient,
++    model: PrismaModel<T, CreateInput, UpdateInput>,
++  ) {
+     this.prisma = prismaClient;
+     this.model = model;
+   }
+@@ -29,22 +36,19 @@ export abstract class BaseRepository<
+     return this.model.findUnique({ where: { id } });
+   }
+ 
+-  async findMany(args?: FindManyArgs): Promise<T[]> {
++  async findMany(args?: unknown): Promise<T[]> {
+     return this.model.findMany(args);
+   }
+ 
+   async update(id: string, data: UpdateInput): Promise<T> {
+-    return this.model.update({
+-      where: { id },
+-      data,
+-    });
++    return this.model.update({ where: { id }, data });
+   }
+ 
+   async delete(id: string): Promise<T> {
+     return this.model.delete({ where: { id } });
+   }
+ 
+-  async count(args?: CountArgs): Promise<number> {
++  async count(args?: unknown): Promise<number> {
+     return this.model.count(args);
+   }
+ }
+diff --git a/apps/api/src/repositories/bible-book.repository.ts b/apps/api/src/repositories/bible-book.repository.ts
+deleted file mode 100644
+index 2f756d6..0000000
+--- a/apps/api/src/repositories/bible-book.repository.ts
++++ /dev/null
+@@ -1,83 +0,0 @@
+-import { BaseRepository } from "./base.repository";
+-import { PrismaClient } from "@/libs/prisma";
+-import type {
+-  BibleBook,
+-  BibleBookFindManyArgs,
+-  BibleBookCountArgs,
+-  BibleBookUncheckedCreateInput,
+-  Testament,
+-} from "@/libs/prisma";
+-
+-export interface CreateBibleBookInput {
+-  name: string;
+-  order: number;
+-  testament: Testament;
+-  totalChapters: number;
+-}
+-
+-export interface UpdateBibleBookInput {
+-  name?: string;
+-  testament?: Testament;
+-  totalChapters?: number;
+-}
+-
+-export class BibleBookRepository extends BaseRepository<
+-  BibleBook,
+-  BibleBookUncheckedCreateInput,
+-  UpdateBibleBookInput,
+-  BibleBookFindManyArgs,
+-  BibleBookCountArgs
+-> {
+-  constructor(prisma: PrismaClient) {
+-    super(prisma, prisma.bibleBook);
+-  }
+-
+-  async findByName({
+-    bookName,
+-  }: {
+-    bookName: string;
+-  }): Promise<BibleBook | null> {
+-    return this.prisma.bibleBook.findUnique({ where: { name: bookName } });
+-  }
+-
+-  async findByOrder({
+-    bookOrder,
+-  }: {
+-    bookOrder: number;
+-  }): Promise<BibleBook | null> {
+-    return this.prisma.bibleBook.findUnique({ where: { order: bookOrder } });
+-  }
+-
+-  async findByTestament({
+-    testament,
+-    args,
+-  }: {
+-    testament: Testament;
+-    args?: Omit<BibleBookFindManyArgs, "where">;
+-  }): Promise<BibleBook[]> {
+-    return this.prisma.bibleBook.findMany({
+-      where: { testament },
+-      ...args,
+-    });
+-  }
+-
+-  async findWithChapters({ bookId }: { bookId: string }) {
+-    return this.prisma.bibleBook.findUnique({
+-      where: { id: bookId },
+-      include: {
+-        chapters: {
+-          orderBy: { number: "asc" },
+-        },
+-      },
+-    });
+-  }
+-
+-  async findAllOrderedByOrder(
+-    args?: Omit<BibleBookFindManyArgs, "orderBy">,
+-  ): Promise<BibleBook[]> {
+-    return this.prisma.bibleBook.findMany({
+-      orderBy: { order: "asc" },
+-      ...args,
+-    });
+-  }
+-}
+diff --git a/apps/api/src/repositories/bible-chapter.repository.ts b/apps/api/src/repositories/bible-chapter.repository.ts
+deleted file mode 100644
+index d1dfff6..0000000
+--- a/apps/api/src/repositories/bible-chapter.repository.ts
++++ /dev/null
+@@ -1,79 +0,0 @@
+-import { BaseRepository } from "./base.repository";
+-import { PrismaClient } from "@/libs/prisma";
+-import type {
+-  BibleChapter,
+-  BibleChapterFindManyArgs,
+-  BibleChapterCountArgs,
+-  BibleChapterUncheckedCreateInput,
+-} from "@/libs/prisma";
+-
+-export interface CreateBibleChapterInput {
+-  bookId: string;
+-  number: number;
+-  totalVerses: number;
+-}
+-
+-export interface UpdateBibleChapterInput {
+-  number?: number;
+-  totalVerses?: number;
+-}
+-
+-export class BibleChapterRepository extends BaseRepository<
+-  BibleChapter,
+-  BibleChapterUncheckedCreateInput,
+-  UpdateBibleChapterInput,
+-  BibleChapterFindManyArgs,
+-  BibleChapterCountArgs
+-> {
+-  constructor(prisma: PrismaClient) {
+-    super(prisma, prisma.bibleChapter);
+-  }
+-
+-  async findByBookAndNumber({
+-    bookOrder,
+-    chapterNumber,
+-  }: {
+-    bookOrder: number;
+-    chapterNumber: number;
+-  }): Promise<BibleChapter | null> {
+-    const book = await this.prisma.bibleBook.findFirst({
+-      where: {
+-        order: bookOrder,
+-      },
+-      select: {
+-        id: true,
+-      },
+-    });
+-    if (!book) return null;
+-    return this.prisma.bibleChapter.findUnique({
+-      where: {
+-        bookId_number: { bookId: book.id, number: chapterNumber },
+-      },
+-    });
+-  }
+-
+-  async findByBookId({
+-    bookId,
+-    args,
+-  }: {
+-    bookId: string;
+-    args?: Omit<BibleChapterFindManyArgs, "where">;
+-  }): Promise<BibleChapter[]> {
+-    return this.prisma.bibleChapter.findMany({
+-      where: { bookId },
+-      orderBy: { number: "asc" },
+-      ...args,
+-    });
+-  }
+-
+-  async findWithVerses({ chapterId }: { chapterId: string }) {
+-    return this.prisma.bibleChapter.findUnique({
+-      where: { id: chapterId },
+-      include: {
+-        verses: {
+-          orderBy: { number: "asc" },
+-        },
+-      },
+-    });
+-  }
+-}
+diff --git a/apps/api/src/repositories/bible-verse.repository.ts b/apps/api/src/repositories/bible-verse.repository.ts
+deleted file mode 100644
+index 587e3f4..0000000
+--- a/apps/api/src/repositories/bible-verse.repository.ts
++++ /dev/null
+@@ -1,67 +0,0 @@
+-import { BaseRepository } from "./base.repository";
+-import { PrismaClient } from "@/libs/prisma";
+-import type {
+-  BibleVerse,
+-  BibleVerseFindManyArgs,
+-  BibleVerseCountArgs,
+-  BibleVerseUncheckedCreateInput,
+-} from "@/libs/prisma";
+-
+-export interface CreateBibleVerseInput {
+-  chapterId: string;
+-  number: number;
+-  text: string;
+-}
+-
+-export interface UpdateBibleVerseInput {
+-  number?: number;
+-  text?: string;
+-}
+-
+-export class BibleVerseRepository extends BaseRepository<
+-  BibleVerse,
+-  BibleVerseUncheckedCreateInput,
+-  UpdateBibleVerseInput,
+-  BibleVerseFindManyArgs,
+-  BibleVerseCountArgs
+-> {
+-  constructor(prisma: PrismaClient) {
+-    super(prisma, prisma.bibleVerse);
+-  }
+-
+-  async findByChapterAndNumber({
+-    chapterId,
+-    verseNumber,
+-  }: {
+-    chapterId: string;
+-    verseNumber: number;
+-  }): Promise<BibleVerse | null> {
+-    return this.prisma.bibleVerse.findUnique({
+-      where: {
+-        chapterId_number: { chapterId, number: verseNumber },
+-      },
+-    });
+-  }
+-
+-  async findByChapterId(
+-    { chapterId }: { chapterId: string },
+-    args?: Omit<BibleVerseFindManyArgs, "where">,
+-  ): Promise<BibleVerse[]> {
+-    return this.prisma.bibleVerse.findMany({
+-      where: { chapterId },
+-      orderBy: { number: "asc" },
+-      ...args,
+-    });
+-  }
+-
+-  async findWithRelations({ verseId }: { verseId: string }) {
+-    return this.prisma.bibleVerse.findUnique({
+-      where: { id: verseId },
+-      include: {
+-        likes: true,
+-        marks: true,
+-        readings: true,
+-      },
+-    });
+-  }
+-}
+diff --git a/apps/api/src/repositories/index.ts b/apps/api/src/repositories/index.ts
+index d6b8884..b5b7387 100644
+--- a/apps/api/src/repositories/index.ts
++++ b/apps/api/src/repositories/index.ts
+@@ -1,4 +1,4 @@
+-export { BaseRepository } from "./base.repository";
+-export { BibleBookRepository } from "./bible-book.repository";
+-export { BibleChapterRepository } from "./bible-chapter.repository";
+-export { BibleVerseRepository } from "./bible-verse.repository";
++export * from "./base.repository";
++export * from "./bible/books/bible-book.repository";
++export * from "./bible/chapters/bible-chapter.repository";
++export * from "./bible/verses/bible-verse.repository";
+diff --git a/apps/api/src/services/bible-books.service.ts b/apps/api/src/services/bible-books.service.ts
+deleted file mode 100644
+index 979a10e..0000000
+--- a/apps/api/src/services/bible-books.service.ts
++++ /dev/null
+@@ -1,63 +0,0 @@
+-import { BibleBookRepository } from "@/repositories";
+-import { prisma } from "@/libs/prisma";
+-import { Testament, type BibleBookFindManyArgs } from "@/libs/prisma/index";
+-
+-export interface FetchBooksParams {
+-  page: number;
+-  limit: number;
+-  testament?: Testament;
+-}
+-
+-export class BibleBooksService {
+-  private bookRepository: BibleBookRepository;
+-
+-  constructor() {
+-    this.bookRepository = new BibleBookRepository(prisma);
+-  }
+-
+-  async fetchBooks({ page, limit, testament }: FetchBooksParams) {
+-    // Validar testamento
+-    if (testament && !Object.values(Testament).includes(testament)) {
+-      throw new Error("Testament must be 'OLD' or 'NEW'");
+-    }
+-
+-    const skip = (page - 1) * limit;
+-
+-    const where: BibleBookFindManyArgs["where"] = {};
+-    if (testament) {
+-      where.testament = testament;
+-    }
+-
+-    const [books, totalBooks] = await Promise.all([
+-      this.bookRepository.findMany({
+-        where,
+-        skip,
+-        take: limit,
+-        orderBy: { order: "asc" },
+-      }),
+-      this.bookRepository.count({ where }),
+-    ]);
+-
+-    const totalPages = Math.ceil(totalBooks / limit);
+-
+-    return {
+-      books,
+-      pagination: {
+-        currentPage: page,
+-        totalPages,
+-        totalItems: totalBooks,
+-        itemsPerPage: limit,
+-        hasNextPage: page < totalPages,
+-        hasPrevPage: page > 1,
+-      },
+-    };
+-  }
+-
+-  async fetchBookById({ bookId }: { bookId: string }) {
+-    return this.bookRepository.findById(bookId);
+-  }
+-
+-  async fetchBookByOrder({ bookOrder }: { bookOrder: number }) {
+-    return this.bookRepository.findByOrder({ bookOrder });
+-  }
+-}
+diff --git a/apps/api/src/services/bible-chapters.service.ts b/apps/api/src/services/bible-chapters.service.ts
+deleted file mode 100644
+index 4378d9a..0000000
+--- a/apps/api/src/services/bible-chapters.service.ts
++++ /dev/null
+@@ -1,71 +0,0 @@
+-import { BibleChapterRepository } from "@/repositories";
+-import {
+-  prisma,
+-  type BibleChapterFindManyArgs,
+-  type BibleChapterCountArgs,
+-} from "@/libs/prisma";
+-
+-export interface FetchChaptersParams {
+-  bookId: string;
+-  page: number;
+-  limit: number;
+-}
+-
+-export class BibleChaptersService {
+-  private chapterRepository: BibleChapterRepository;
+-
+-  constructor() {
+-    this.chapterRepository = new BibleChapterRepository(prisma);
+-  }
+-
+-  async fetchChapters({ bookId, page, limit }: FetchChaptersParams) {
+-    const skip = (page - 1) * limit;
+-
+-    const args: BibleChapterFindManyArgs = {
+-      where: { bookId },
+-      skip,
+-      take: limit,
+-      orderBy: { number: "asc" },
+-    };
+-
+-    const countArgs: BibleChapterCountArgs = { where: { bookId } };
+-
+-    const [chapters, totalChapters] = await Promise.all([
+-      this.chapterRepository.findMany(args),
+-      this.chapterRepository.count(countArgs),
+-    ]);
+-
+-    const totalPages = Math.ceil(totalChapters / limit);
+-
+-    return {
+-      chapters,
+-      pagination: {
+-        currentPage: page,
+-        totalPages,
+-        totalItems: totalChapters,
+-        itemsPerPage: limit,
+-        hasNextPage: page < totalPages,
+-        hasPrevPage: page > 1,
+-      },
+-    };
+-  }
+-
+-  async fetchChapterById({ chapterId }: { chapterId: string }) {
+-    return this.chapterRepository.findWithVerses({
+-      chapterId,
+-    });
+-  }
+-
+-  async fetchChapterByBookAndNumber({
+-    bookOrder,
+-    chapterNumber,
+-  }: {
+-    bookOrder: number;
+-    chapterNumber: number;
+-  }) {
+-    return this.chapterRepository.findByBookAndNumber({
+-      bookOrder,
+-      chapterNumber,
+-    });
+-  }
+-}
+diff --git a/apps/api/src/services/bible-verses.service.ts b/apps/api/src/services/bible-verses.service.ts
+deleted file mode 100644
+index 35e3509..0000000
+--- a/apps/api/src/services/bible-verses.service.ts
++++ /dev/null
+@@ -1,69 +0,0 @@
+-import { BibleVerseRepository } from "@/repositories";
+-import {
+-  prisma,
+-  type BibleVerseFindManyArgs,
+-  type BibleVerseCountArgs,
+-} from "@/libs/prisma";
+-
+-export interface FetchVersesParams {
+-  chapterId: string;
+-  page: number;
+-  limit: number;
+-}
+-
+-export class BibleVersesService {
+-  private verseRepository: BibleVerseRepository;
+-
+-  constructor() {
+-    this.verseRepository = new BibleVerseRepository(prisma);
+-  }
+-
+-  async fetchVerses({ chapterId, page, limit }: FetchVersesParams) {
+-    const skip = (page - 1) * limit;
+-
+-    const args: BibleVerseFindManyArgs = {
+-      where: { chapterId },
+-      skip,
+-      take: limit,
+-      orderBy: { number: "asc" },
+-    };
+-
+-    const countArgs: BibleVerseCountArgs = { where: { chapterId } };
+-
+-    const [verses, totalVerses] = await Promise.all([
+-      this.verseRepository.findMany(args),
+-      this.verseRepository.count(countArgs),
+-    ]);
+-
+-    const totalPages = Math.ceil(totalVerses / limit);
+-
+-    return {
+-      verses,
+-      pagination: {
+-        currentPage: page,
+-        totalPages,
+-        totalItems: totalVerses,
+-        itemsPerPage: limit,
+-        hasNextPage: page < totalPages,
+-        hasPrevPage: page > 1,
+-      },
+-    };
+-  }
+-
+-  async fetchVerseById({ verseId }: { verseId: string }) {
+-    return this.verseRepository.findWithRelations({ verseId });
+-  }
+-
+-  async fetchVerseByNumber({
+-    chapterId,
+-    verseNumber,
+-  }: {
+-    chapterId: string;
+-    verseNumber: number;
+-  }) {
+-    return this.verseRepository.findByChapterAndNumber({
+-      chapterId,
+-      verseNumber,
+-    });
+-  }
+-}
+diff --git a/apps/api/src/services/index.ts b/apps/api/src/services/index.ts
+index 82fbb60..7139802 100644
+--- a/apps/api/src/services/index.ts
++++ b/apps/api/src/services/index.ts
+@@ -1,3 +1,3 @@
+-export { BibleBooksService } from "./bible-books.service";
+-export { BibleChaptersService } from "./bible-chapters.service";
+-export { BibleVersesService } from "./bible-verses.service";
++export * from "./bible/books/bible-books.service";
++export * from "./bible/chapters/bible-chapters.service";
++export * from "./bible/verses/bible-verses.service";
+diff --git a/apps/api/src/startup.ts b/apps/api/src/startup.ts
+index da40820..ba584f9 100644
+--- a/apps/api/src/startup.ts
++++ b/apps/api/src/startup.ts
+@@ -138,9 +138,6 @@ export class ApplicationStartup {
+     }
+   }
+ 
+-  /**
+-   * Inicializa a aplicação
+-   */
+   async initialize(middlewares: any[] = []): Promise<void> {
+     this.registerDecorators();
+     this.setupSwagger();
+diff --git a/apps/api/src/swaggers/index.ts b/apps/api/src/swaggers/index.ts
+index b7bf033..8951832 100644
+--- a/apps/api/src/swaggers/index.ts
++++ b/apps/api/src/swaggers/index.ts
+@@ -2,5 +2,7 @@ import { Swagger } from "azurajs/swagger";
+ 
+ export * from "./v1/public/bible/books/swagger";
+ export * from "./v1/public/bible/books/chapters/swagger";
++export * from "./app.swagger";
++export * from "./seed-database.swagger";
+ 
+ export type SwaggerConfigType = Parameters<typeof Swagger>[0];
+diff --git a/apps/api/src/swaggers/v1/public/bible/books/chapters/swagger.ts b/apps/api/src/swaggers/v1/public/bible/books/chapters/swagger.ts
+index 8e650e1..2028a4d 100644
+--- a/apps/api/src/swaggers/v1/public/bible/books/chapters/swagger.ts
++++ b/apps/api/src/swaggers/v1/public/bible/books/chapters/swagger.ts
+@@ -43,7 +43,7 @@ class ChaptersV1Swagger {
+         description: "Invalid request with incorrect parameters",
+         example: {
+           success: false,
+-          error: "Provide the book using its position (1-73).",
++          message: "Provide the book using its position (1-73).",
+         },
+         schema: {
+           type: "object",
+@@ -52,7 +52,7 @@ class ChaptersV1Swagger {
+               type: "boolean",
+               example: false,
+             },
+-            error: {
++            message: {
+               type: "string",
+               example: "Provide the book using its position (1-73).",
+             },
+@@ -83,8 +83,7 @@ class ChaptersV1Swagger {
+         description: "Internal server error",
+         example: {
+           success: false,
+-          message: "Error fetching chapters",
+-          error: "Unknown error",
++          message: "Internal Server Error",
+         },
+         schema: {
+           type: "object",
+@@ -95,11 +94,7 @@ class ChaptersV1Swagger {
+             },
+             message: {
+               type: "string",
+-              example: "Error fetching chapters",
+-            },
+-            error: {
+-              type: "string",
+-              example: "Unknown error",
++              example: "Internal Server Error",
+             },
+           },
+         },
+@@ -213,18 +208,6 @@ class ChaptersV1Swagger {
+                 },
+               },
+             },
+-            cache: {
+-              type: "boolean",
+-              description: "Indicates if the response was returned from cache",
+-              example: false,
+-            },
+-            cacheExpireAt: {
+-              type: "string",
+-              format: "date-time",
+-              description:
+-                "Date and time when the cache will expire (only when cache is true)",
+-              example: "2024-01-19T10:06:00.000Z",
+-            },
+           },
+         },
+       },
+@@ -256,13 +239,18 @@ class ChaptersV1Swagger {
+           },
+         },
+         example: {
+-          error: "You have made too many requests to a public route!",
++          success: false,
++          message: "You have made too many requests to a public route!",
+           retryAfter: 45,
+         },
+         schema: {
+           type: "object",
+           properties: {
+-            error: {
++            success: {
++              type: "boolean",
++              example: false,
++            },
++            message: {
+               type: "string",
+               example: "You have made too many requests to a public route!",
+             },
+@@ -310,7 +298,7 @@ class ChaptersV1Swagger {
+         description: "Invalid request with incorrect parameters",
+         example: {
+           success: false,
+-          error:
++          message:
+             "Provide the chapter number using its position (Minimum 1).",
+         },
+         schema: {
+@@ -320,7 +308,7 @@ class ChaptersV1Swagger {
+               type: "boolean",
+               example: false,
+             },
+-            error: {
++            message: {
+               type: "string",
+               example:
+                 "Provide the chapter number using its position (Minimum 1).",
+@@ -352,8 +340,7 @@ class ChaptersV1Swagger {
+         description: "Internal server error",
+         example: {
+           success: false,
+-          message: "Error fetching chapter",
+-          error: "Unknown error",
++          message: "Internal Server Error",
+         },
+         schema: {
+           type: "object",
+@@ -364,11 +351,7 @@ class ChaptersV1Swagger {
+             },
+             message: {
+               type: "string",
+-              example: "Error fetching chapter",
+-            },
+-            error: {
+-              type: "string",
+-              example: "Unknown error",
++              example: "Internal Server Error",
+             },
+           },
+         },
+@@ -471,13 +454,18 @@ class ChaptersV1Swagger {
+           },
+         },
+         example: {
+-          error: "You have made too many requests to a public route!",
++          success: false,
++          message: "You have made too many requests to a public route!",
+           retryAfter: 45,
+         },
+         schema: {
+           type: "object",
+           properties: {
+-            error: {
++            success: {
++              type: "boolean",
++              example: false,
++            },
++            message: {
+               type: "string",
+               example: "You have made too many requests to a public route!",
+             },
+diff --git a/apps/api/src/swaggers/v1/public/bible/books/chapters/verses/swagger.ts b/apps/api/src/swaggers/v1/public/bible/books/chapters/verses/swagger.ts
+index f221032..452ef4d 100644
+--- a/apps/api/src/swaggers/v1/public/bible/books/chapters/verses/swagger.ts
++++ b/apps/api/src/swaggers/v1/public/bible/books/chapters/verses/swagger.ts
+@@ -52,7 +52,7 @@ class VersesV1Swagger {
+         description: "Requisição inválida com parâmetros incorretos",
+         example: {
+           success: false,
+-          error: "Informe números válidos para livro, capítulo e versículo.",
++          message: "Informe números válidos para livro, capítulo e versículo.",
+         },
+         schema: {
+           type: "object",
+@@ -61,7 +61,7 @@ class VersesV1Swagger {
+               type: "boolean",
+               example: false,
+             },
+-            error: {
++            message: {
+               type: "string",
+               example:
+                 "Informe números válidos para livro, capítulo e versículo.",
+@@ -73,7 +73,7 @@ class VersesV1Swagger {
+         description: "Capítulo não encontrado",
+         example: {
+           success: false,
+-          error: "Capítulo não encontrado nesse livro.",
++          message: "Capítulo não encontrado nesse livro.",
+         },
+         schema: {
+           type: "object",
+@@ -82,7 +82,7 @@ class VersesV1Swagger {
+               type: "boolean",
+               example: false,
+             },
+-            error: {
++            message: {
+               type: "string",
+               example: "Capítulo não encontrado nesse livro.",
+             },
+@@ -93,7 +93,7 @@ class VersesV1Swagger {
+         description: "Erro interno do servidor",
+         example: {
+           success: false,
+-          error: "Erro ao buscar versículos!",
++          message: "Internal Server Error",
+         },
+         schema: {
+           type: "object",
+@@ -102,9 +102,9 @@ class VersesV1Swagger {
+               type: "boolean",
+               example: false,
+             },
+-            error: {
++            message: {
+               type: "string",
+-              example: "Erro ao buscar versículos!",
++              example: "Internal Server Error",
+             },
+           },
+         },
+@@ -224,63 +224,55 @@ class VersesV1Swagger {
+                 },
+               },
+             },
+-            cache: {
+-              type: "boolean",
+-              description: "Indica se a resposta foi retornada do cache",
+-              example: false,
+-            },
+-            cacheExpireAt: {
+-              type: "string",
+-              format: "date-time",
+-              description:
+-                "Data e hora em que o cache expirará (apenas quando cache é true)",
+-              example: "2024-01-19T10:06:00.000Z",
+-            },
+           },
+         },
+       },
+       429: {
+-        description: "Limite de requisições excedido para rotas públicas",
++        description: "Request limit exceeded for public routes",
+         headers: {
+           "X-RateLimit-Limit": {
+-            description:
+-              "Número máximo de requisições permitidas por janela de tempo",
++            description: "Maximum number of requests allowed per time window",
+             schema: {
+               type: "string",
+               example: "60",
+             },
+           },
+           "X-RateLimit-Remaining": {
+-            description: "Número de requisições restantes (0 quando excedido)",
++            description: "Number of remaining requests (0 when exceeded)",
+             schema: {
+               type: "string",
+               example: "0",
+             },
+           },
+           "X-RateLimit-Reset": {
+-            description: "Data e hora em que o limite será resetado",
++            description: "Date and time when the limit will be reset",
+             schema: {
+               type: "string",
+               format: "date-time",
+-              example: "2024-01-19T10:05:00.000Z",
++              example: "2024-01-17T10:05:00.000Z",
+             },
+           },
+         },
+         example: {
+-          error: "Você fez muitas requisições para uma rota pública!",
++          success: false,
++          message: "You have made too many requests to a public route!",
+           retryAfter: 45,
+         },
+         schema: {
+           type: "object",
+           properties: {
+-            error: {
++            success: {
++              type: "boolean",
++              example: false,
++            },
++            message: {
+               type: "string",
+-              example: "Você fez muitas requisições para uma rota pública!",
++              example: "You have made too many requests to a public route!",
+             },
+             retryAfter: {
+               type: "integer",
+               description:
+-                "Número de segundos a aguardar antes de fazer outra requisição",
++                "Number of seconds to wait before making another request",
+               example: 45,
+             },
+           },
+@@ -331,7 +323,7 @@ class VersesV1Swagger {
+         description: "Requisição inválida com parâmetros incorretos",
+         example: {
+           success: false,
+-          error: "Informe números válidos para livro, capítulo e versículo.",
++          message: "Informe números válidos para livro, capítulo e versículo.",
+         },
+         schema: {
+           type: "object",
+@@ -340,7 +332,7 @@ class VersesV1Swagger {
+               type: "boolean",
+               example: false,
+             },
+-            error: {
++            message: {
+               type: "string",
+               example:
+                 "Informe números válidos para livro, capítulo e versículo.",
+@@ -352,7 +344,7 @@ class VersesV1Swagger {
+         description: "Versículo não encontrado",
+         example: {
+           success: false,
+-          error: "Versículo não encontrado.",
++          message: "Versículo não encontrado.",
+         },
+         schema: {
+           type: "object",
+@@ -361,7 +353,7 @@ class VersesV1Swagger {
+               type: "boolean",
+               example: false,
+             },
+-            error: {
++            message: {
+               type: "string",
+               example: "Versículo não encontrado.",
+             },
+@@ -372,7 +364,7 @@ class VersesV1Swagger {
+         description: "Erro interno do servidor",
+         example: {
+           success: false,
+-          error: "Erro ao buscar o versículo!",
++          message: "Internal Server Error",
+         },
+         schema: {
+           type: "object",
+@@ -381,9 +373,9 @@ class VersesV1Swagger {
+               type: "boolean",
+               example: false,
+             },
+-            error: {
++            message: {
+               type: "string",
+-              example: "Erro ao buscar o versículo!",
++              example: "Internal Server Error",
+             },
+           },
+         },
+@@ -459,47 +451,51 @@ class VersesV1Swagger {
+         },
+       },
+       429: {
+-        description: "Limite de requisições excedido para rotas públicas",
++        description: "Request limit exceeded for public routes",
+         headers: {
+           "X-RateLimit-Limit": {
+-            description:
+-              "Número máximo de requisições permitidas por janela de tempo",
++            description: "Maximum number of requests allowed per time window",
+             schema: {
+               type: "string",
+               example: "60",
+             },
+           },
+           "X-RateLimit-Remaining": {
+-            description: "Número de requisições restantes (0 quando excedido)",
++            description: "Number of remaining requests (0 when exceeded)",
+             schema: {
+               type: "string",
+               example: "0",
+             },
+           },
+           "X-RateLimit-Reset": {
+-            description: "Data e hora em que o limite será resetado",
++            description: "Date and time when the limit will be reset",
+             schema: {
+               type: "string",
+               format: "date-time",
+-              example: "2024-01-19T10:05:00.000Z",
++              example: "2024-01-17T10:05:00.000Z",
+             },
+           },
+         },
+         example: {
+-          error: "Você fez muitas requisições para uma rota pública!",
++          success: false,
++          message: "You have made too many requests to a public route!",
+           retryAfter: 45,
+         },
+         schema: {
+           type: "object",
+           properties: {
+-            error: {
++            success: {
++              type: "boolean",
++              example: false,
++            },
++            message: {
+               type: "string",
+-              example: "Você fez muitas requisições para uma rota pública!",
++              example: "You have made too many requests to a public route!",
+             },
+             retryAfter: {
+               type: "integer",
+               description:
+-                "Número de segundos a aguardar antes de fazer outra requisição",
++                "Number of seconds to wait before making another request",
+               example: 45,
+             },
+           },
+diff --git a/apps/api/src/swaggers/v1/public/bible/books/swagger.ts b/apps/api/src/swaggers/v1/public/bible/books/swagger.ts
+index d6c2777..2275abd 100644
+--- a/apps/api/src/swaggers/v1/public/bible/books/swagger.ts
++++ b/apps/api/src/swaggers/v1/public/bible/books/swagger.ts
+@@ -43,7 +43,7 @@ class BibleBooksV1Swagger {
+         description: "Invalid request with incorrect parameters",
+         example: {
+           success: false,
+-          error: "Page must be a positive number",
++          message: "Page must be a positive number",
+         },
+         schema: {
+           type: "object",
+@@ -52,7 +52,7 @@ class BibleBooksV1Swagger {
+               type: "boolean",
+               example: false,
+             },
+-            error: {
++            message: {
+               type: "string",
+               example: "Page must be a positive number",
+             },
+@@ -63,8 +63,7 @@ class BibleBooksV1Swagger {
+         description: "Internal server error",
+         example: {
+           success: false,
+-          message: "Error fetching books",
+-          error: "Unknown error",
++          message: "Internal Server Error",
+         },
+         schema: {
+           type: "object",
+@@ -75,11 +74,7 @@ class BibleBooksV1Swagger {
+             },
+             message: {
+               type: "string",
+-              example: "Error fetching books",
+-            },
+-            error: {
+-              type: "string",
+-              example: "Unknown error",
++              example: "Internal Server Error",
+             },
+           },
+         },
+@@ -198,18 +193,6 @@ class BibleBooksV1Swagger {
+                 },
+               },
+             },
+-            cache: {
+-              type: "boolean",
+-              description: "Indicates if the response was returned from cache",
+-              example: false,
+-            },
+-            cacheExpireAt: {
+-              type: "string",
+-              format: "date-time",
+-              description:
+-                "Date and time when the cache will expire (only when cache is true)",
+-              example: "2024-01-17T10:06:00.000Z",
+-            },
+           },
+         },
+       },
+@@ -241,13 +224,18 @@ class BibleBooksV1Swagger {
+           },
+         },
+         example: {
+-          error: "You have made too many requests to a public route!",
++          success: false,
++          message: "You have made too many requests to a public route!",
+           retryAfter: 45,
+         },
+         schema: {
+           type: "object",
+           properties: {
+-            error: {
++            success: {
++              type: "boolean",
++              example: false,
++            },
++            message: {
+               type: "string",
+               example: "You have made too many requests to a public route!",
+             },
+@@ -285,7 +273,7 @@ class BibleBooksV1Swagger {
+         description: "Invalid request with incorrect parameters",
+         example: {
+           success: false,
+-          error: "Provide the book using its position (1-73).",
++          message: "Provide the book using its position (1-73).",
+         },
+         schema: {
+           type: "object",
+@@ -294,7 +282,7 @@ class BibleBooksV1Swagger {
+               type: "boolean",
+               example: false,
+             },
+-            error: {
++            message: {
+               type: "string",
+               example: "Provide the book using its position (1-73).",
+             },
+@@ -325,8 +313,7 @@ class BibleBooksV1Swagger {
+         description: "Internal server error",
+         example: {
+           success: false,
+-          message: "Error fetching book",
+-          error: "Unknown error",
++          message: "Internal Server Error",
+         },
+         schema: {
+           type: "object",
+@@ -337,11 +324,7 @@ class BibleBooksV1Swagger {
+             },
+             message: {
+               type: "string",
+-              example: "Error fetching book",
+-            },
+-            error: {
+-              type: "string",
+-              example: "Unknown error",
++              example: "Internal Server Error",
+             },
+           },
+         },
+@@ -449,13 +432,18 @@ class BibleBooksV1Swagger {
+           },
+         },
+         example: {
+-          error: "You have made too many requests to a public route!",
++          success: false,
++          message: "You have made too many requests to a public route!",
+           retryAfter: 45,
+         },
+         schema: {
+           type: "object",
+           properties: {
+-            error: {
++            success: {
++              type: "boolean",
++              example: false,
++            },
++            message: {
+               type: "string",
+               example: "You have made too many requests to a public route!",
+             },
+diff --git a/apps/api/src/utils/index.ts b/apps/api/src/utils/index.ts
+index 7d5bda6..0cf1f4f 100644
+--- a/apps/api/src/utils/index.ts
++++ b/apps/api/src/utils/index.ts
+@@ -1 +1 @@
+-export * from "./validate-query-pagination/util";
++export * from "./validate-query-pagination.util";
+diff --git a/apps/api/src/utils/validate-query-pagination/util.ts b/apps/api/src/utils/validate-query-pagination/util.ts
+deleted file mode 100644
+index f155159..0000000
+--- a/apps/api/src/utils/validate-query-pagination/util.ts
++++ /dev/null
+@@ -1,28 +0,0 @@
+-export function validateQueryPagination({
+-  page,
+-  limit,
+-}: {
+-  page?: string;
+-  limit?: string;
+-}) {
+-  let parsedPage: number = 1;
+-  let parsedLimit: number = 73;
+-
+-  if (page !== undefined) {
+-    const pageNum = parseInt(page);
+-    if (isNaN(pageNum) || pageNum < 1) {
+-      throw new Error("Página deve ser um número positivo");
+-    }
+-    parsedPage = pageNum;
+-  }
+-
+-  if (limit !== undefined) {
+-    const limitNum = parseInt(limit);
+-    if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
+-      throw new Error("Limite deve ser um número entre 1 e 100");
+-    }
+-    parsedLimit = limitNum;
+-  }
+-
+-  return { page: parsedPage, limit: parsedLimit };
+-}
+diff --git a/apps/api/src/viewmodels/bible-book.viewmodel.ts b/apps/api/src/viewmodels/bible-book.viewmodel.ts
+deleted file mode 100644
+index 3076f11..0000000
+--- a/apps/api/src/viewmodels/bible-book.viewmodel.ts
++++ /dev/null
+@@ -1,29 +0,0 @@
+-import { BibleBook, Testament } from "@/libs/prisma/index";
+-import { BaseViewModel } from "./api-response.viewmodel";
+-
+-export class BibleBookViewModel extends BaseViewModel<Omit<BibleBook, never>> {
+-  id: string;
+-  name: string;
+-  order: number;
+-  testament: Testament;
+-  totalChapters: number;
+-
+-  constructor(book: BibleBook) {
+-    super(book);
+-    this.id = book.id;
+-    this.name = book.name;
+-    this.order = book.order;
+-    this.testament = book.testament;
+-    this.totalChapters = book.totalChapters;
+-  }
+-
+-  toJSON() {
+-    return {
+-      id: this.id,
+-      name: this.name,
+-      order: this.order,
+-      testament: this.testament,
+-      totalChapters: this.totalChapters,
+-    };
+-  }
+-}
+diff --git a/apps/api/src/viewmodels/bible-chapter.viewmodel.ts b/apps/api/src/viewmodels/bible-chapter.viewmodel.ts
+deleted file mode 100644
+index dfae7f6..0000000
+--- a/apps/api/src/viewmodels/bible-chapter.viewmodel.ts
++++ /dev/null
+@@ -1,28 +0,0 @@
+-import { BibleChapter } from "@/libs/prisma/index";
+-import { BaseViewModel } from "./api-response.viewmodel";
+-
+-export class BibleChapterViewModel extends BaseViewModel<
+-  Omit<BibleChapter, never>
+-> {
+-  id: string;
+-  bookId: string;
+-  number: number;
+-  totalVerses: number;
+-
+-  constructor(chapter: BibleChapter) {
+-    super(chapter);
+-    this.id = chapter.id;
+-    this.bookId = chapter.bookId;
+-    this.number = chapter.number;
+-    this.totalVerses = chapter.totalVerses;
+-  }
+-
+-  toJSON() {
+-    return {
+-      id: this.id,
+-      bookId: this.bookId,
+-      number: this.number,
+-      totalVerses: this.totalVerses,
+-    };
+-  }
+-}
+diff --git a/apps/api/src/viewmodels/bible-verse.viewmodel.ts b/apps/api/src/viewmodels/bible-verse.viewmodel.ts
+deleted file mode 100644
+index cf0b732..0000000
+--- a/apps/api/src/viewmodels/bible-verse.viewmodel.ts
++++ /dev/null
+@@ -1,28 +0,0 @@
+-import { BibleVerse } from "@/libs/prisma/index";
+-import { BaseViewModel } from "./api-response.viewmodel";
+-
+-export class BibleVerseViewModel extends BaseViewModel<
+-  Omit<BibleVerse, never>
+-> {
+-  id: string;
+-  chapterId: string;
+-  number: number;
+-  text: string;
+-
+-  constructor(verse: BibleVerse) {
+-    super(verse);
+-    this.id = verse.id;
+-    this.chapterId = verse.chapterId;
+-    this.number = verse.number;
+-    this.text = verse.text;
+-  }
+-
+-  toJSON() {
+-    return {
+-      id: this.id,
+-      chapterId: this.chapterId,
+-      number: this.number,
+-      text: this.text,
+-    };
+-  }
+-}
+diff --git a/package.json b/package.json
+index 8f31e21..a6afd22 100644
+--- a/package.json
++++ b/package.json
+@@ -6,5 +6,5 @@
+   "keywords": [],
+   "author": "d3veduardo",
+   "license": "ISC",
+-  "packageManager": "pnpm@10.25.0"
++  "packageManager": "pnpm@10.28.1"
+ }
+diff --git a/pnpm-lock.yaml b/pnpm-lock.yaml
+index 7eec0ec..5db7c48 100644
+--- a/pnpm-lock.yaml
++++ b/pnpm-lock.yaml
+@@ -2207,32 +2207,32 @@ snapshots:
+     dependencies:
+       '@prisma/debug': 7.2.0
+ 
+-  '@prisma/engines-version@7.2.0-4.0c8ef2ce45c83248ab3df073180d5eda9e8be7a3': {}
++  '@prisma/engines-version@7.3.0-16.9d6ad21cbbceab97458517b147a6a09ff43aa735': {}
+ 
+-  '@prisma/engines@7.2.0':
+-    dependencies:
+-      '@prisma/debug': 7.2.0
+-      '@prisma/engines-version': 7.2.0-4.0c8ef2ce45c83248ab3df073180d5eda9e8be7a3
+-      '@prisma/fetch-engine': 7.2.0
+-      '@prisma/get-platform': 7.2.0
+-
+-  '@prisma/fetch-engine@7.2.0':
++  '@prisma/engines@7.3.0':
+     dependencies:
+-      '@prisma/debug': 7.2.0
+-      '@prisma/engines-version': 7.2.0-4.0c8ef2ce45c83248ab3df073180d5eda9e8be7a3
+-      '@prisma/get-platform': 7.2.0
++      '@prisma/debug': 7.3.0
++      '@prisma/engines-version': 7.3.0-16.9d6ad21cbbceab97458517b147a6a09ff43aa735
++      '@prisma/fetch-engine': 7.3.0
++      '@prisma/get-platform': 7.3.0
+ 
+-  '@prisma/get-platform@6.8.2':
++  '@prisma/fetch-engine@7.3.0':
+     dependencies:
+-      '@prisma/debug': 6.8.2
++      '@prisma/debug': 7.3.0
++      '@prisma/engines-version': 7.3.0-16.9d6ad21cbbceab97458517b147a6a09ff43aa735
++      '@prisma/get-platform': 7.3.0
+ 
+   '@prisma/get-platform@7.2.0':
+     dependencies:
+       '@prisma/debug': 7.2.0
+ 
+-  '@prisma/query-plan-executor@6.18.0': {}
++  '@prisma/get-platform@7.3.0':
++    dependencies:
++      '@prisma/debug': 7.3.0
++
++  '@prisma/query-plan-executor@7.2.0': {}
+ 
+-  '@prisma/studio-core@0.9.0(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
++  '@prisma/studio-core@0.13.1(@types/react@19.2.8)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+     dependencies:
+       '@types/react': 19.2.8
+       react: 19.2.3
+@@ -2313,82 +2313,14 @@ snapshots:
+   '@rollup/rollup-win32-x64-msvc@4.55.1':
+     optional: true
+ 
+-  '@standard-schema/spec@1.1.0': {}
+-
+-  '@swc/helpers@0.5.15':
+-    dependencies:
+-      tslib: 2.8.1
+-
+-  '@tailwindcss/node@4.1.18':
++  '@selderee/plugin-htmlparser2@0.11.0':
+     dependencies:
+-      '@jridgewell/remapping': 2.3.5
+-      enhanced-resolve: 5.18.4
+-      jiti: 2.6.1
+-      lightningcss: 1.30.2
+-      magic-string: 0.30.21
+-      source-map-js: 1.2.1
+-      tailwindcss: 4.1.18
+-
+-  '@tailwindcss/oxide-android-arm64@4.1.18':
+-    optional: true
+-
+-  '@tailwindcss/oxide-darwin-arm64@4.1.18':
+-    optional: true
+-
+-  '@tailwindcss/oxide-darwin-x64@4.1.18':
+-    optional: true
+-
+-  '@tailwindcss/oxide-freebsd-x64@4.1.18':
+-    optional: true
++      domhandler: 5.0.3
++      selderee: 0.11.0
+ 
+-  '@tailwindcss/oxide-linux-arm-gnueabihf@4.1.18':
+-    optional: true
+-
+-  '@tailwindcss/oxide-linux-arm64-gnu@4.1.18':
+-    optional: true
+-
+-  '@tailwindcss/oxide-linux-arm64-musl@4.1.18':
+-    optional: true
++  '@stablelib/base64@1.0.1': {}
+ 
+-  '@tailwindcss/oxide-linux-x64-gnu@4.1.18':
+-    optional: true
+-
+-  '@tailwindcss/oxide-linux-x64-musl@4.1.18':
+-    optional: true
+-
+-  '@tailwindcss/oxide-wasm32-wasi@4.1.18':
+-    optional: true
+-
+-  '@tailwindcss/oxide-win32-arm64-msvc@4.1.18':
+-    optional: true
+-
+-  '@tailwindcss/oxide-win32-x64-msvc@4.1.18':
+-    optional: true
+-
+-  '@tailwindcss/oxide@4.1.18':
+-    optionalDependencies:
+-      '@tailwindcss/oxide-android-arm64': 4.1.18
+-      '@tailwindcss/oxide-darwin-arm64': 4.1.18
+-      '@tailwindcss/oxide-darwin-x64': 4.1.18
+-      '@tailwindcss/oxide-freebsd-x64': 4.1.18
+-      '@tailwindcss/oxide-linux-arm-gnueabihf': 4.1.18
+-      '@tailwindcss/oxide-linux-arm64-gnu': 4.1.18
+-      '@tailwindcss/oxide-linux-arm64-musl': 4.1.18
+-      '@tailwindcss/oxide-linux-x64-gnu': 4.1.18
+-      '@tailwindcss/oxide-linux-x64-musl': 4.1.18
+-      '@tailwindcss/oxide-wasm32-wasi': 4.1.18
+-      '@tailwindcss/oxide-win32-arm64-msvc': 4.1.18
+-      '@tailwindcss/oxide-win32-x64-msvc': 4.1.18
+-
+-  '@tailwindcss/postcss@4.1.18':
+-    dependencies:
+-      '@alloc/quick-lru': 5.2.0
+-      '@tailwindcss/node': 4.1.18
+-      '@tailwindcss/oxide': 4.1.18
+-      postcss: 8.5.6
+-      tailwindcss: 4.1.18
+-
+-  '@tweenjs/tween.js@23.1.3': {}
++  '@standard-schema/spec@1.1.0': {}
+ 
+   '@types/bcrypt@6.0.0':
+     dependencies:
