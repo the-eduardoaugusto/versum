@@ -1,9 +1,5 @@
 import { BibleChapterRepository } from "@/repositories";
-import {
-  prisma,
-  type BibleChapterFindManyArgs,
-  type BibleChapterCountArgs,
-} from "@/libs/prisma";
+import { prisma, Prisma } from "@/libs/prisma";
 
 export interface FetchChaptersParams {
   bookId: string;
@@ -14,21 +10,21 @@ export interface FetchChaptersParams {
 export class BibleChaptersService {
   private chapterRepository: BibleChapterRepository;
 
-  constructor() {
-    this.chapterRepository = new BibleChapterRepository(prisma);
+  constructor(repository?: BibleChapterRepository) {
+    this.chapterRepository = repository ?? new BibleChapterRepository(prisma);
   }
 
   async fetchChapters({ bookId, page, limit }: FetchChaptersParams) {
     const skip = (page - 1) * limit;
 
-    const args: BibleChapterFindManyArgs = {
+    const args: Prisma.BibleChapterFindManyArgs = {
       where: { bookId },
       skip,
       take: limit,
       orderBy: { number: "asc" },
     };
 
-    const countArgs: BibleChapterCountArgs = { where: { bookId } };
+    const countArgs: Prisma.BibleChapterCountArgs = { where: { bookId } };
 
     const [chapters, totalChapters] = await Promise.all([
       this.chapterRepository.findMany(args),

@@ -1,27 +1,13 @@
 import { BaseRepository } from "../../base.repository";
 import { PrismaClient } from "@/libs/prisma";
-import type {
-  BibleChapter,
-  BibleChapterFindManyArgs,
-  BibleChapterCountArgs,
-  BibleChapterUncheckedCreateInput,
-} from "@/libs/prisma";
-
-export interface CreateBibleChapterInput {
-  bookId: string;
-  number: number;
-  totalVerses: number;
-}
-
-export interface UpdateBibleChapterInput {
-  number?: number;
-  totalVerses?: number;
-}
+import type { BibleChapter, Prisma } from "@/libs/prisma";
 
 export class BibleChapterRepository extends BaseRepository<
   BibleChapter,
-  BibleChapterUncheckedCreateInput,
-  UpdateBibleChapterInput
+  Prisma.BibleChapterUncheckedCreateInput,
+  Prisma.BibleChapterUncheckedUpdateInput,
+  Prisma.BibleChapterFindManyArgs,
+  Prisma.BibleChapterCountArgs
 > {
   constructor(prisma: PrismaClient) {
     super(prisma, prisma.bibleChapter);
@@ -43,7 +29,7 @@ export class BibleChapterRepository extends BaseRepository<
       },
     });
     if (!book) return null;
-    return this.prisma.bibleChapter.findUnique({
+    return await this.prisma.bibleChapter.findUnique({
       where: {
         bookId_number: { bookId: book.id, number: chapterNumber },
       },
@@ -55,9 +41,9 @@ export class BibleChapterRepository extends BaseRepository<
     args,
   }: {
     bookId: string;
-    args?: Omit<BibleChapterFindManyArgs, "where">;
+    args?: Omit<Prisma.BibleChapterFindManyArgs, "where">;
   }): Promise<BibleChapter[]> {
-    return this.prisma.bibleChapter.findMany({
+    return await this.prisma.bibleChapter.findMany({
       where: { bookId },
       orderBy: { number: "asc" },
       ...args,
@@ -65,7 +51,7 @@ export class BibleChapterRepository extends BaseRepository<
   }
 
   async findWithVerses({ chapterId }: { chapterId: string }) {
-    return this.prisma.bibleChapter.findUnique({
+    return await this.prisma.bibleChapter.findUnique({
       where: { id: chapterId },
       include: {
         verses: {

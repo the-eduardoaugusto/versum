@@ -1,4 +1,6 @@
-export function validateQueryPagination({
+import { BadRequestError } from "./error-model";
+
+export function validateQueryPaginationAndParse({
   page,
   limit,
 }: {
@@ -11,7 +13,7 @@ export function validateQueryPagination({
   if (page !== undefined) {
     const pageNum = parseInt(page);
     if (isNaN(pageNum) || pageNum < 1) {
-      throw new Error("Página deve ser um número positivo");
+      throw new BadRequestError("Page must be a positive number!");
     }
     parsedPage = pageNum;
   }
@@ -19,7 +21,7 @@ export function validateQueryPagination({
   if (limit !== undefined) {
     const limitNum = parseInt(limit);
     if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
-      throw new Error("Limite deve ser um número entre 1 e 100");
+      throw new BadRequestError("Limit must be a number between 1 and 100!");
     }
     parsedLimit = limitNum;
   }
