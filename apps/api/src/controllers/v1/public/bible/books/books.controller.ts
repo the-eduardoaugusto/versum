@@ -1,7 +1,6 @@
 import { Controller, Get, Param, Query, Res } from "azurajs/decorators";
 import { ResponseServer } from "azurajs/types";
 import { BibleBooksService } from "@/services";
-import { validateQueryPagination } from "@/utils";
 import { v } from "azurajs/validators";
 import { Swagger } from "azurajs/swagger";
 import { bibleBooksV1Swagger } from "@/swaggers";
@@ -31,11 +30,6 @@ export class BibleBooksV1Controller {
     @Res() res: ResponseServer,
   ) {
     try {
-      const { page: parsedPage, limit: parsedLimit } = validateQueryPagination({
-        page,
-        limit,
-      });
-
       let testamentValue: Testament | undefined;
       if (testament) {
         if (!Object.values(Testament).includes(testament as Testament)) {
@@ -45,8 +39,8 @@ export class BibleBooksV1Controller {
       }
 
       const result = await this.booksService.fetchBooks({
-        page: parsedPage,
-        limit: parsedLimit,
+        page,
+        limit,
         testament: testamentValue,
       });
 
@@ -78,7 +72,9 @@ export class BibleBooksV1Controller {
         .min(1)
         .safeParse(Number(bookOrder));
       if (!parseBookOrder.success) {
-        throw new BadRequestError("Provide the book using its position (1-73).");
+        throw new BadRequestError(
+          "Provide the book using its position (1-73).",
+        );
       }
 
       const book = await this.booksService.fetchBookByOrder({

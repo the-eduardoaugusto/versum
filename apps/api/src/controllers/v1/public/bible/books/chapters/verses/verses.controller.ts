@@ -6,7 +6,6 @@ import {
   BibleBooksService,
   BibleChaptersService,
 } from "@/services";
-import { validateQueryPagination } from "@/utils";
 import {
   BibleVerseViewModel,
   PaginationViewModel,
@@ -22,12 +21,10 @@ import { handleError } from "@/utils/error-handler.util";
 )
 export class VersesController {
   private versesService: BibleVersesService;
-  private booksService: BibleBooksService;
   private chaptersService: BibleChaptersService;
 
   constructor() {
     this.versesService = new BibleVersesService();
-    this.booksService = new BibleBooksService();
     this.chaptersService = new BibleChaptersService();
   }
 
@@ -45,17 +42,14 @@ export class VersesController {
       const parsedChapter = v.number().min(1).safeParse(Number(chapterNumber));
 
       if (!parsedBook.success) {
-        throw new BadRequestError("Provide the book using its position (1-73).");
+        throw new BadRequestError(
+          "Provide the book using its position (1-73).",
+        );
       }
 
       if (!parsedChapter.success) {
         throw new BadRequestError("Provide a valid chapter number (>=1).");
       }
-
-      const { page: parsedPage, limit: parsedLimit } = validateQueryPagination({
-        page,
-        limit,
-      });
 
       const chapter = await this.chaptersService.fetchChapterByBookAndNumber({
         bookOrder: parsedBook.data,
@@ -67,8 +61,8 @@ export class VersesController {
 
       const result = await this.versesService.fetchVerses({
         chapterId: chapter.id,
-        page: parsedPage,
-        limit: parsedLimit,
+        page,
+        limit,
       });
 
       const verseViewModels = result.verses.map((verse) =>
@@ -99,8 +93,14 @@ export class VersesController {
       const parsedChapter = v.number().min(1).safeParse(Number(chapterNumber));
       const parsedVerse = v.number().min(1).safeParse(Number(verseNumber));
 
-      if (!parsedBook.success || !parsedChapter.success || !parsedVerse.success) {
-        throw new BadRequestError("Provide valid numbers for book, chapter, and verse.");
+      if (
+        !parsedBook.success ||
+        !parsedChapter.success ||
+        !parsedVerse.success
+      ) {
+        throw new BadRequestError(
+          "Provide valid numbers for book, chapter, and verse.",
+        );
       }
 
       const chapter = await this.chaptersService.fetchChapterByBookAndNumber({

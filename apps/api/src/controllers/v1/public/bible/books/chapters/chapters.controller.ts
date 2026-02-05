@@ -1,6 +1,5 @@
 import { Controller, Get, Param, Query, Res } from "azurajs/decorators";
 import { ResponseServer } from "azurajs/types";
-import { validateQueryPagination } from "@/utils";
 import { v } from "azurajs/validators";
 import { BibleChaptersService, BibleBooksService } from "@/services";
 import {
@@ -39,13 +38,10 @@ export class ChaptersController {
         .safeParse(Number(bookOrder));
 
       if (!parseBookOrder.success) {
-        throw new BadRequestError("Provide the book using its position (1-73).");
+        throw new BadRequestError(
+          "Provide the book using its position (1-73).",
+        );
       }
-
-      const { page: parsedPage, limit: parsedLimit } = validateQueryPagination({
-        page,
-        limit,
-      });
 
       // Get book by order to find its ID
       const book = await this.booksService.fetchBookByOrder({
@@ -57,8 +53,8 @@ export class ChaptersController {
 
       const result = await this.chaptersService.fetchChapters({
         bookId: book.id,
-        page: parsedPage,
-        limit: parsedLimit,
+        page,
+        limit,
       });
 
       const chapterViewModels = result.chapters.map((chapter) =>
@@ -88,10 +84,16 @@ export class ChaptersController {
         .number()
         .min(1)
         .safeParse(Number(chapterNumber));
-      const parseBookOrder = v.number().min(1).max(73).safeParse(Number(bookOrder));
+      const parseBookOrder = v
+        .number()
+        .min(1)
+        .max(73)
+        .safeParse(Number(bookOrder));
 
       if (!parseChapterNumber.success || !parseBookOrder.success) {
-        throw new BadRequestError("Provide valid numbers for book and chapter.");
+        throw new BadRequestError(
+          "Provide valid numbers for book and chapter.",
+        );
       }
 
       const chapter = await this.chaptersService.fetchChapterByBookAndNumber({

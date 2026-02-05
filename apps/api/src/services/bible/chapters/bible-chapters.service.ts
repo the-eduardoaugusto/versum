@@ -1,10 +1,17 @@
 import { BibleChapterRepository } from "@/repositories";
 import { prisma, Prisma } from "@/libs/prisma";
+import { validateQueryPaginationAndParse } from "@/utils";
+import { PaginationViewModel } from "@/viewmodels";
+
+export interface Pagination {
+  page?: string;
+  limit?: string;
+}
 
 export interface FetchChaptersParams {
   bookId: string;
-  page: number;
-  limit: number;
+  page?: string;
+  limit?: string;
 }
 
 export class BibleChaptersService {
@@ -14,13 +21,18 @@ export class BibleChaptersService {
     this.chapterRepository = repository ?? new BibleChapterRepository(prisma);
   }
 
-  async fetchChapters({ bookId, page, limit }: FetchChaptersParams) {
-    const skip = (page - 1) * limit;
+  async fetchChapters({ bookId, page = "1", limit = "10" }: Partial<Pagination> & { bookId: string }) {
+    const { limit: parsedLimit, page: parsedPage } = validateQueryPaginationAndParse({
+      page,
+      limit,
+    });
+
+    const skip = (parsedPage - 1) * parsedLimit;
 
     const args: Prisma.BibleChapterFindManyArgs = {
       where: { bookId },
       skip,
-      take: limit,
+      take: parsedLimit,
       orderBy: { number: "asc" },
     };
 
@@ -31,18 +43,18 @@ export class BibleChaptersService {
       this.chapterRepository.count(countArgs),
     ]);
 
-    const totalPages = Math.ceil(totalChapters / limit);
+    const totalPages = Math.ceil(totalChapters / parsedLimit);
 
     return {
       chapters,
-      pagination: {
-        currentPage: page,
+      pagination: new PaginationViewModel({
+        currentPage: parsedPage,
         totalPages,
         totalItems: totalChapters,
-        itemsPerPage: limit,
-        hasNextPage: page < totalPages,
-        hasPrevPage: page > 1,
-      },
+        itemsPerPage: parsedLimit,
+        hasNextPage: parsedPage < totalPages,
+        hasPrevPage: parsedPage > 1,
+      }),
     };
   }
 
