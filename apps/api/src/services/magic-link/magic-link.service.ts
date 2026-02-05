@@ -1,12 +1,16 @@
-import { MagicLinkRepository } from "@/repositories/magic-link.repository";
+import { MagicLinkRepository } from "@/repositories";
 import { randomBytes } from "crypto";
 import { prisma } from "@/libs/prisma";
 import * as argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import { env } from "@/env";
 import { UserRepository } from "@/repositories";
-import { RefreshTokenRepository } from "@/repositories/refresh-token.repository";
-import { BadRequestError, NotFoundError, UnauthorizedError } from "@/utils/error-model";
+import { RefreshTokenRepository } from "@/repositories";
+import {
+  BadRequestError,
+  NotFoundError,
+  UnauthorizedError,
+} from "@/utils/error-model";
 
 export class MagicLinkService {
   private magicLinkRepository: MagicLinkRepository;
