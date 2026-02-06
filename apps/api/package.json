@@ -10,10 +10,12 @@
     "azurajs-scalar": "^2.1.4",
     "dotenv": "^17.2.3",
     "ioredis": "^5.9.2",
+    "jsonwebtoken": "^9.0.3",
     "pg": "^8.17.1",
     "resend": "^6.9.1"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.0.8",
     "@types/pg": "^8.16.0",
     "poku": "^3.0.2",
