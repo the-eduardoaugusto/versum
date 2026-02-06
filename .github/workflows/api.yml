@@ -65,4 +65,4 @@ jobs:
         run: cd apps/api && pnpm dlx prisma generate
 
       - name: Run tests
-        run: cd apps/api ; pnpm test test --reporter=verbose
+        run: cd apps/api ; pnpm test --reporter=verbose
