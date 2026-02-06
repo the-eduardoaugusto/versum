@@ -1,6 +1,5 @@
 import { bibleChapterRepoMock } from "@/repositories/bible/chapters/bible-chapter.repository.mock";
-import { describe, it } from "node:test";
-import { strict, assert } from "poku";
+import { strict, assert, describe, it } from "poku";
 import { BibleChaptersService } from "./bible-chapters.service";
 
 describe("Bible chapters services", async () => {

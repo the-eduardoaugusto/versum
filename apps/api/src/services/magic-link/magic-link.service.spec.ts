@@ -1,10 +1,4 @@
-import { describe, it } from "node:test";
-import { strict, assert } from "poku";
-import { MagicLinkService } from "./magic-link.service";
-import { prisma } from "@/libs/prisma";
-import { MagicLinkRepository } from "@/repositories";
-import { UserRepository } from "@/repositories";
-import { RefreshTokenRepository } from "@/repositories";
+import { strict, assert, describe, it } from "poku";
 import * as argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import { env } from "@/env";

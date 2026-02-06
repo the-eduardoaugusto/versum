@@ -29,6 +29,6 @@
     "dev": "tsx --watch src/index.ts --env-file .env",
     "build": "tsup",
     "start": "node dist/index.mjs",
-    "test": "poku"
+    "test": "vitest"
   }
 }

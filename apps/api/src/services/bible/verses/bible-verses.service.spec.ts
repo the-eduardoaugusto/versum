@@ -1,13 +1,12 @@
 import { bibleVerseRepoMock } from "@/repositories/bible/verses/bible-verse.repository.mock";
-import { describe, it } from "node:test";
-import { strict, assert } from "poku";
+import { strict, assert, describe, it } from "poku";
 import { BibleVersesService } from "./bible-verses.service";
 
 describe("Bible verses services", async () => {
   await describe("fetchVerses", async () => {
     await it("should return verses with correct pagination", async () => {
       const bibleVersesService = new BibleVersesService(bibleVerseRepoMock);
-      const chapterId = "chapter-1-1"; // Exemplo de ID de capítulo
+      const chapterId = "chapter-1-1";
       const page = 1;
       const limit = 10;
 

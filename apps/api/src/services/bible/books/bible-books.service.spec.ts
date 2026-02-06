@@ -1,6 +1,5 @@
 import { bibleBookRepoMock } from "@/repositories/bible/books/bible-book.repository.mock";
-import { describe, it } from "node:test";
-import { strict, assert } from "poku";
+import { strict, assert, describe, it } from "poku";
 import { BibleBooksService } from "./bible-books.service";
 import { Testament } from "@/libs/prisma";
 
