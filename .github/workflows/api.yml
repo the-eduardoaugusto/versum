@@ -6,6 +6,8 @@ on:
       - "apps/api/**"
 
   push:
+    branches:
+      - main
     paths:
       - "apps/api/**"
 
