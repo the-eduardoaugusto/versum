@@ -1,0 +1,66 @@
+name: CI - Api (Back-end)
+
+on:
+  pull_request:
+    paths:
+      - "apps/api/**"
+
+  push:
+    paths:
+      - "apps/api/**"
+
+jobs:
+  test:
+    env:
+      NODE_ENV: test
+      DATABASE_URL: "postgresql://postgres:password@localhost:5432/test_db"
+      DATABASE_CERT_PATH: ".certs/postgre-certificate.pem"
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Create certificate directory
+        run: mkdir -p .certs
+
+      - name: Create dummy certificate file
+        run: echo "--- dummy cert ---" > .certs/postgre-certificate.pem
+
+      - name: Generate Prisma Client
+        run: cd apps/api && pnpm dlx prisma generate
+
+      - name: Run tests
+        run: pnpm --filter api test

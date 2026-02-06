@@ -1,11 +1,11 @@
 import type { ConfigTypes } from "azurajs/config";
 
-const environment = (
-  process.env.NODE_ENV != "test" ? process.env.NODE_ENV : "development"
-) as "production" | "development";
-
 const config: ConfigTypes = {
-  environment,
+  environment: "development",
+  name: "Versum API",
+  server: {
+    // cluster: true,
+  },
   logging: {
     enabled: true,
     showDetails: true,
@@ -20,7 +20,7 @@ const config: ConfigTypes = {
     rateLimit: {
       enabled: false,
       limit: 100,
-      timeframe: 60000, // 1 minuto
+      timeframe: 60000,
     },
   },
 };

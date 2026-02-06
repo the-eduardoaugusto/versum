@@ -1,23 +1,32 @@
 {
   "name": "api",
   "private": true,
-  "version": "1.0.0",
+  "version": "0.1.2",
   "dependencies": {
-    "@prisma/client": "^6.19.2",
-    "azurajs": "2.5.2-4",
-    "bcrypt": "^6.0.0",
+    "@prisma/adapter-pg": "^7.2.0",
+    "@prisma/client": "^7.3.0",
+    "argon2": "^0.44.0",
+    "azurajs": "^2.7.0",
+    "azurajs-scalar": "^2.1.4",
     "dotenv": "^17.2.3",
-    "prisma": "^6.19.2",
-    "uuid": "^13.0.0"
+    "ioredis": "^5.9.2",
+    "pg": "^8.17.1",
+    "resend": "^6.9.1"
   },
   "devDependencies": {
-    "@types/bcrypt": "^6.0.0",
     "@types/node": "^25.0.8",
     "@types/pg": "^8.16.0",
+    "poku": "^3.0.2",
+    "prisma": "7.3.0",
+    "tsc-alias": "^1.8.16",
+    "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
   "scripts": {
-    "dev": "tsx --watch src/index.ts --env-file .env"
+    "dev": "tsx --watch src/index.ts --env-file .env",
+    "build": "tsup",
+    "start": "node dist/index.mjs",
+    "test": "poku"
   }
 }

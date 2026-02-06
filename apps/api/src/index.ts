@@ -1,15 +1,14 @@
 import { AzuraClient } from "azurajs";
-import { applyDecorators } from "azurajs/decorators";
-import * as controllers from "./controllers";
-import { publicRoutesRateLimit } from "./middlewares";
-import { env } from "./env";
+import * as controllersModule from "@/controllers";
+import { ApplicationStartup } from "@/startup";
+import * as middlewaresIndex from "@/middlewares";
 
 const app = new AzuraClient();
+const middlewares = Object.values(middlewaresIndex);
 
-applyDecorators(app, Object.values(controllers));
+// Extract controller values from the module
+const controllers = Object.values(controllersModule);
 
-app.use("/app/public", publicRoutesRateLimit);
-
-app.listen(Number(env.PORT)).then(() => {
-  console.log("API is running on http://localhost:3000");
-});
+// Inicializar aplicação
+const startup = new ApplicationStartup(app, controllers);
+startup.initialize(middlewares);

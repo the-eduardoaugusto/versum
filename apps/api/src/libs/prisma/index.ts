@@ -1,10 +1,5 @@
-import { env } from "../../env";
-import { PrismaClient } from "../../generated/prisma/client";
+export { prisma } from "./client";
+export * from "../../../generated/prisma/client";
 
-export const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: env.DATABASE_URL,
-    },
-  },
-});
+// Exportar tipos adicionais necessários do namespace Prisma
+export { Prisma } from "../../../generated/prisma/client";

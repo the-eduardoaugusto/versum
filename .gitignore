@@ -1,4 +1,4 @@
 .env
-/.certs
-/node_modules
-__git
+.certs
+node_modules
+*.zip
