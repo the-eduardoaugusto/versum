@@ -5,6 +5,7 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.3.0",
+    "argon2": "^0.44.0",
     "azurajs": "^2.7.0",
     "azurajs-scalar": "^2.1.4",
     "dotenv": "^17.2.3",
@@ -13,9 +14,9 @@
     "resend": "^6.9.1"
   },
   "devDependencies": {
-    "poku": "^3.0.2",
     "@types/node": "^25.0.8",
     "@types/pg": "^8.16.0",
+    "poku": "^3.0.2",
     "prisma": "7.3.0",
     "tsc-alias": "^1.8.16",
     "tsup": "^8.5.1",
