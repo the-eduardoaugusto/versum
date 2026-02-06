@@ -63,4 +63,4 @@ jobs:
         run: cd apps/api && pnpm dlx prisma generate
 
       - name: Run tests
-        run: pnpm --filter api test
+        run: cd apps/api pnpm test
