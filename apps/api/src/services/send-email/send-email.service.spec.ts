@@ -1,5 +1,4 @@
-import { describe, it } from "node:test";
-import { strict } from "poku";
+import { strict, describe, it } from "poku";
 import { SendEmailService } from "./send-email.service";
 
 // Mock do cliente resend
