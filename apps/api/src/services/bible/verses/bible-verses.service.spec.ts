@@ -28,6 +28,8 @@ describe("Bible verses services", async () => {
         });
       }
 
+      strict.strictEqual(false, true, "TESTE DE ERRO");
+
       // Verifica se o número de itens respeita o limite
       assert.ok(
         data.verses.length <= limit,
