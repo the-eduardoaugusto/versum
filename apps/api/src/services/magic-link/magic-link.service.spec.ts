@@ -1,4 +1,4 @@
-import { strict, assert, describe, it } from "poku";
+import { describe, it, expect } from "vitest";
 import * as argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import { env } from "@/env";
@@ -298,28 +298,23 @@ class TestableMagicLinkService {
   }
 }
 
-describe("MagicLink service", async () => {
-  await describe("authenticateToken", async () => {
-    await it("should throw BadRequestError when token format is invalid", async () => {
+describe("MagicLink service", () => {
+  describe("authenticateToken", () => {
+    it("should throw BadRequestError when token format is invalid", async () => {
       const magicLinkService = new TestableMagicLinkService(
         mockMagicLinkRepository,
         mockUserRepository,
         mockRefreshTokenRepository,
       );
 
-      await assert.rejects(
-        async () => {
-          await magicLinkService.authenticateToken({ token: "invalid-format" });
-        },
-        {
-          name: "BadRequestError",
-          message: "Bad magic link token!",
-        },
-        "Should throw BadRequestError for invalid token format",
+      await expect(
+        magicLinkService.authenticateToken({ token: "invalid-format" }),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `[BadRequestError: Bad magic link token!]`,
       );
     });
 
-    await it("should throw NotFoundError when magic link does not exist", async () => {
+    it("should throw NotFoundError when magic link does not exist", async () => {
       const magicLinkService = new TestableMagicLinkService(
         {
           ...mockMagicLinkRepository,
@@ -329,21 +324,16 @@ describe("MagicLink service", async () => {
         mockRefreshTokenRepository,
       );
 
-      await assert.rejects(
-        async () => {
-          await magicLinkService.authenticateToken({
-            token: "valid.publicId.token",
-          });
-        },
-        {
-          name: "NotFoundError",
-          message: "Magic link token do not exists",
-        },
-        "Should throw NotFoundError when magic link does not exist",
+      await expect(
+        magicLinkService.authenticateToken({
+          token: "valid.publicId.token",
+        }),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `[NotFoundError: Magic link token do not exists]`,
       );
     });
 
-    await it("should throw UnauthorizedError when magic link is invalidated", async () => {
+    it("should throw UnauthorizedError when magic link is invalidated", async () => {
       const magicLinkService = new TestableMagicLinkService(
         {
           ...mockMagicLinkRepository,
@@ -362,21 +352,16 @@ describe("MagicLink service", async () => {
         mockRefreshTokenRepository,
       );
 
-      await assert.rejects(
-        async () => {
-          await magicLinkService.authenticateToken({
-            token: "valid.publicId.hashed-token",
-          });
-        },
-        {
-          name: "UnauthorizedError",
-          message: "Magic Link token is invalid.",
-        },
-        "Should throw UnauthorizedError when magic link is invalidated",
+      await expect(
+        magicLinkService.authenticateToken({
+          token: "valid.publicId.hashed-token",
+        }),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `[UnauthorizedError: Magic Link token is invalid.]`,
       );
     });
 
-    await it("should throw UnauthorizedError when token does not match", async () => {
+    it("should throw UnauthorizedError when token does not match", async () => {
       const hashedToken = await argon2.hash("correct-token");
       const magicLinkService = new TestableMagicLinkService(
         {
@@ -396,21 +381,16 @@ describe("MagicLink service", async () => {
         mockRefreshTokenRepository,
       );
 
-      await assert.rejects(
-        async () => {
-          await magicLinkService.authenticateToken({
-            token: `valid.publicId.wrong-token`,
-          });
-        },
-        {
-          name: "UnauthorizedError",
-          message: "Magic link does not match",
-        },
-        "Should throw UnauthorizedError when token does not match",
+      await expect(
+        magicLinkService.authenticateToken({
+          token: `valid.publicId.wrong-token`,
+        }),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `[UnauthorizedError: Magic link does not match]`,
       );
     });
 
-    await it("should throw UnauthorizedError when magic link has already been used", async () => {
+    it("should throw UnauthorizedError when magic link has already been used", async () => {
       const rawToken = "correct-token";
       const hashedToken = await argon2.hash(rawToken);
       const publicId = "valid-publicId";
@@ -440,21 +420,16 @@ describe("MagicLink service", async () => {
         mockRefreshTokenRepository,
       );
 
-      await assert.rejects(
-        async () => {
-          await magicLinkService.authenticateToken({
-            token: `${publicId}.${rawToken}`,
-          });
-        },
-        {
-          name: "UnauthorizedError",
-          message: "Magic link has already been used",
-        },
-        "Should throw UnauthorizedError when magic link has already been used",
+      await expect(
+        magicLinkService.authenticateToken({
+          token: `${publicId}.${rawToken}`,
+        }),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `[UnauthorizedError: Magic link has already been used]`,
       );
     });
 
-    await it("should create new user and return tokens when magic link is valid and user does not exist", async () => {
+    it("should create new user and return tokens when magic link is valid and user does not exist", async () => {
       const email = "newuser@example.com";
       const rawToken = "correct-token";
       const hashedToken = await argon2.hash(rawToken);
@@ -499,15 +474,15 @@ describe("MagicLink service", async () => {
       });
 
       // Verifica se os tokens foram retornados
-      strict.ok(result.accessToken, "Should return access token");
-      strict.ok(result.refreshToken, "Should return refresh token");
+      expect(result.accessToken).toBeTruthy();
+      expect(result.refreshToken).toBeTruthy();
 
       // Verifica se o token JWT é válido (decodificando-o)
       const decoded = jwt.verify(result.accessToken, env.ENCRYPT_SECRET) as any;
-      strict.ok(decoded.sub, "JWT should have subject (user ID)");
+      expect(decoded.sub).toBeTruthy();
     });
 
-    await it("should use existing user and return tokens when magic link is valid", async () => {
+    it("should use existing user and return tokens when magic link is valid", async () => {
       const email = "existinguser@example.com";
       const rawToken = "correct-token";
       const hashedToken = await argon2.hash(rawToken);
@@ -560,21 +535,17 @@ describe("MagicLink service", async () => {
       });
 
       // Verifica se os tokens foram retornados
-      strict.ok(result.accessToken, "Should return access token");
-      strict.ok(result.refreshToken, "Should return refresh token");
+      expect(result.accessToken).toBeTruthy();
+      expect(result.refreshToken).toBeTruthy();
 
       // Verifica se o token JWT contém o ID do usuário existente
       const decoded = jwt.verify(result.accessToken, env.ENCRYPT_SECRET) as any;
-      strict.strictEqual(
-        decoded.sub,
-        existingUserId,
-        "JWT should contain existing user ID",
-      );
+      expect(decoded.sub).toBe(existingUserId);
     });
   });
 
-  await describe("createToken", async () => {
-    await it("should create a magic link token", async () => {
+  describe("createToken", () => {
+    it("should create a magic link token", async () => {
       const email = "test@example.com";
       const magicLinkService = new TestableMagicLinkService(
         mockMagicLinkRepository,
@@ -586,13 +557,9 @@ describe("MagicLink service", async () => {
 
       // Verifica se o resultado tem o formato esperado (publicId.token)
       const tokenParts = result.split(".");
-      strict.strictEqual(
-        tokenParts.length,
-        2,
-        "Token should have two parts separated by '.'",
-      );
-      strict.ok(tokenParts[0], "Public ID should not be empty");
-      strict.ok(tokenParts[1], "Token should not be empty");
+      expect(tokenParts).toHaveLength(2);
+      expect(tokenParts[0]).toBeTruthy();
+      expect(tokenParts[1]).toBeTruthy();
     });
   });
 });

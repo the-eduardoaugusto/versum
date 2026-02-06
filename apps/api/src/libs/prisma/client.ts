@@ -4,17 +4,27 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import fs from "fs";
 import path from "node:path";
 
-const certPath = path.join(process.cwd(), env.DATABASE_CERT_PATH);
-const cert = fs.readFileSync(certPath, "utf-8");
+const isTest = env.NODE_ENV === "test";
+
+let cert = "";
+
+if (!isTest) {
+  const certPath = path.join(process.cwd(), env.DATABASE_CERT_PATH);
+  cert = fs.readFileSync(certPath, "utf-8");
+}
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    ca: cert,
-    cert: cert,
-    key: cert,
-    rejectUnauthorized: false,
-  },
+  ...(isTest
+    ? {}
+    : {
+        ssl: {
+          ca: cert,
+          cert: cert,
+          key: cert,
+          rejectUnauthorized: false,
+        },
+      }),
 });
 
 export const prisma = new PrismaClient({

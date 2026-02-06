@@ -1,4 +1,4 @@
-import { strict, describe, it } from "poku";
+import { describe, it, expect } from "vitest";
 import { SendEmailService } from "./send-email.service";
 
 // Mock do cliente resend
@@ -39,9 +39,9 @@ class TestableSendEmailService extends SendEmailService {
   }
 }
 
-describe("SendEmail service", async () => {
-  await describe("sendEmail", async () => {
-    await it("should send an email with correct parameters", async () => {
+describe("SendEmail service", () => {
+  describe("sendEmail", () => {
+    it("should send an email with correct parameters", async () => {
       const emailPayload = {
         to: "recipient@example.com",
         subject: "Test Subject",
@@ -51,29 +51,13 @@ describe("SendEmail service", async () => {
       const sendEmailService = new TestableSendEmailService(mockResendClient);
       const result = await sendEmailService.sendEmail(emailPayload);
 
-      strict.strictEqual(
-        result.from,
-        "no-reply@send.eduardoaugusto.is-a.dev",
-        "From address should be set correctly",
-      );
-      strict.strictEqual(
-        result.to,
-        emailPayload.to,
-        "To address should match the input",
-      );
-      strict.strictEqual(
-        result.subject,
-        emailPayload.subject,
-        "Subject should match the input",
-      );
-      strict.strictEqual(
-        result.html,
-        emailPayload.html,
-        "HTML content should match the input",
-      );
+      expect(result.from).toBe("no-reply@send.eduardoaugusto.is-a.dev");
+      expect(result.to).toBe(emailPayload.to);
+      expect(result.subject).toBe(emailPayload.subject);
+      expect(result.html).toBe(emailPayload.html);
     });
 
-    await it("should handle different recipient formats", async () => {
+    it("should handle different recipient formats", async () => {
       const emailPayload = {
         to: ["recipient1@example.com", "recipient2@example.com"],
         subject: "Test Subject for Multiple Recipients",
@@ -83,19 +67,11 @@ describe("SendEmail service", async () => {
       const sendEmailService = new TestableSendEmailService(mockResendClient);
       const result = await sendEmailService.sendEmail(emailPayload);
 
-      strict.strictEqual(
-        result.from,
-        "no-reply@send.eduardoaugusto.is-a.dev",
-        "From address should be set correctly",
-      );
-      strict.deepStrictEqual(
-        result.to,
-        emailPayload.to,
-        "To addresses should match the input",
-      );
+      expect(result.from).toBe("no-reply@send.eduardoaugusto.is-a.dev");
+      expect(result.to).toStrictEqual(emailPayload.to);
     });
 
-    await it("should handle email with CC and BCC fields", async () => {
+    it("should handle email with CC and BCC fields", async () => {
       const emailPayload = {
         to: "recipient@example.com",
         cc: "cc@example.com",
@@ -107,29 +83,13 @@ describe("SendEmail service", async () => {
       const sendEmailService = new TestableSendEmailService(mockResendClient);
       const result = await sendEmailService.sendEmail(emailPayload);
 
-      strict.strictEqual(
-        result.from,
-        "no-reply@send.eduardoaugusto.is-a.dev",
-        "From address should be set correctly",
-      );
-      strict.strictEqual(
-        result.to,
-        emailPayload.to,
-        "To address should match the input",
-      );
-      strict.strictEqual(
-        result.cc,
-        emailPayload.cc,
-        "CC address should match the input",
-      );
-      strict.strictEqual(
-        result.bcc,
-        emailPayload.bcc,
-        "BCC address should match the input",
-      );
+      expect(result.from).toBe("no-reply@send.eduardoaugusto.is-a.dev");
+      expect(result.to).toBe(emailPayload.to);
+      expect(result.cc).toBe(emailPayload.cc);
+      expect(result.bcc).toBe(emailPayload.bcc);
     });
 
-    await it("should handle email with replyTo field", async () => {
+    it("should handle email with replyTo field", async () => {
       const emailPayload = {
         to: "recipient@example.com",
         subject: "Test Subject with Reply-To",
@@ -140,21 +100,9 @@ describe("SendEmail service", async () => {
       const sendEmailService = new TestableSendEmailService(mockResendClient);
       const result = await sendEmailService.sendEmail(emailPayload);
 
-      strict.strictEqual(
-        result.from,
-        "no-reply@send.eduardoaugusto.is-a.dev",
-        "From address should be set correctly",
-      );
-      strict.strictEqual(
-        result.to,
-        emailPayload.to,
-        "To address should match the input",
-      );
-      strict.strictEqual(
-        result.replyTo,
-        emailPayload.replyTo,
-        "Reply-To address should match the input",
-      );
+      expect(result.from).toBe("no-reply@send.eduardoaugusto.is-a.dev");
+      expect(result.to).toBe(emailPayload.to);
+      expect(result.replyTo).toBe(emailPayload.replyTo);
     });
   });
 });

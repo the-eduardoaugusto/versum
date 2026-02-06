@@ -18,17 +18,17 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.0.8",
     "@types/pg": "^8.16.0",
-    "poku": "^3.0.2",
     "prisma": "7.3.0",
     "tsc-alias": "^1.8.16",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   },
   "scripts": {
     "dev": "tsx --watch src/index.ts --env-file .env",
     "build": "tsup",
     "start": "node dist/index.mjs",
-    "test": "poku"
+    "test": "vitest"
   }
 }
