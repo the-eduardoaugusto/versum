@@ -1,6 +1,8 @@
 import { Controller, Get, Res } from "azurajs/decorators";
 import { ResponseServer } from "azurajs/types";
-import { prisma } from "@/libs/prisma";
+import { db } from "@/db/client";
+import { bibleBooks, bibleChapters, bibleVerses } from "@/db/schema";
+import { and, eq, sql } from "drizzle-orm";
 import { handleError } from "@/utils/error-handler.util";
 import { Swagger } from "azurajs/swagger";
 import { seedDatabaseSwagger } from "@/swaggers";
@@ -114,7 +116,7 @@ export class SeedDebugController {
     this.hasError = false;
     this.messageId = null;
 
-    console.log("🔥🔥🔥 === SEED DEBUG MODE ATIVADO === 🔥🔥🔥");
+    console.log("🔥🔥🔥🔥 === SEED DEBUG MODE ATIVADO === 🔥🔥🔥🔥🔥");
     await this.addLog("🔥 SEED INICIADO");
 
     try {
@@ -151,7 +153,7 @@ export class SeedDebugController {
       );
 
       console.log("[3] Verificando livros já existentes no BD...");
-      const existingBooks = await prisma.bibleBook.findMany();
+      const existingBooks = (await db.select().from(bibleBooks)) as any[];
       console.log(`[3.1] Encontrados no BD: ${existingBooks.length}`);
       await this.addLog(`🔍 Livros existentes no BD: ${existingBooks.length}`);
 
@@ -167,23 +169,25 @@ export class SeedDebugController {
         console.log(`\n📖 Livro: ${livroData.nome} (${testament})`);
 
         const existing = existingBooks.find((b) => b.name === livroData.nome);
-        let livro;
+        let libro: any;
 
         if (existing) {
           console.log("   [=] Já existe no BD");
-          livro = existing;
+          libro = existing;
         } else {
           console.log("   [+] Criando livro...");
-          livro = await prisma.bibleBook.create({
-            data: {
+          const [newLibro] = (await db
+            .insert(bibleBooks)
+            .values({
               name: livroData.nome,
               order: ordem,
-              testament,
+              testament: testament as any,
               totalChapters: livroData.capitulos.length,
-            },
-          });
+            })
+            .returning()) as any[];
+          libro = newLibro;
           createdBooks++;
-          console.log("   [✔] Livro criado ID:", livro.id);
+          console.log("   [✔] Livro criado ID:", libro.id);
           await this.addLog(
             `📖 [${testament}] ${livroData.nome} - ${livroData.capitulos.length} caps`,
           );
@@ -192,30 +196,41 @@ export class SeedDebugController {
         for (const capituloData of livroData.capitulos) {
           console.log(`\n       👉 Capítulo ${capituloData.capitulo}`);
 
-          const existingChapter = await prisma.bibleChapter.findFirst({
-            where: { bookId: livro.id, number: capituloData.capitulo },
-          });
+          const [existingChapter] = (await db
+            .select()
+            .from(bibleChapters)
+            .where(
+              and(
+                eq(bibleChapters.bookId, libro.id),
+                eq(bibleChapters.number, capituloData.capitulo),
+              ),
+            )) as any[];
 
-          let capitulo;
+          let capitulo: any;
           if (existingChapter) {
             console.log("          [=] Capítulo já existe");
             capitulo = existingChapter;
           } else {
             console.log("          [+] Criando capítulo...");
-            capitulo = await prisma.bibleChapter.create({
-              data: {
-                bookId: livro.id,
+            const [newCapitulo] = (await db
+              .insert(bibleChapters)
+              .values({
+                bookId: libro.id,
                 number: capituloData.capitulo,
                 totalVerses: capituloData.versiculos.length,
-              },
-            });
+              })
+              .returning()) as any[];
+            capitulo = newCapitulo;
             createdChapters++;
             console.log("          [✔] Capítulo criado ID:", capitulo.id);
           }
 
-          const beforeCount = await prisma.bibleVerse.count({
-            where: { chapterId: capitulo.id },
-          });
+          const [countResult] = (await db
+            .select({ count: sql<number>`count(*)` })
+            .from(bibleVerses)
+            .where(eq(bibleVerses.chapterId, capitulo.id))) as any[];
+
+          const beforeCount = Number(countResult.count);
 
           const versiculos = capituloData.versiculos.map((vers) => ({
             chapterId: capitulo.id,
@@ -227,14 +242,19 @@ export class SeedDebugController {
             `          [+] Inserindo versos (total: ${versiculos.length})...`,
           );
 
-          await prisma.bibleVerse.createMany({
-            data: versiculos,
-            skipDuplicates: true,
-          });
+          if (versiculos.length > 0) {
+            await db
+              .insert(bibleVerses)
+              .values(versiculos)
+              .onConflictDoNothing();
+          }
 
-          const afterCount = await prisma.bibleVerse.count({
-            where: { chapterId: capitulo.id },
-          });
+          const [afterCountResult] = (await db
+            .select({ count: sql<number>`count(*)` })
+            .from(bibleVerses)
+            .where(eq(bibleVerses.chapterId, capitulo.id))) as any[];
+
+          const afterCount = Number(afterCountResult.count);
 
           const inserted = afterCount - beforeCount;
           createdVerses += inserted;

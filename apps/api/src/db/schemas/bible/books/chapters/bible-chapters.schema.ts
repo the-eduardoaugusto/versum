@@ -2,7 +2,7 @@ import { integer, pgTable, unique, uuid } from "drizzle-orm/pg-core";
 import { bibleBooks } from "../bible-books.schema";
 
 export const bibleChapters = pgTable(
-  "bible-chapters",
+  "bible_chapters",
   {
     id: uuid("id").primaryKey().defaultRandom(),
     bookId: uuid("book_id")
@@ -12,7 +12,7 @@ export const bibleChapters = pgTable(
     totalVerses: integer("total_verses").notNull(),
   },
   (table) => [
-    unique("bible_chapters_bookId_number_unique").on(
+    unique("bible_chapters_book_id_number_unique").on(
       table.bookId,
       table.number,
     ),

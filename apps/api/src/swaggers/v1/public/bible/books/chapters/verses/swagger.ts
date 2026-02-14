@@ -4,15 +4,15 @@ class VersesV1Swagger {
 
   getVerses: SwaggerConfigType = {
     description:
-      "Retorna todos os versículos de um capítulo bíblico específico. Esta rota possui cache de 300 segundos e rate limit de 60 requisições por minuto.",
+      "Returns all verses of a specific biblical chapter. This route has a cache of 300 seconds and rate limit of 60 requests per minute.",
     tags: ["Public", "Bible", "Verses"],
-    summary: "Lista todos os versículos de um capítulo bíblico.",
+    summary: "Lists all verses of a biblical chapter.",
     parameters: [
       {
         in: "path",
         name: "bookOrder",
         required: true,
-        description: "Número de ordem do livro bíblico (1-73)",
+        description: "Order number of the biblical book (1-73)",
         example: "1",
         schema: {
           type: "string",
@@ -22,7 +22,7 @@ class VersesV1Swagger {
         in: "path",
         name: "chapterNumber",
         required: true,
-        description: "Número do capítulo (mínimo 1)",
+        description: "Chapter number (minimum 1)",
         example: "1",
         schema: {
           type: "string",
@@ -31,7 +31,7 @@ class VersesV1Swagger {
       {
         in: "query",
         name: "page",
-        description: "Número da página para paginação (começa em 1)",
+        description: "Page number for pagination (starts at 1)",
         example: "1",
         schema: {
           type: "string",
@@ -40,7 +40,7 @@ class VersesV1Swagger {
       {
         in: "query",
         name: "limit",
-        description: "Quantidade de versículos por página",
+        description: "Number of verses per page",
         example: "10",
         schema: {
           type: "string",
@@ -49,10 +49,10 @@ class VersesV1Swagger {
     ],
     responses: {
       400: {
-        description: "Requisição inválida com parâmetros incorretos",
+        description: "Invalid request with incorrect parameters",
         example: {
           success: false,
-          message: "Informe números válidos para livro, capítulo e versículo.",
+          message: "Provide valid numbers for book, chapter and verse.",
         },
         schema: {
           type: "object",
@@ -63,17 +63,16 @@ class VersesV1Swagger {
             },
             message: {
               type: "string",
-              example:
-                "Informe números válidos para livro, capítulo e versículo.",
+              example: "Provide valid numbers for book, chapter and verse.",
             },
           },
         },
       },
       404: {
-        description: "Capítulo não encontrado",
+        description: "Chapter not found",
         example: {
           success: false,
-          message: "Capítulo não encontrado nesse livro.",
+          message: "Chapter not found in this book.",
         },
         schema: {
           type: "object",
@@ -84,13 +83,13 @@ class VersesV1Swagger {
             },
             message: {
               type: "string",
-              example: "Capítulo não encontrado nesse livro.",
+              example: "Chapter not found in this book.",
             },
           },
         },
       },
       500: {
-        description: "Erro interno do servidor",
+        description: "Internal server error",
         example: {
           success: false,
           message: "Internal Server Error",
@@ -110,11 +109,10 @@ class VersesV1Swagger {
         },
       },
       200: {
-        description: "Lista de versículos buscada com sucesso",
+        description: "List of verses retrieved successfully",
         headers: {
           "X-RateLimit-Limit": {
-            description:
-              "Número máximo de requisições permitidas por janela de tempo",
+            description: "Maximum number of requests allowed per time window",
             schema: {
               type: "string",
               example: "60",
@@ -122,14 +120,14 @@ class VersesV1Swagger {
           },
           "X-RateLimit-Remaining": {
             description:
-              "Número de requisições restantes antes de atingir o limite",
+              "Number of remaining requests before reaching the limit",
             schema: {
               type: "string",
               example: "59",
             },
           },
           "X-RateLimit-Reset": {
-            description: "Data e hora em que o limite será resetado",
+            description: "Date and time when the limit will be reset",
             schema: {
               type: "string",
               format: "date-time",
@@ -144,13 +142,13 @@ class VersesV1Swagger {
               id: "1234abcd-5678-90ef-ghij-klmnopqrstu1",
               chapterId: "9876dcba-5432-10ef-ghij-klmnopqrstu9",
               number: 1,
-              text: "No princípio, criou Deus os céus e a terra.",
+              text: "In the beginning, God created the heavens and the earth.",
             },
             {
               id: "2345bcde-6789-01fg-hijk-lmnopqrstuv2",
               chapterId: "9876dcba-5432-10ef-ghij-klmnopqrstu9",
               number: 2,
-              text: "A terra era sem forma e vazia; havia trevas sobre a face do abismo...",
+              text: "The earth was without form and void; and darkness was upon the face of the deep...",
             },
           ],
           pagination: {
@@ -190,7 +188,8 @@ class VersesV1Swagger {
                   },
                   text: {
                     type: "string",
-                    example: "No princípio, criou Deus os céus e a terra.",
+                    example:
+                      "In the beginning, God created the heavens and the earth.",
                   },
                 },
               },
@@ -283,15 +282,15 @@ class VersesV1Swagger {
 
   getVerseByNumber: SwaggerConfigType = {
     description:
-      "Retorna um versículo específico da Bíblia. Esta rota possui cache de 300 segundos e rate limit de 60 requisições por minuto.",
+      "Returns a specific Bible verse. This route has a cache of 300 seconds and rate limit of 60 requests per minute.",
     tags: ["Public", "Bible", "Verses"],
-    summary: "Obtém um versículo bíblico pelo número.",
+    summary: "Gets a biblical verse by number.",
     parameters: [
       {
         in: "path",
         name: "bookOrder",
         required: true,
-        description: "Número de ordem do livro bíblico (1-73)",
+        description: "Order number of the biblical book (1-73)",
         example: "1",
         schema: {
           type: "string",
@@ -301,7 +300,7 @@ class VersesV1Swagger {
         in: "path",
         name: "chapterNumber",
         required: true,
-        description: "Número do capítulo (mínimo 1)",
+        description: "Chapter number (minimum 1)",
         example: "1",
         schema: {
           type: "string",
@@ -311,7 +310,7 @@ class VersesV1Swagger {
         in: "path",
         name: "verseNumber",
         required: true,
-        description: "Número do versículo (mínimo 1)",
+        description: "Verse number (minimum 1)",
         example: "1",
         schema: {
           type: "string",
@@ -320,10 +319,10 @@ class VersesV1Swagger {
     ],
     responses: {
       400: {
-        description: "Requisição inválida com parâmetros incorretos",
+        description: "Invalid request with incorrect parameters",
         example: {
           success: false,
-          message: "Informe números válidos para livro, capítulo e versículo.",
+          message: "Provide valid numbers for book, chapter and verse.",
         },
         schema: {
           type: "object",
@@ -334,17 +333,16 @@ class VersesV1Swagger {
             },
             message: {
               type: "string",
-              example:
-                "Informe números válidos para livro, capítulo e versículo.",
+              example: "Provide valid numbers for book, chapter and verse.",
             },
           },
         },
       },
       404: {
-        description: "Versículo não encontrado",
+        description: "Verse not found",
         example: {
           success: false,
-          message: "Versículo não encontrado.",
+          message: "Verse not found.",
         },
         schema: {
           type: "object",
@@ -355,13 +353,13 @@ class VersesV1Swagger {
             },
             message: {
               type: "string",
-              example: "Versículo não encontrado.",
+              example: "Verse not found.",
             },
           },
         },
       },
       500: {
-        description: "Erro interno do servidor",
+        description: "Internal server error",
         example: {
           success: false,
           message: "Internal Server Error",
@@ -381,11 +379,10 @@ class VersesV1Swagger {
         },
       },
       200: {
-        description: "Versículo bíblico buscado com sucesso",
+        description: "Biblical verse retrieved successfully",
         headers: {
           "X-RateLimit-Limit": {
-            description:
-              "Número máximo de requisições permitidas por janela de tempo",
+            description: "Maximum number of requests allowed per time window",
             schema: {
               type: "string",
               example: "60",
@@ -393,14 +390,14 @@ class VersesV1Swagger {
           },
           "X-RateLimit-Remaining": {
             description:
-              "Número de requisições restantes antes de atingir o limite",
+              "Number of remaining requests before reaching the limit",
             schema: {
               type: "string",
               example: "59",
             },
           },
           "X-RateLimit-Reset": {
-            description: "Data e hora em que o limite será resetado",
+            description: "Date and time when the limit will be reset",
             schema: {
               type: "string",
               format: "date-time",
@@ -414,7 +411,7 @@ class VersesV1Swagger {
             id: "1234abcd-5678-90ef-ghij-klmnopqrstu1",
             chapterId: "9876dcba-5432-10ef-ghij-klmnopqrstu9",
             number: 1,
-            text: "No princípio, criou Deus os céus e a terra.",
+            text: "In the beginning, God created the heavens and the earth.",
           },
         },
         schema: {
@@ -443,7 +440,8 @@ class VersesV1Swagger {
                 },
                 text: {
                   type: "string",
-                  example: "No princípio, criou Deus os céus e a terra.",
+                  example:
+                    "In the beginning, God created the heavens and the earth.",
                 },
               },
             },

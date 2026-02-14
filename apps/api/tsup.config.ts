@@ -10,7 +10,6 @@ export default defineConfig({
   splitting: false,
   treeshake: false,
   bundle: true,
-  external: ["@prisma/client", "prisma", ".prisma"],
   ignoreWatch: ["**/*.html"],
 
   // Copia arquivos HTML para o dist

@@ -1,32 +1,53 @@
-import { PrismaClient, User, Prisma } from "@/libs/prisma";
-import { BaseRepository } from "../base.repository";
+import { users } from "@/db/schema";
+import { eq, InferInsertModel, InferSelectModel } from "drizzle-orm";
+import { db } from "@/db/client";
 
-export class UserRepository extends BaseRepository<
-  User,
-  Prisma.UserUncheckedCreateInput,
-  Prisma.UserUncheckedUpdateInput,
-  Prisma.UserFindManyArgs,
-  Prisma.UserCountArgs
-> {
-  constructor(prisma: PrismaClient) {
-    super(prisma, prisma.user);
-  }
+export type User = InferSelectModel<typeof users>;
+export type NewUser = InferInsertModel<typeof users>;
+
+export class UserRepository {
+  table = users;
+  db = db;
 
   async findByEmail({ email }: { email: string }) {
-    const user = this.prisma.user.findUnique({
-      where: {
-        email,
-      },
-    });
+    const [user] = await this.db
+      .select()
+      .from(this.table)
+      .where(eq(this.table.email, email));
 
-    return user;
+    return user || null;
   }
 
   async findByUsername({ username }: { username: string }) {
-    const user = await this.prisma.user.findUnique({
-      where: {
+    const [user] = await this.db
+      .select()
+      .from(this.table)
+      .where(eq(this.table.username, username));
+
+    return user || null;
+  }
+
+  async create({
+    email,
+    name,
+    username,
+    createdAt,
+  }: {
+    email: string;
+    name: string;
+    username: string;
+    createdAt: Date;
+  }) {
+    const [user] = await this.db
+      .insert(this.table)
+      .values({
+        email,
+        name,
         username,
-      },
-    });
+        createdAt,
+      })
+      .returning();
+
+    return user || null;
   }
 }

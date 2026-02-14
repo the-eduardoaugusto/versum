@@ -9,7 +9,7 @@ import {
   PaginationViewModel,
   ApiResponseViewModel,
 } from "@/viewmodels";
-import { Testament } from "@/libs/prisma/index";
+import { Testament } from "@/services/bible/books/bible-books.service";
 import { BadRequestError, NotFoundError } from "@/utils/error-model";
 import { handleError } from "@/utils/error-handler.util";
 
@@ -32,7 +32,7 @@ export class BibleBooksV1Controller {
     try {
       let testamentValue: Testament | undefined;
       if (testament) {
-        if (!Object.values(Testament).includes(testament as Testament)) {
+        if (!["OLD", "NEW"].includes(testament)) {
           throw new BadRequestError("Testament must be 'OLD' or 'NEW'");
         }
         testamentValue = testament as Testament;

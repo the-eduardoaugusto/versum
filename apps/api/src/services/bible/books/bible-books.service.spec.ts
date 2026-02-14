@@ -1,185 +1,355 @@
-import { bibleBookRepoMock } from "@/repositories/bible/books/bible-book.repository.mock";
-import { describe, it, expect } from "vitest";
+import { mockBibleDb } from "@/db/__mocks__/mock-db";
+import { BibleBook } from "@/repositories";
+import { createMockedBibleBookRepository } from "@/repositories/bible/books/__mocks__/bible-book.repository.mock";
+import type { MockedBibleBookRepository } from "@/repositories/bible/books/__mocks__/bible-book.repository.mock";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { BibleBooksService } from "./bible-books.service";
-import { Testament } from "@/libs/prisma";
 
-describe("Bible books services", () => {
+const mockBooks = mockBibleDb.books;
+
+describe("Bible books service", () => {
+  let bibleBookMockRepo: MockedBibleBookRepository;
+  let bibleBookService: BibleBooksService;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    bibleBookMockRepo = createMockedBibleBookRepository();
+    bibleBookService = new BibleBooksService(bibleBookMockRepo);
+  });
+
   describe("fetchBooks", () => {
-    it("should return list of books with correct pagination", async () => {
-      const bibleBookService = new BibleBooksService(bibleBookRepoMock);
-      const limit = "10";
-      const page = "1";
+    it("returns books with correct pagination", async () => {
+      const limit = 20;
+      const page = 1;
+
+      vi.mocked(bibleBookMockRepo.findMany.limit).mockResolvedValue(mockBooks);
+
+      bibleBookMockRepo.__setCount(mockBooks.length);
+      //unt: mockBooks.length }]);
+
       const data = await bibleBookService.fetchBooks({ page, limit });
 
-      expect(data.pagination.currentPage).toBe(parseInt(page));
-
-      expect(data.pagination.hasNextPage).toBe(
-        data.pagination.currentPage < data.pagination.totalPages,
-      );
-
-      expect(data.pagination.hasPrevPage).toBe(data.pagination.currentPage > 1);
-
-      // Verifica se o número de itens retornados não excede o limite
-      expect(data.books.length).toBeLessThanOrEqual(Number(limit));
-
-      // Verifica se o total de itens está correto (deve ser o total de todos os livros)
-      expect(data.pagination.totalItems).toBe(66); // Total de livros bíblicos
-
-      // Verifica se o número de itens retornados respeita o limite
-      expect(data.books.length).toBeLessThanOrEqual(Number(limit));
-
-      // Verifica se o total de itens está correto
-      expect(data.pagination.totalItems).toBeGreaterThanOrEqual(
+      expect(
+        bibleBookMockRepo.findMany.where,
+        "where method of findMany should be called!",
+      ).toHaveBeenCalled();
+      expect(
+        data.pagination.totalItems,
+        "Total items should be equal to mockBooks.length",
+      ).toBe(mockBooks.length);
+      expect(
         data.books.length,
+        "Books length should be equal to mockBooks.length",
+      ).toBe(mockBooks.length);
+    });
+
+    it("uses default pagination when params are not provided", async () => {
+      vi.mocked(bibleBookMockRepo.findMany.limit).mockResolvedValue(mockBooks);
+      bibleBookMockRepo.__setCount(mockBooks.length);
+
+      const data = await bibleBookService.fetchBooks({});
+
+      // Default: page=1 ; limit=10
+      expect(data.pagination.currentPage, "Current page should be 1").toBe(1);
+      expect(data.pagination.itemsPerPage, "Items per page should be 10").toBe(
+        10,
       );
+      expect(
+        bibleBookMockRepo.findMany.offset,
+        "Offset should be 0",
+      ).toHaveBeenCalledWith(0);
+      expect(
+        bibleBookMockRepo.findMany.limit,
+        "Limit should be 10",
+      ).toHaveBeenCalledWith(10);
     });
 
-    it("should filter by testament when provided", async () => {
-      const bibleBookService = new BibleBooksService(bibleBookRepoMock);
-      const testament: Testament = "NEW";
+    it("uses provided page value of pagination", async () => {
+      vi.mocked(bibleBookMockRepo.findMany.limit).mockResolvedValue(mockBooks);
+      bibleBookMockRepo.__setCount(mockBooks.length);
+
       const data = await bibleBookService.fetchBooks({
-        testament,
+        page: 2,
       });
 
-      data.books.forEach((b) => {
-        expect(b.testament).toBe(testament);
-      });
+      expect(data.pagination.currentPage, "Current page should be 2").toBe(2);
+      expect(data.pagination.itemsPerPage, "Items per page should be 10").toBe(
+        10,
+      );
+      expect(
+        bibleBookMockRepo.findMany.offset,
+        "Offset should be 10",
+      ).toHaveBeenCalledWith(10);
+      expect(
+        bibleBookMockRepo.findMany.limit,
+        "Limit should be 10",
+      ).toHaveBeenCalledWith(10);
     });
 
-    it("should throw error for invalid testament", async () => {
-      const bibleBookService = new BibleBooksService(bibleBookRepoMock);
-      const invalidTestament = "INVALID" as Testament;
+    it("uses provided limit value of pagination", async () => {
+      vi.mocked(bibleBookMockRepo.findMany.limit).mockResolvedValue(mockBooks);
+      bibleBookMockRepo.__setCount(mockBooks.length);
+
+      const data = await bibleBookService.fetchBooks({
+        limit: 20,
+      });
+
+      expect(data.pagination.currentPage, "Current page should be 1").toBe(1);
+      expect(data.pagination.itemsPerPage, "Items per page should be 20").toBe(
+        20,
+      );
+      expect(
+        bibleBookMockRepo.findMany.offset,
+        "Offset should be 0",
+      ).toHaveBeenCalledWith(0);
+      expect(
+        bibleBookMockRepo.findMany.limit,
+        "Limit should be 20",
+      ).toHaveBeenCalledWith(20);
+    });
+
+    it("throws invalid limit error", async () => {
+      await expect(
+        bibleBookService.fetchBooks({
+          limit: -1,
+        }),
+      ).rejects.toThrowError("Limit must be a number between 1 and 100!");
 
       await expect(
-        bibleBookService.fetchBooks({ testament: invalidTestament }),
-      ).rejects.toThrowErrorMatchingInlineSnapshot(`
-        {
-          "message": "Testament must be 'OLD' or 'NEW'",
-          "success": false,
-        }
-      `);
+        bibleBookService.fetchBooks({
+          limit: 101,
+        }),
+      ).rejects.toThrowError("Limit must be a number between 1 and 100!");
+
+      await expect(
+        bibleBookService.fetchBooks({
+          limit: "invalid_limit ",
+        }),
+      ).rejects.toThrowError("Limit must be a number between 1 and 100!");
     });
 
-    it("should handle pagination correctly with different page sizes", async () => {
-      const bibleBookService = new BibleBooksService(bibleBookRepoMock);
-      const limit = "5";
-      const page = "2";
-      const data = await bibleBookService.fetchBooks({ page, limit });
+    it("provides all pagination parameters", async () => {
+      vi.mocked(bibleBookMockRepo.findMany.limit).mockResolvedValue(mockBooks);
+      bibleBookMockRepo.__setCount(mockBooks.length);
 
-      // Verifica se o número de itens respeita o limite
-      expect(data.books.length).toBeLessThanOrEqual(Number(limit));
+      const data = await bibleBookService.fetchBooks({
+        page: 2,
+        limit: 5,
+      });
 
-      // Verifica se a página atual é a esperada
-      expect(data.pagination.currentPage).toBe(parseInt(page));
+      expect(data.pagination.currentPage, "Current page should be 2").toBe(2);
+      expect(data.pagination.itemsPerPage, "Items per page should be 5").toBe(
+        5,
+      );
+      expect(
+        bibleBookMockRepo.findMany.offset,
+        "Offset should be 5",
+      ).toHaveBeenCalledWith(5);
+      expect(
+        bibleBookMockRepo.findMany.limit,
+        "Limit should be 5",
+      ).toHaveBeenCalledWith(5);
+    });
 
-      // Verifica se a paginação está funcionando
-      expect(data.pagination.totalPages).toBeGreaterThan(1);
+    describe("fetchBookById", () => {
+      it("returns book when id is valid", async () => {
+        vi.mocked(bibleBookMockRepo.findById).mockResolvedValue(mockBooks[0]);
+        const data = await bibleBookService.fetchBookById({
+          bookId: mockBooks[0].id,
+        });
+        expect(data, "Book should be returned").toEqual(mockBooks[0]);
+      });
+
+      it("throws invalid id error", async () => {
+        await expect(
+          bibleBookService.fetchBookById({
+            bookId: "invalid",
+          }),
+        ).rejects.toThrowError(`Book with id invalid not found!`);
+      });
+
+      it("throws book not found", async () => {
+        vi.mocked(bibleBookMockRepo.findById).mockResolvedValue(
+          null as unknown as BibleBook,
+        );
+        await expect(
+          bibleBookService.fetchBookById({
+            bookId: mockBooks[0].id,
+          }),
+        ).rejects.toThrowError(`Book with id ${mockBooks[0].id} not found!`);
+      });
+    });
+
+    describe("fetchBookByTestament", () => {
+      it("filters books by testament", async () => {
+        vi.mocked(bibleBookMockRepo.findMany.limit).mockResolvedValue(
+          mockBooks,
+        );
+        bibleBookMockRepo.__setCount(mockBooks.length);
+
+        const data = await bibleBookService.fetchBooksByTestament({
+          testament: "OLD",
+        });
+
+        expect(data.pagination.currentPage, "Current page should be 1").toBe(1);
+        expect(
+          data.pagination.itemsPerPage,
+          "Items per page should be 10",
+        ).toBe(10);
+        expect(
+          bibleBookMockRepo.findMany.offset,
+          "Offset should be 0",
+        ).toHaveBeenCalledWith(0);
+        expect(
+          bibleBookMockRepo.findMany.limit,
+          "Limit should be 10",
+        ).toHaveBeenCalledWith(10);
+      });
+
+      it("throws invalid testament error", async () => {
+        await expect(
+          bibleBookService.fetchBooksByTestament({
+            // @ts-ignore This is a test case
+            testament: "invalid",
+          }),
+        ).rejects.toThrowError(`Testament must be 'OLD' or 'NEW'`);
+      });
+
+      it("uses provided pagination parameters", async () => {
+        vi.mocked(bibleBookMockRepo.findMany.limit).mockResolvedValue(
+          mockBooks,
+        );
+        bibleBookMockRepo.__setCount(mockBooks.length);
+
+        const data = await bibleBookService.fetchBooksByTestament({
+          testament: "OLD",
+          page: 2,
+          limit: 5,
+        });
+
+        expect(data.pagination.currentPage, "Current page should be 2").toBe(2);
+        expect(data.pagination.itemsPerPage, "Items per page should be 5").toBe(
+          5,
+        );
+        expect(
+          bibleBookMockRepo.findMany.offset,
+          "Offset should be 5",
+        ).toHaveBeenCalledWith(5);
+        expect(
+          bibleBookMockRepo.findMany.limit,
+          "Limit should be 5",
+        ).toHaveBeenCalledWith(5);
+      });
+      it("uses provided page value of pagination", async () => {
+        vi.mocked(bibleBookMockRepo.findMany.limit).mockResolvedValue(
+          mockBooks,
+        );
+        bibleBookMockRepo.__setCount(mockBooks.length);
+
+        const data = await bibleBookService.fetchBooksByTestament({
+          testament: "OLD",
+          page: 2,
+        });
+
+        expect(data.pagination.currentPage, "Current page should be 2").toBe(2);
+      });
+
+      it("uses provided limit value of pagination", async () => {
+        vi.mocked(bibleBookMockRepo.findMany.limit).mockResolvedValue(
+          mockBooks,
+        );
+        bibleBookMockRepo.__setCount(mockBooks.length);
+
+        const data = await bibleBookService.fetchBooksByTestament({
+          testament: "OLD",
+          limit: 5,
+        });
+
+        expect(data.pagination.itemsPerPage, "Items per page should be 5").toBe(
+          5,
+        );
+      });
+
+      it("throws an error when limit is less than 1", async () => {
+        vi.mocked(bibleBookMockRepo.findMany.limit).mockResolvedValue(
+          mockBooks,
+        );
+        bibleBookMockRepo.__setCount(mockBooks.length);
+
+        await expect(
+          bibleBookService.fetchBooksByTestament({
+            testament: "OLD",
+            limit: 0,
+          }),
+        ).rejects.toThrowError("Limit must be a number between 1 and 100!");
+      });
+    });
+
+    it("throws an error when page is less than 1", async () => {
+      vi.mocked(bibleBookMockRepo.findMany.limit).mockResolvedValue(mockBooks);
+      bibleBookMockRepo.__setCount(mockBooks.length);
+
+      await expect(
+        bibleBookService.fetchBooksByTestament({
+          testament: "OLD",
+          page: 0,
+        }),
+      ).rejects.toThrowError("Page must be a positive number!");
+    });
+
+    it("throws an error when page is a invalid number", async () => {
+      vi.mocked(bibleBookMockRepo.findMany.limit).mockResolvedValue(mockBooks);
+      bibleBookMockRepo.__setCount(mockBooks.length);
+
+      await expect(
+        bibleBookService.fetchBooksByTestament({
+          testament: "OLD",
+          page: "invalid",
+        }),
+      ).rejects.toThrowError("Page must be a positive number!");
+    });
+    it("throws an error when limit is greater than 100", async () => {
+      vi.mocked(bibleBookMockRepo.findMany.limit).mockResolvedValue(mockBooks);
+      bibleBookMockRepo.__setCount(mockBooks.length);
+
+      await expect(
+        bibleBookService.fetchBooksByTestament({
+          testament: "OLD",
+          limit: 101,
+        }),
+      ).rejects.toThrowError("Limit must be a number between 1 and 100!");
+    });
+    it("throws an error when limit is not a number", async () => {
+      vi.mocked(bibleBookMockRepo.findById).mockResolvedValue(
+        mockBooks[0] as unknown as BibleBook,
+      );
+      await expect(
+        bibleBookService.fetchBooksByTestament({
+          testament: "OLD",
+          limit: "invalid",
+        }),
+      ).rejects.toThrowError("Limit must be a number between 1 and 100!");
     });
   });
-
   describe("fetchBookById", () => {
-    it("should return book by id when found", async () => {
-      const bibleBookService = new BibleBooksService(bibleBookRepoMock);
-      const bookId = "uuid1"; // Gênesis
-
-      const book = await bibleBookService.fetchBookById({ bookId });
-
-      expect(book).not.toBeNull();
-      expect(book?.id).toBe(bookId);
-      expect(book?.name).toBe("Gênesis");
-    });
-
-    it("should return null when book is not found", async () => {
-      const bibleBookService = new BibleBooksService(bibleBookRepoMock);
-      const bookId = "non-existent-id";
-
-      const book = await bibleBookService.fetchBookById({ bookId });
-
-      expect(book).toBeNull();
-    });
-  });
-
-  describe("fetchBookByOrder", () => {
-    it("should return book by order when found", async () => {
-      const bibleBookService = new BibleBooksService(bibleBookRepoMock);
-      const bookOrder = 1; // Gênesis
-
-      const book = await bibleBookService.fetchBookByOrder({ bookOrder });
-
-      expect(book).not.toBeNull();
-      expect(book?.order).toBe(bookOrder);
-      expect(book?.name).toBe("Gênesis");
-    });
-
-    it("should return null when book is not found by order", async () => {
-      const bibleBookService = new BibleBooksService(bibleBookRepoMock);
-      const bookOrder = 999; // Order that doesn't exist
-
-      const book = await bibleBookService.fetchBookByOrder({ bookOrder });
-
-      expect(book).toBeNull();
-    });
-  });
-
-  describe("fetchBookByTestament", () => {
-    it("should return books filtered by testament with pagination", async () => {
-      const bibleBookService = new BibleBooksService(bibleBookRepoMock);
-      const testament: Testament = "NEW";
-      const limit = "5";
-      const page = "1";
-
-      const data = await bibleBookService.fetchBookByTestament({
-        testament,
-        limit,
-        page,
+    it("returns a book when id is valid", async () => {
+      vi.mocked(bibleBookMockRepo.findById).mockResolvedValue(
+        mockBooks[0] as unknown as BibleBook,
+      );
+      bibleBookMockRepo.__setCount(mockBooks.length);
+      const book = await bibleBookService.fetchBookById({
+        bookId: mockBooks[0].id,
       });
-
-      // Verifica se todos os livros retornados têm o testamento correto
-      data.books.forEach((book) => {
-        expect(book.testament).toBe(testament);
-      });
-
-      // Verifica se o número de itens respeita o limite
-      expect(data.books.length).toBeLessThanOrEqual(Number(limit));
-
-      // Verifica a paginação
-      expect(data.pagination.currentPage).toBe(parseInt(page));
+      expect(book).toBeDefined();
     });
-
-    it("should return all books for OLD testament", async () => {
-      const bibleBookService = new BibleBooksService(bibleBookRepoMock);
-      const testament: Testament = "OLD";
-
-      const data = await bibleBookService.fetchBookByTestament({ testament });
-
-      // Verifica se todos os livros retornados têm o testamento correto
-      data.books.forEach((book) => {
-        expect(book.testament).toBe(testament);
-      });
-
-      // Verifica se temos o número esperado de livros do Antigo Testamento
-      expect(data.books.length).toBeGreaterThan(0);
-    });
-
-    it("should handle pagination correctly in fetchBookByTestament", async () => {
-      const bibleBookService = new BibleBooksService(bibleBookRepoMock);
-      const testament: Testament = "NEW";
-      const limit = "3";
-      const page = "1";
-
-      const data = await bibleBookService.fetchBookByTestament({
-        testament,
-        limit,
-        page,
-      });
-
-      // Verifica se o número de itens respeita o limite
-      expect(data.books.length).toBeLessThanOrEqual(Number(limit));
-
-      // Verifica se todos os livros têm o testamento correto
-      data.books.forEach((book) => {
-        expect(book.testament).toBe(testament);
-      });
+    it("returns undefined when id is invalid", async () => {
+      vi.mocked(bibleBookMockRepo.findById).mockResolvedValue(null);
+      bibleBookMockRepo.__setCount(mockBooks.length);
+      await expect(
+        bibleBookService.fetchBookById({
+          bookId: "invalid",
+        }),
+      ).rejects.toThrowError("Book with id invalid not found!");
     });
   });
 });
