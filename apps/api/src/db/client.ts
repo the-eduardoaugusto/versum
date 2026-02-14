@@ -3,7 +3,7 @@ import { env } from "@/env";
 import path from "path";
 import fs from "fs";
 import { Pool } from "pg";
-import * as schema from "../../db/schema";
+import * as schema from "./schema";
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
@@ -17,9 +17,7 @@ const readCert = (filename: string) => {
     : undefined;
 };
 
-const ca = readCert(".certs/postgre-ca.crt");
 const cert = readCert(".certs/postgre-certificate.pem");
-const key = readCert(".certs/postgre-private-key.key");
 
 const dbUrl = new URL(process.env.DATABASE_URL!);
 
@@ -31,9 +29,9 @@ const pgPool = new Pool({
   password: dbUrl.password,
   database: dbUrl.pathname.replace("/", ""),
   ssl: {
-    ca,
+    ca: cert,
     cert,
-    key,
+    key: cert,
     rejectUnauthorized: false,
   },
 });

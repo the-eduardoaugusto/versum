@@ -1,4 +1,4 @@
-import { BibleVerse } from "@/libs/prisma/index";
+import { BibleVerse } from "@/repositories";
 import { BaseViewModel } from "../../api-response.viewmodel";
 
 export class BibleVerseViewModel extends BaseViewModel<

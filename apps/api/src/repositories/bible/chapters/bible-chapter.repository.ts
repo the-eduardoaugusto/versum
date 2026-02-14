@@ -1,17 +1,20 @@
-import { BaseRepository } from "../../base.repository";
-import { PrismaClient } from "@/libs/prisma";
-import type { BibleChapter, Prisma } from "@/libs/prisma";
+import { bibleBooks, bibleChapters } from "@/db/schema";
+import {
+  and,
+  asc,
+  count,
+  eq,
+  InferInsertModel,
+  InferSelectModel,
+} from "drizzle-orm";
+import { db } from "@/db/client";
 
-export class BibleChapterRepository extends BaseRepository<
-  BibleChapter,
-  Prisma.BibleChapterUncheckedCreateInput,
-  Prisma.BibleChapterUncheckedUpdateInput,
-  Prisma.BibleChapterFindManyArgs,
-  Prisma.BibleChapterCountArgs
-> {
-  constructor(prisma: PrismaClient) {
-    super(prisma, prisma.bibleChapter);
-  }
+export type BibleChapter = InferSelectModel<typeof bibleChapters>;
+export type NewBibleChapter = InferInsertModel<typeof bibleChapters>;
+
+export class BibleChapterRepository {
+  table = bibleChapters;
+  db = db;
 
   async findByBookAndNumber({
     bookOrder,
@@ -20,44 +23,46 @@ export class BibleChapterRepository extends BaseRepository<
     bookOrder: number;
     chapterNumber: number;
   }): Promise<BibleChapter | null> {
-    const book = await this.prisma.bibleBook.findFirst({
-      where: {
-        order: bookOrder,
-      },
-      select: {
-        id: true,
-      },
-    });
+    const [book] = await this.db
+      .select({ id: bibleBooks.id })
+      .from(bibleBooks)
+      .where(eq(bibleBooks.order, bookOrder))
+      .limit(1);
+
     if (!book) return null;
-    return await this.prisma.bibleChapter.findUnique({
-      where: {
-        bookId_number: { bookId: book.id, number: chapterNumber },
-      },
-    });
+
+    const [chapter] = await this.db
+      .select()
+      .from(this.table)
+      .where(
+        and(
+          eq(this.table.bookId, book.id),
+          eq(this.table.number, chapterNumber),
+        ),
+      );
+
+    return chapter || null;
   }
 
-  async findByBookId({
-    bookId,
-    args,
-  }: {
-    bookId: string;
-    args?: Omit<Prisma.BibleChapterFindManyArgs, "where">;
-  }): Promise<BibleChapter[]> {
-    return await this.prisma.bibleChapter.findMany({
-      where: { bookId },
-      orderBy: { number: "asc" },
-      ...args,
-    });
+  async findByBookId({ bookId }: { bookId: string }): Promise<BibleChapter[]> {
+    return await this.db
+      .select()
+      .from(this.table)
+      .where(eq(this.table.bookId, bookId))
+      .orderBy(asc(this.table.number));
   }
 
   async findWithVerses({ chapterId }: { chapterId: string }) {
-    return await this.prisma.bibleChapter.findUnique({
-      where: { id: chapterId },
-      include: {
+    return await this.db.query.bibleChapters.findFirst({
+      where: eq(bibleChapters.id, chapterId),
+      with: {
         verses: {
-          orderBy: { number: "asc" },
+          orderBy: [asc(this.table.number)],
         },
       },
     });
   }
+
+  findMany = this.db.select().from(this.table);
+  count = this.db.select({ count: count(this.table.number) }).from(this.table);
 }

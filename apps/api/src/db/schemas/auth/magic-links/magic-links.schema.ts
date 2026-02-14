@@ -21,7 +21,7 @@ export const magicLinks = pgTable(
       .notNull(),
   },
   (table) => [
-    index("maigc_links_email_public_id_idx").on(table.email, table.publicId),
+    index("magic_links_email_public_id_idx").on(table.email, table.publicId),
     index("magic_links_expires_at_idx").on(table.expiresAt),
   ],
 );

@@ -1,3 +1,4 @@
+export * from "./books/bible-books.enum";
 export * from "./books/bible-books.schema";
 export * from "./books/bible-books.relations";
 export * from "./books/chapters/bible-chapters.schema";

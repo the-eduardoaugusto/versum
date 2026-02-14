@@ -1,6 +1,6 @@
 import { MagicLinkService } from "@/services";
-import { Controller, Get, Query, Res } from "azurajs/decorators";
-import { ResponseServer } from "azurajs/types";
+import { Controller, Get, Query, Req, Res } from "azurajs/decorators";
+import { RequestServer, ResponseServer } from "azurajs/types";
 import { Swagger } from "azurajs/swagger";
 import { magicLinkV1Swagger } from "@/swaggers";
 import { handleError } from "@/utils/error-handler.util";
@@ -15,13 +15,20 @@ export class MagicLinkCallbackController {
   }
   @Get("/")
   @Swagger(magicLinkV1Swagger.generateJwt)
-  async generateJwt(@Res() res: ResponseServer, @Query("token") token: string) {
+  async generateJwt(
+    @Res() res: ResponseServer,
+    @Req() req: RequestServer,
+    @Query("token") token: string,
+  ) {
     try {
       if (!token) {
         throw new BadRequestError("Magic link token is required!");
       }
 
-      const auth = await this.magicLinkService.authenticateToken({ token });
+      const auth = await this.magicLinkService.authenticateToken({
+        token,
+        ipAddress: req.ip || "unknown",
+      });
 
       return res.json({
         success: true,

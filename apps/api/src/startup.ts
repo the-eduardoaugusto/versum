@@ -4,10 +4,11 @@ import { setupSwaggerWithControllers } from "azurajs/swagger";
 import { logger } from "azurajs/logger";
 import { env } from "@/env";
 import { redis } from "@/libs/redis";
-import { prisma } from "@/libs/prisma";
 import { Scalar } from "azurajs-scalar";
 import path from "path";
 import { fileURLToPath } from "url";
+import { db } from "@/db/client";
+import { sql } from "drizzle-orm";
 
 /**
  * Classe responsável pelo startup e configuração inicial da aplicação
@@ -26,7 +27,7 @@ export class ApplicationStartup {
     const baseUrl = env.APP_URL || "http://localhost:4002";
     new Scalar({
       apiSpecPath: "/api-spec.json",
-      proxyPath: "/scalar/proxy/",
+      // proxyPath: "/scalar/proxy/",
       docPath: "/docs/",
       customHtmlPath: path.join(__dirname, "./public/html/api-docs.html"),
       app,
@@ -107,11 +108,11 @@ export class ApplicationStartup {
   }
 
   /**
-   * Conecta ao PostgreSQL
+   * Conecta ao PostgreSQL via Drizzle
    */
   private async connectPostgres(): Promise<void> {
     try {
-      logger("log", "Connecting to Postgre Database! 🐘", {
+      logger("log", "Connecting to Postgre Database! 🐘 (Drizzle)", {
         colors: {
           log: "#336791",
         },
@@ -119,9 +120,10 @@ export class ApplicationStartup {
         showTimestamp: true,
       });
 
-      await prisma.$connect();
+      // Test connection with a simple query
+      await db.execute(sql`SELECT 1`);
 
-      logger("success", "   Connected on Postgre Database! 🐘", {
+      logger("success", "   Connected on Postgre Database! 🐘 (Drizzle)", {
         timestampFormat: "time",
         showTimestamp: true,
       });

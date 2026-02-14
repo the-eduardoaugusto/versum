@@ -9,7 +9,7 @@ import {
 import { testamentEnum } from "./bible-books.enum";
 
 export const bibleBooks = pgTable(
-  "bible-books",
+  "bible_books",
   {
     id: uuid("id").primaryKey().defaultRandom(),
     name: varchar("name", { length: 100 }).notNull().unique(),
