@@ -62,7 +62,7 @@ jobs:
         run: echo "--- dummy cert ---" > .certs/postgre-certificate.pem
 
       - name: Generate Drizzle
-        run: cd apps/api && pnpm dlx drizzle-kit generate
+        run: cd apps/api && pnpm drizzle-kit generate
 
       - name: Run tests
         run: cd apps/api ; pnpm test --reporter=verbose
