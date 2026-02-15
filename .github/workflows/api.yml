@@ -61,8 +61,8 @@ jobs:
       - name: Create dummy certificate file
         run: echo "--- dummy cert ---" > .certs/postgre-certificate.pem
 
-      - name: Generate Prisma Client
-        run: cd apps/api && pnpm dlx prisma generate
+      - name: Generate Drizzle
+        run: cd apps/api && pnpm drizzle-kit generate
 
       - name: Run tests
-        run: cd apps/api pnpm test
+        run: cd apps/api ; pnpm test --reporter=verbose

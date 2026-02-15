@@ -1,215 +1,194 @@
-import { bibleChapterRepoMock } from "@/repositories/bible/chapters/bible-chapter.repository.mock";
-import { describe, it } from "node:test";
-import { strict, assert } from "poku";
+import { mockBibleDb } from "@/db/__mocks__/mock-db";
+import { BibleBook, BibleChapter, BibleVerse } from "@/repositories";
+import { createMockedBibleChapterRepository } from "@/repositories/bible/chapters/__mocks__/bible-chapter.repository.mock";
+import type { MockedBibleChapterRepository } from "@/repositories/bible/chapters/__mocks__/bible-chapter.repository.mock";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { BibleChaptersService } from "./bible-chapters.service";
 
-describe("Bible chapters services", async () => {
-  await describe("fetchChapters", async () => {
-    await it("should return chapters with correct pagination", async () => {
-      const bibleChaptersService = new BibleChaptersService(
-        bibleChapterRepoMock,
-      );
-      const bookId = "uuid1"; // Gênesis
+const mockChapters: BibleChapter[] = mockBibleDb.chapters;
+
+describe("Bible chapters service", () => {
+  let bibleChapterMockRepo: MockedBibleChapterRepository;
+  let bibleChapterService: BibleChaptersService;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    bibleChapterMockRepo = createMockedBibleChapterRepository();
+    bibleChapterService = new BibleChaptersService(bibleChapterMockRepo);
+  });
+
+  describe("fetchChapters", () => {
+    it("returns chapters with correct pagination for a given bookId", async () => {
+      const bookId = mockBibleDb.books[0].id;
+      const limit = 2;
       const page = 1;
-      const limit = 10;
+      const filteredChapters = mockChapters.filter(
+        (c: BibleChapter) => c.bookId === bookId,
+      );
 
-      const data = await bibleChaptersService.fetchChapters({
+      vi.mocked(bibleChapterMockRepo.findMany.orderBy).mockResolvedValue(
+        filteredChapters.slice(0, limit),
+      );
+      vi.mocked(bibleChapterMockRepo.count.where).mockResolvedValue([
+        { count: filteredChapters.length },
+      ]);
+
+      const data = await bibleChapterService.fetchChapters({
         bookId,
-        page: String(page),
-        limit: String(limit),
+        page: page,
+        limit: limit,
       });
 
-      // Verifica se os capítulos pertencem ao livro correto
-      data.chapters.forEach((chapter) => {
-        strict.strictEqual(
-          chapter.bookId,
-          bookId,
-          "All chapters should belong to the specified book",
-        );
-      });
-
-      // Verifica se o número de itens respeita o limite
-      assert.ok(
-        data.chapters.length <= limit,
-        "Items length respects pagination limit",
-      );
-
-      // Verifica a paginação
-      strict.strictEqual(
-        data.pagination.currentPage,
-        page,
-        "Current page should be correct",
-      );
-
-      strict.ok(
-        data.pagination.totalItems >= data.chapters.length,
-        "Total items should be greater than or equal to items returned",
-      );
-    });
-
-    await it("should handle pagination correctly with different page sizes", async () => {
-      const bibleChaptersService = new BibleChaptersService(
-        bibleChapterRepoMock,
-      );
-      const bookId = "uuid1"; // Gênesis
-      const page = 2;
-      const limit = 5;
-
-      const data = await bibleChaptersService.fetchChapters({
-        bookId,
-        page: String(page),
-        limit: String(limit),
-      });
-
-      // Verifica se o número de itens respeita o limite
-      assert.ok(
-        data.chapters.length <= limit,
-        "Items length respects pagination limit",
-      );
-
-      // Verifica se a página atual é a esperada
-      strict.strictEqual(
-        data.pagination.currentPage,
-        page,
-        "Current page should be correct",
-      );
-
-      // Verifica se a paginação está funcionando
-      strict.ok(
-        data.pagination.totalPages >= page,
-        "Should have enough pages for the requested page",
-      );
-    });
-
-    await it("should return empty array when book has no chapters", async () => {
-      const bibleChaptersService = new BibleChaptersService(
-        bibleChapterRepoMock,
-      );
-      const bookId = "non-existent-book-id";
-      const page = 1;
-      const limit = 10;
-
-      const data = await bibleChaptersService.fetchChapters({
-        bookId,
-        page: String(page),
-        limit: String(limit),
-      });
-
-      strict.strictEqual(
-        data.chapters.length,
-        0,
-        "Should return empty array when book has no chapters",
-      );
-
-      strict.strictEqual(
+      expect(
+        bibleChapterMockRepo.findMany.where,
+        "where method of findMany should be called!",
+      ).toHaveBeenCalled();
+      expect(
         data.pagination.totalItems,
-        0,
-        "Total items should be 0 when book has no chapters",
+        "Total items should be equal to filtered chapters length",
+      ).toBe(filteredChapters.length);
+      expect(
+        data.chapters.length,
+        "Chapters length should be equal to the limit",
+      ).toBe(limit);
+      expect(data.pagination.currentPage).toBe(page);
+      expect(data.pagination.itemsPerPage).toBe(limit);
+    });
+
+    it("uses default pagination when params are not provided", async () => {
+      const bookId = "4a331c13-6ebb-42a6-94b7-060c4774f9d7"; // Genesis ID
+      const defaultLimit = 10;
+      const defaultPage = 1;
+      const filteredChapters = mockChapters.filter(
+        (c: BibleChapter) => c.bookId === bookId,
       );
+
+      vi.mocked(bibleChapterMockRepo.findMany.orderBy).mockResolvedValue(
+        filteredChapters.slice(0, defaultLimit),
+      );
+      vi.mocked(bibleChapterMockRepo.count.where).mockResolvedValue([
+        { count: filteredChapters.length },
+      ]);
+
+      const data = await bibleChapterService.fetchChapters({ bookId });
+
+      expect(data.pagination.currentPage).toBe(defaultPage);
+      expect(data.pagination.itemsPerPage).toBe(defaultLimit);
+      expect(bibleChapterMockRepo.findMany.offset).toHaveBeenCalledWith(0);
+      expect(bibleChapterMockRepo.findMany.limit).toHaveBeenCalledWith(
+        defaultLimit,
+      );
+    });
+
+    it("throws invalid limit error", async () => {
+      const bookId = "4a331c13-6ebb-42a6-94b7-060c4774f9d7"; // Genesis ID
+      await expect(
+        bibleChapterService.fetchChapters({
+          bookId,
+          limit: "-1",
+        }),
+      ).rejects.toThrowError("Limit must be a number between 1 and 100!");
+
+      await expect(
+        bibleChapterService.fetchChapters({
+          bookId,
+          limit: "101",
+        }),
+      ).rejects.toThrowError("Limit must be a number between 1 and 100!");
+
+      await expect(
+        bibleChapterService.fetchChapters({
+          bookId,
+          limit: "invalid_limit",
+        }),
+      ).rejects.toThrowError("Limit must be a number between 1 and 100!");
+    });
+
+    it("throws invalid page error", async () => {
+      const bookId = "4a331c13-6ebb-42a6-94b7-060c4774f9d7"; // Genesis ID
+      await expect(
+        bibleChapterService.fetchChapters({
+          bookId,
+          page: "0",
+        }),
+      ).rejects.toThrowError("Page must be a positive number!");
+
+      await expect(
+        bibleChapterService.fetchChapters({
+          bookId,
+          page: "invalid_page",
+        }),
+      ).rejects.toThrowError("Page must be a positive number!");
     });
   });
 
-  await describe("fetchChapterById", async () => {
-    await it("should return chapter with verses when found", async () => {
-      const bibleChaptersService = new BibleChaptersService(
-        bibleChapterRepoMock,
+  describe("fetchChapterById", () => {
+    it("returns chapter when id is valid", async () => {
+      const chapterId = "chapter1";
+      const chapter = mockChapters.find(
+        (c: BibleChapter) => c.id === chapterId,
       );
-      const chapterId = "chapter-uuid1-1"; // Capítulo 1 de Gênesis
+      const expectedChapter:
+        | (BibleChapter & { verses: BibleVerse[] })
+        | undefined = chapter
+        ? {
+            ...chapter,
+            verses: mockBibleDb.verses.filter(
+              (v: BibleVerse) => v.chapterId === chapterId,
+            ),
+          }
+        : undefined;
 
-      const chapter = await bibleChaptersService.fetchChapterById({
+      bibleChapterMockRepo.__setFindWithVerses(expectedChapter);
+
+      const data = await bibleChapterService.fetchChapterById({
         chapterId,
       });
-
-      strict.ok(chapter !== null, "Chapter should be found");
-      if (chapter) {
-        strict.strictEqual(chapter.id, chapterId, "Chapter id should match");
-        strict.ok(
-          Array.isArray(chapter.verses),
-          "Chapter should have verses array",
-        );
-      }
+      expect(data).toEqual(expectedChapter);
     });
 
-    await it("should return null when chapter is not found", async () => {
-      const bibleChaptersService = new BibleChaptersService(
-        bibleChapterRepoMock,
-      );
-      const chapterId = "non-existent-chapter-id";
+    it("returns null when chapter is not found", async () => {
+      const chapterId = "non-existent-chapter";
+      bibleChapterMockRepo.__setFindWithVerses(null as unknown as undefined);
 
-      const chapter = await bibleChaptersService.fetchChapterById({
+      const data = await bibleChapterService.fetchChapterById({
         chapterId,
       });
-
-      strict.strictEqual(
-        chapter,
-        null,
-        "Chapter should be null when not found",
-      );
+      expect(data).toBeNull();
     });
   });
 
-  await describe("fetchChapterByBookAndNumber", async () => {
-    await it("should return chapter by book order and chapter number when found", async () => {
-      const bibleChaptersService = new BibleChaptersService(
-        bibleChapterRepoMock,
-      );
-      const bookOrder = 1; // Gênesis
+  describe("fetchChapterByBookAndNumber", () => {
+    it("returns chapter when book order and chapter number are valid", async () => {
+      const bookOrder = 1;
       const chapterNumber = 1;
+      // In a real scenario, this mock would return a chapter associated with the bookId derived from bookOrder.
+      // For unit testing the service, we mock the direct repository call.
+      const expectedChapter: BibleChapter = {
+        id: "5af68e97-265a-415b-baf7-7fe0b886ee8b", // Genesis Chapter 1 ID
+        bookId: "4a331c13-6ebb-42a6-94b7-060c4774f9d7", // Genesis ID
+        number: 1,
+        totalVerses: 31,
+      };
+      bibleChapterMockRepo.__setFindByBookAndNumber(expectedChapter);
 
-      const chapter = await bibleChaptersService.fetchChapterByBookAndNumber({
+      const data = await bibleChapterService.fetchChapterByBookAndNumber({
         bookOrder,
         chapterNumber,
       });
-
-      strict.ok(chapter !== null, "Chapter should be found");
-      if (chapter) {
-        strict.strictEqual(
-          chapter.number,
-          chapterNumber,
-          "Chapter number should match",
-        );
-        // Precisamos encontrar o livro correspondente para verificar o bookId
-        const book = { id: "uuid1" }; // Simulando o livro Gênesis
-        // Não podemos verificar o bookId diretamente sem acesso ao livro
-      }
+      expect(data).toEqual(expectedChapter);
     });
 
-    await it("should return null when chapter is not found by book order and number", async () => {
-      const bibleChaptersService = new BibleChaptersService(
-        bibleChapterRepoMock,
-      );
-      const bookOrder = 999; // Ordem que não existe
-      const chapterNumber = 1;
+    it("returns null when chapter is not found by book order and number", async () => {
+      const bookOrder = 999;
+      const chapterNumber = 999;
+      bibleChapterMockRepo.__setFindByBookAndNumber(null);
 
-      const chapter = await bibleChaptersService.fetchChapterByBookAndNumber({
+      const data = await bibleChapterService.fetchChapterByBookAndNumber({
         bookOrder,
         chapterNumber,
       });
-
-      strict.strictEqual(
-        chapter,
-        null,
-        "Chapter should be null when not found by book order and number",
-      );
-    });
-
-    await it("should return null when book order is invalid", async () => {
-      const bibleChaptersService = new BibleChaptersService(
-        bibleChapterRepoMock,
-      );
-      const bookOrder = 0; // Ordem inválida
-      const chapterNumber = 1;
-
-      const chapter = await bibleChaptersService.fetchChapterByBookAndNumber({
-        bookOrder,
-        chapterNumber,
-      });
-
-      strict.strictEqual(
-        chapter,
-        null,
-        "Chapter should be null when book order is invalid",
-      );
+      expect(data).toBeNull();
     });
   });
 });

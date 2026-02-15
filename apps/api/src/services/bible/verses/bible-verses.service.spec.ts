@@ -1,203 +1,175 @@
-import { bibleVerseRepoMock } from "@/repositories/bible/verses/bible-verse.repository.mock";
-import { describe, it } from "node:test";
-import { strict, assert } from "poku";
+import { mockBibleDb } from "@/db/__mocks__/mock-db";
+import { BibleVerse } from "@/repositories";
+import { createMockedBibleVerseRepository } from "@/repositories/bible/verses/__mocks__/bible-verse.repository.mock";
+import type { MockedBibleVerseRepository } from "@/repositories/bible/verses/__mocks__/bible-verse.repository.mock";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { BibleVersesService } from "./bible-verses.service";
 
-describe("Bible verses services", async () => {
-  await describe("fetchVerses", async () => {
-    await it("should return verses with correct pagination", async () => {
-      const bibleVersesService = new BibleVersesService(bibleVerseRepoMock);
-      const chapterId = "chapter-1-1"; // Exemplo de ID de capítulo
+const mockVerses = mockBibleDb.verses;
+
+describe("Bible verses service", () => {
+  let bibleVerseMockRepo: MockedBibleVerseRepository;
+  let bibleVerseService: BibleVersesService;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    bibleVerseMockRepo = createMockedBibleVerseRepository();
+    bibleVerseService = new BibleVersesService(bibleVerseMockRepo);
+  });
+
+  describe("fetchVerses", () => {
+    it("returns verses with correct pagination for a given chapterId", async () => {
+      const chapterId = "5af68e97-265a-415b-baf7-7fe0b886ee8b"; // Genesis Chapter 1 ID
+      const limit = 2;
       const page = 1;
-      const limit = 10;
+      const filteredVerses = mockVerses.filter(
+        (v: BibleVerse) => v.chapterId === chapterId,
+      );
 
-      const data = await bibleVersesService.fetchVerses({
+      vi.mocked(bibleVerseMockRepo.findMany.orderBy).mockResolvedValue(
+        filteredVerses.slice(0, limit),
+      );
+      bibleVerseMockRepo.__setCount(filteredVerses.length);
+
+      const data = await bibleVerseService.fetchVerses({
         chapterId,
-        page: String(page),
-        limit: String(limit),
+        page: page.toString(),
+        limit: limit.toString(),
       });
 
-      // Verifica se os versículos pertencem ao capítulo correto
-      if (data.verses.length > 0) {
-        data.verses.forEach((verse) => {
-          strict.strictEqual(
-            verse.chapterId,
-            chapterId,
-            "All verses should belong to the specified chapter",
-          );
-        });
-      }
-
-      // Verifica se o número de itens respeita o limite
-      assert.ok(
-        data.verses.length <= limit,
-        "Items length respects pagination limit",
-      );
-
-      // Verifica a paginação
-      strict.strictEqual(
-        data.pagination.currentPage,
-        page,
-        "Current page should be correct",
-      );
-
-      strict.ok(
-        data.pagination.totalItems >= data.verses.length,
-        "Total items should be greater than or equal to items returned",
-      );
-    });
-
-    await it("should handle pagination correctly with different page sizes", async () => {
-      const bibleVersesService = new BibleVersesService(bibleVerseRepoMock);
-      const chapterId = "chapter-1-1"; // Exemplo de ID de capítulo
-      const page = 1; // Usando página 1 para garantir que exista
-      const limit = 5;
-
-      const data = await bibleVersesService.fetchVerses({
-        chapterId,
-        page: String(page),
-        limit: String(limit),
-      });
-
-      // Verifica se o número de itens respeita o limite
-      assert.ok(
-        data.verses.length <= limit,
-        "Items length respects pagination limit",
-      );
-
-      // Verifica se a página atual é a esperada
-      strict.strictEqual(
-        data.pagination.currentPage,
-        page,
-        "Current page should be correct",
-      );
-
-      // Verifica se a paginação está funcionando corretamente
-      strict.ok(
-        data.pagination.currentPage >= 1,
-        "Current page should be at least 1",
-      );
-    });
-
-    await it("should return empty array when chapter has no verses", async () => {
-      const bibleVersesService = new BibleVersesService(bibleVerseRepoMock);
-      const chapterId = "non-existent-chapter-id";
-      const page = 1;
-      const limit = 10;
-
-      const data = await bibleVersesService.fetchVerses({
-        chapterId,
-        page: String(page),
-        limit: String(limit),
-      });
-
-      strict.strictEqual(
-        data.verses.length,
-        0,
-        "Should return empty array when chapter has no verses",
-      );
-
-      strict.strictEqual(
+      expect(
+        bibleVerseMockRepo.findMany.where,
+        "where method of findMany should be called!",
+      ).toHaveBeenCalled();
+      expect(
         data.pagination.totalItems,
-        0,
-        "Total items should be 0 when chapter has no verses",
+        "Total items should be equal to filtered verses length",
+      ).toBe(filteredVerses.length);
+      expect(
+        data.verses.length,
+        "Verses length should be equal to the limit",
+      ).toBe(limit);
+      expect(data.pagination.currentPage).toBe(page);
+      expect(data.pagination.itemsPerPage).toBe(limit);
+    });
+
+    it("uses default pagination when params are not provided", async () => {
+      const chapterId = "5af68e97-265a-415b-baf7-7fe0b886ee8b"; // Genesis Chapter 1 ID
+      const defaultLimit = 10;
+      const defaultPage = 1;
+      const filteredVerses = mockVerses.filter(
+        (v: BibleVerse) => v.chapterId === chapterId,
+      );
+
+      vi.mocked(bibleVerseMockRepo.findMany.orderBy).mockResolvedValue(
+        filteredVerses.slice(0, defaultLimit),
+      );
+      bibleVerseMockRepo.__setCount(filteredVerses.length);
+
+      const data = await bibleVerseService.fetchVerses({ chapterId });
+
+      expect(data.pagination.currentPage).toBe(defaultPage);
+      expect(data.pagination.itemsPerPage).toBe(defaultLimit);
+      expect(bibleVerseMockRepo.findMany.offset).toHaveBeenCalledWith(0);
+      expect(bibleVerseMockRepo.findMany.limit).toHaveBeenCalledWith(
+        defaultLimit,
       );
     });
-  });
 
-  await describe("fetchVerseById", async () => {
-    await it("should return verse with relations when found", async () => {
-      const bibleVersesService = new BibleVersesService(bibleVerseRepoMock);
-      const verseId = "verse-1"; // Exemplo de ID de versículo
-
-      const verse = await bibleVersesService.fetchVerseById({ verseId });
-
-      strict.ok(verse !== null, "Verse should be found");
-      if (verse) {
-        strict.strictEqual(verse.id, verseId, "Verse id should match");
-        strict.ok(
-          verse.likes !== undefined,
-          "Verse should have likes relation",
-        );
-        strict.ok(
-          verse.marks !== undefined,
-          "Verse should have marks relation",
-        );
-        strict.ok(
-          verse.readings !== undefined,
-          "Verse should have readings relation",
-        );
-      }
-    });
-
-    await it("should return null when verse is not found", async () => {
-      const bibleVersesService = new BibleVersesService(bibleVerseRepoMock);
-      const verseId = "non-existent-verse-id";
-
-      const verse = await bibleVersesService.fetchVerseById({ verseId });
-
-      strict.strictEqual(verse, null, "Verse should be null when not found");
-    });
-  });
-
-  await describe("fetchVerseByNumber", async () => {
-    await it("should return verse by chapter id and verse number when found", async () => {
-      const bibleVersesService = new BibleVersesService(bibleVerseRepoMock);
-      const chapterId = "chapter-1-1";
-      const verseNumber = 1;
-
-      const verse = await bibleVersesService.fetchVerseByNumber({
-        chapterId,
-        verseNumber,
-      });
-
-      strict.ok(verse !== null, "Verse should be found");
-      if (verse) {
-        strict.strictEqual(
-          verse.number,
-          verseNumber,
-          "Verse number should match",
-        );
-        strict.strictEqual(
-          verse.chapterId,
+    it("throws invalid limit error", async () => {
+      const chapterId = "5af68e97-265a-415b-baf7-7fe0b886ee8b"; // Genesis Chapter 1 ID
+      await expect(
+        bibleVerseService.fetchVerses({
           chapterId,
-          "Verse should belong to the correct chapter",
-        );
-      }
+          limit: "-1",
+        }),
+      ).rejects.toThrowError("Limit must be a number between 1 and 100!");
+
+      await expect(
+        bibleVerseService.fetchVerses({
+          chapterId,
+          limit: "101",
+        }),
+      ).rejects.toThrowError("Limit must be a number between 1 and 100!");
+
+      await expect(
+        bibleVerseService.fetchVerses({
+          chapterId,
+          limit: "invalid_limit",
+        }),
+      ).rejects.toThrowError("Limit must be a number between 1 and 100!");
     });
 
-    await it("should return null when verse is not found by chapter id and number", async () => {
-      const bibleVersesService = new BibleVersesService(bibleVerseRepoMock);
-      const chapterId = "non-existent-chapter-id";
-      const verseNumber = 999; // Número que não existe
+    it("throws invalid page error", async () => {
+      const chapterId = "5af68e97-265a-415b-baf7-7fe0b886ee8b"; // Genesis Chapter 1 ID
+      await expect(
+        bibleVerseService.fetchVerses({
+          chapterId,
+          page: "0",
+        }),
+      ).rejects.toThrowError("Page must be a positive number!");
 
-      const verse = await bibleVersesService.fetchVerseByNumber({
+      await expect(
+        bibleVerseService.fetchVerses({
+          chapterId,
+          page: "invalid_page",
+        }),
+      ).rejects.toThrowError("Page must be a positive number!");
+    });
+  });
+
+  describe("fetchVerseById", () => {
+    it("returns verse when id is valid", async () => {
+      const verseId = "verse1";
+      const expectedVerse: BibleVerse | undefined = mockVerses.find(
+        (v: BibleVerse) => v.id === verseId,
+      );
+      bibleVerseMockRepo.__setFindWithRelations(expectedVerse);
+
+      const data = await bibleVerseService.fetchVerseById({
+        verseId,
+      });
+      expect(data).toEqual(expectedVerse);
+    });
+
+    it("returns null when verse is not found", async () => {
+      const verseId = "non-existent-verse";
+      bibleVerseMockRepo.__setFindWithRelations(null);
+
+      const data = await bibleVerseService.fetchVerseById({
+        verseId,
+      });
+      expect(data).toBeNull();
+    });
+  });
+
+  describe("fetchVerseByNumber", () => {
+    it("returns verse when chapter id and verse number are valid", async () => {
+      const chapterId = "5af68e97-265a-415b-baf7-7fe0b886ee8b"; // Genesis Chapter 1 ID
+      const verseNumber = 1;
+      const expectedVerse: BibleVerse | undefined = mockVerses.find(
+        (v: BibleVerse) =>
+          v.chapterId === chapterId && v.number === verseNumber,
+      );
+      bibleVerseMockRepo.__setFindByChapterAndNumber(expectedVerse);
+
+      const data = await bibleVerseService.fetchVerseByNumber({
         chapterId,
         verseNumber,
       });
-
-      strict.strictEqual(
-        verse,
-        null,
-        "Verse should be null when not found by chapter id and number",
-      );
+      expect(data).toEqual(expectedVerse);
     });
 
-    await it("should return null when verse number is invalid", async () => {
-      const bibleVersesService = new BibleVersesService(bibleVerseRepoMock);
-      const chapterId = "chapter-1-1";
-      const verseNumber = 0; // Número inválido
+    it("returns null when verse is not found by chapter id and number", async () => {
+      const chapterId = "5af68e97-265a-415b-baf7-7fe0b886ee8b"; // Genesis Chapter 1 ID
+      const verseNumber = 999;
+      bibleVerseMockRepo.__setFindByChapterAndNumber(null);
 
-      const verse = await bibleVersesService.fetchVerseByNumber({
+      const data = await bibleVerseService.fetchVerseByNumber({
         chapterId,
         verseNumber,
       });
-
-      strict.strictEqual(
-        verse,
-        null,
-        "Verse should be null when verse number is invalid",
-      );
+      expect(data).toBeNull();
     });
   });
 });

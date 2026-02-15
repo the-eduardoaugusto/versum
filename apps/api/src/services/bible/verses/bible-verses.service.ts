@@ -1,7 +1,9 @@
 import { BibleVerseRepository } from "@/repositories";
-import { prisma, Prisma } from "@/libs/prisma";
+import { BadRequestError, NotFoundError } from "@/utils/error-model";
 import { Pagination, validateQueryPaginationAndParse } from "@/utils";
 import { PaginationViewModel } from "@/viewmodels";
+import { asc, eq } from "drizzle-orm";
+import { sanitizeId, sanitizePaginationParams } from "@/utils/sanitize-input";
 
 export interface FetchVersesParams {
   chapterId: string;
@@ -13,7 +15,7 @@ export class BibleVersesService {
   private verseRepository: BibleVerseRepository;
 
   constructor(repository?: BibleVerseRepository) {
-    this.verseRepository = repository ?? new BibleVerseRepository(prisma);
+    this.verseRepository = repository ?? new BibleVerseRepository();
   }
 
   async fetchVerses({
@@ -21,27 +23,31 @@ export class BibleVersesService {
     page = "1",
     limit = "10",
   }: Partial<Pagination> & { chapterId: string }) {
+    const sanitizedChapterId = sanitizeId(chapterId);
+    const sanitizedParams = sanitizePaginationParams({ page, limit });
     const { limit: parsedLimit, page: parsedPage } =
       validateQueryPaginationAndParse({
-        page,
-        limit,
+        page: sanitizedParams.page,
+        limit: sanitizedParams.limit,
       });
 
-    const skip = (parsedPage - 1) * parsedLimit;
+    const offset = (parsedPage - 1) * parsedLimit;
+    const where = eq(
+      (this.verseRepository as any).table.chapterId,
+      sanitizedChapterId,
+    );
 
-    const args: Prisma.BibleVerseFindManyArgs = {
-      where: { chapterId },
-      skip,
-      take: parsedLimit,
-      orderBy: { number: "asc" },
-    };
+    const [verses, totalVersesQuery] = await Promise.all([
+      this.verseRepository.findMany
+        .where(where)
+        .limit(parsedLimit)
+        .offset(offset)
+        .orderBy(asc((this.verseRepository as any).table.number)),
 
-    const countArgs: Prisma.BibleVerseCountArgs = { where: { chapterId } };
-
-    const [verses, totalVerses] = await Promise.all([
-      this.verseRepository.findMany(args),
-      this.verseRepository.count(countArgs),
+      this.verseRepository.count.where(where),
     ]);
+
+    const totalVerses = totalVersesQuery[0]?.count || 0;
 
     const totalPages = Math.ceil(totalVerses / parsedLimit);
 
@@ -59,7 +65,10 @@ export class BibleVersesService {
   }
 
   async fetchVerseById({ verseId }: { verseId: string }) {
-    return this.verseRepository.findWithRelations({ verseId });
+    const sanitizedVerseId = sanitizeId(verseId);
+    return this.verseRepository.findWithRelations({
+      verseId: sanitizedVerseId,
+    });
   }
 
   async fetchVerseByNumber({
@@ -69,8 +78,9 @@ export class BibleVersesService {
     chapterId: string;
     verseNumber: number;
   }) {
+    const sanitizedChapterId = sanitizeId(chapterId);
     return this.verseRepository.findByChapterAndNumber({
-      chapterId,
+      chapterId: sanitizedChapterId,
       verseNumber,
     });
   }

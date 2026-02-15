@@ -1,4 +1,5 @@
-import { BibleBook, Testament } from "@/libs/prisma/index";
+import { BibleBook } from "@/repositories";
+import { Testament } from "@/services/bible/books/bible-books.service";
 import { BaseViewModel } from "../../api-response.viewmodel";
 
 export class BibleBookViewModel extends BaseViewModel<Omit<BibleBook, never>> {

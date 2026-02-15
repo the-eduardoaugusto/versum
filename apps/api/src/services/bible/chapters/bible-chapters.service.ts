@@ -1,7 +1,9 @@
 import { BibleChapterRepository } from "@/repositories";
-import { prisma, Prisma } from "@/libs/prisma";
+import { BadRequestError, NotFoundError } from "@/utils/error-model";
 import { Pagination, validateQueryPaginationAndParse } from "@/utils";
 import { PaginationViewModel } from "@/viewmodels";
+import { asc, eq } from "drizzle-orm";
+import { sanitizeId, sanitizePaginationParams } from "@/utils/sanitize-input";
 
 export interface FetchChaptersParams {
   bookId: string;
@@ -13,7 +15,7 @@ export class BibleChaptersService {
   private chapterRepository: BibleChapterRepository;
 
   constructor(repository?: BibleChapterRepository) {
-    this.chapterRepository = repository ?? new BibleChapterRepository(prisma);
+    this.chapterRepository = repository ?? new BibleChapterRepository();
   }
 
   async fetchChapters({
@@ -21,27 +23,27 @@ export class BibleChaptersService {
     page = "1",
     limit = "10",
   }: Partial<Pagination> & { bookId: string }) {
+    const sanitizedBookId = sanitizeId(bookId);
+    const sanitizedParams = sanitizePaginationParams({ page, limit });
     const { limit: parsedLimit, page: parsedPage } =
       validateQueryPaginationAndParse({
-        page,
-        limit,
+        page: sanitizedParams.page,
+        limit: sanitizedParams.limit,
       });
 
-    const skip = (parsedPage - 1) * parsedLimit;
+    const offset = (parsedPage - 1) * parsedLimit;
+    const where = eq(this.chapterRepository.table.bookId, sanitizedBookId);
 
-    const args: Prisma.BibleChapterFindManyArgs = {
-      where: { bookId },
-      skip,
-      take: parsedLimit,
-      orderBy: { number: "asc" },
-    };
-
-    const countArgs: Prisma.BibleChapterCountArgs = { where: { bookId } };
-
-    const [chapters, totalChapters] = await Promise.all([
-      this.chapterRepository.findMany(args),
-      this.chapterRepository.count(countArgs),
+    const [chapters, totalChaptersQuery] = await Promise.all([
+      this.chapterRepository.findMany
+        .where(where)
+        .limit(parsedLimit)
+        .offset(offset)
+        .orderBy(asc(this.chapterRepository.table.number)),
+      this.chapterRepository.count.where(where),
     ]);
+
+    const totalChapters = Number(totalChaptersQuery[0]?.count || 0);
 
     const totalPages = Math.ceil(totalChapters / parsedLimit);
 
@@ -59,8 +61,9 @@ export class BibleChaptersService {
   }
 
   async fetchChapterById({ chapterId }: { chapterId: string }) {
+    const sanitizedChapterId = sanitizeId(chapterId);
     return this.chapterRepository.findWithVerses({
-      chapterId,
+      chapterId: sanitizedChapterId,
     });
   }
 
