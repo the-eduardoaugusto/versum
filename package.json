@@ -6,5 +6,20 @@
   "keywords": [],
   "author": "d3veduardo",
   "license": "ISC",
-  "packageManager": "pnpm@10.28.1"
+  "packageManager": "bun@1.3.10",
+  "private": true,
+  "scripts": {
+    "install-deps": "bun install --frozen-lockfile",
+    "i-deps": "bun install --frozen-lockfile"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
 }
