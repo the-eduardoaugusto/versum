@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, or, sql, count } from "drizzle-orm";
 import {
   bibleBooks as books,
   bibleChapters as chapters,
@@ -6,8 +6,14 @@ import {
 } from "../../../infrastructure/db/schema.ts";
 import type {
   iBibleRepository,
+  PaginationParams,
+  PaginatedResult,
+  BookDynamicIdParams,
   ChapterParams,
   VerseParams,
+  Book,
+  Chapter,
+  Verse,
 } from "./bible.types.repository.ts";
 import { db as drizzle } from "../../../infrastructure/db/index.ts";
 
@@ -18,77 +24,171 @@ export class BibleRepository implements iBibleRepository {
     this.db = db ?? drizzle;
   }
 
-  async findAllBooks() {
-    return await this.db.select().from(books);
+  async findBooksPaginated({
+    page,
+    limit,
+  }: PaginationParams): Promise<PaginatedResult<Book>> {
+    const offset = (page - 1) * limit;
+
+    const [data, countResult] = await Promise.all([
+      this.db
+        .select()
+        .from(books)
+        .orderBy(books.name)
+        .limit(limit)
+        .offset(offset),
+      this.db.select({ total: count() }).from(books),
+    ]);
+
+    const total = countResult[0]?.total ?? 0;
+
+    return { data, total: Number(total) };
   }
 
-  async findBookByOrder({ order }: { order: number }) {
+  async findBookByDynamicId({
+    dynamicId,
+  }: BookDynamicIdParams): Promise<Book | null> {
     const [book] = await this.db
       .select()
       .from(books)
-      .where(eq(books.order, order));
+      .where(or(eq(books.slug, dynamicId), eq(books.name, dynamicId)));
 
     return book ?? null;
   }
 
-  async findChaptersByBookOrder({
-    bookOrder,
-  }: Omit<ChapterParams, "chapterNumber">) {
-    return await this.db
-      .select({
-        chapter: chapters,
-      })
-      .from(chapters)
-      .innerJoin(books, eq(chapters.book_id, books.id))
-      .where(eq(books.order, bookOrder))
-      .then((r) => r.map((row) => row.chapter));
+  async findChaptersPaginated({
+    dynamicId,
+    page,
+    limit,
+  }: PaginationParams & Omit<ChapterParams, "chapterNumber">): Promise<PaginatedResult<Chapter>> {
+    const offset = (page - 1) * limit;
+
+    const bookResult = await this.db
+      .select({ id: books.id })
+      .from(books)
+      .where(or(eq(books.slug, dynamicId), eq(books.name, dynamicId)));
+
+    if (!bookResult.length) {
+      return { data: [], total: 0 };
+    }
+
+    const book = bookResult[0];
+    if (!book) {
+      return { data: [], total: 0 };
+    }
+    const bookId = book.id;
+
+    const [data, countResult] = await Promise.all([
+      this.db
+        .select()
+        .from(chapters)
+        .where(eq(chapters.bookId, bookId))
+        .orderBy(chapters.number)
+        .limit(limit)
+        .offset(offset),
+      this.db
+        .select({ total: count() })
+        .from(chapters)
+        .where(eq(chapters.bookId, bookId)),
+    ]);
+
+    const total = countResult[0]?.total ?? 0;
+
+    return { data, total: Number(total) };
   }
 
-  async findChapterByNumberAndBookOrder({
-    bookOrder,
+  async findChapterByNumberAndDynamicId({
+    dynamicId,
     chapterNumber,
-  }: ChapterParams) {
-    const [result] = await this.db
-      .select({
-        chapter: chapters,
-      })
+  }: ChapterParams): Promise<Chapter | null> {
+    const bookResult = await this.db
+      .select({ id: books.id })
+      .from(books)
+      .where(or(eq(books.slug, dynamicId), eq(books.name, dynamicId)));
+
+    if (!bookResult.length) {
+      return null;
+    }
+
+    const book = bookResult[0];
+    if (!book) {
+      return null;
+    }
+    const bookId = book.id;
+
+    const [chapter] = await this.db
+      .select()
       .from(chapters)
-      .innerJoin(books, eq(chapters.book_id, books.id))
       .where(
-        and(eq(books.order, bookOrder), eq(chapters.number, chapterNumber)),
+        and(eq(chapters.bookId, bookId), eq(chapters.number, chapterNumber)),
       );
 
-    return result?.chapter ?? null;
+    return chapter ?? null;
   }
 
-  async findVerses({
-    bookOrder,
+  async findVersesPaginated({
+    dynamicId,
     chapterNumber,
-  }: Omit<VerseParams, "verseNumber">) {
-    return await this.db
-      .select({
-        verse: verses,
-      })
-      .from(verses)
-      .innerJoin(chapters, eq(verses.chapter_id, chapters.id))
-      .innerJoin(books, eq(chapters.book_id, books.id))
+    page,
+    limit,
+  }: PaginationParams & Omit<VerseParams, "verseNumber">): Promise<PaginatedResult<Verse>> {
+    const offset = (page - 1) * limit;
+
+    const chapterResult = await this.db
+      .select({ id: chapters.id })
+      .from(chapters)
+      .innerJoin(books, eq(chapters.bookId, books.id))
       .where(
-        and(eq(books.order, bookOrder), eq(chapters.number, chapterNumber)),
-      )
-      .then((r) => r.map((row) => row.verse));
+        and(
+          or(eq(books.slug, dynamicId), eq(books.name, dynamicId)),
+          eq(chapters.number, chapterNumber),
+        ),
+      );
+
+    if (!chapterResult.length) {
+      return { data: [], total: 0 };
+    }
+
+    const chapterResultItem = chapterResult[0];
+    if (!chapterResultItem) {
+      return { data: [], total: 0 };
+    }
+    const chapterId = chapterResultItem.id;
+
+    const [data, countResult] = await Promise.all([
+      this.db
+        .select()
+        .from(verses)
+        .where(eq(verses.chapterId, chapterId))
+        .orderBy(verses.number)
+        .limit(limit)
+        .offset(offset),
+      this.db
+        .select({ total: count() })
+        .from(verses)
+        .where(eq(verses.chapterId, chapterId)),
+    ]);
+
+    const total = countResult[0]?.total ?? 0;
+
+    return { data, total: Number(total) };
   }
 
-  async findVerse({ bookOrder, chapterNumber, verseNumber }: VerseParams) {
+  async findVerse({
+    dynamicId,
+    chapterNumber,
+    verseNumber,
+  }: VerseParams): Promise<Verse | null> {
     const [result] = await this.db
       .select({
         verse: verses,
       })
       .from(verses)
-      .innerJoin(chapters, eq(verses.chapter_id, chapters.id))
-      .innerJoin(books, eq(chapters.book_id, books.id))
+      .innerJoin(chapters, eq(verses.chapterId, chapters.id))
+      .innerJoin(books, eq(chapters.bookId, books.id))
       .where(
         and(
-          eq(books.order, bookOrder),
+          or(eq(books.slug, dynamicId), eq(books.name, dynamicId)),
           eq(chapters.number, chapterNumber),
           eq(verses.number, verseNumber),
         ),
