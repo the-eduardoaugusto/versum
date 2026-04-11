@@ -8,17 +8,18 @@ export class BibleCommonSchemasV1 {
   static readonly bookSchema = z
     .object({
       id: z.uuid().describe("ID único do livro"),
-      name: z.string().max(100).describe("Nome do livro"),
       order: z
         .number()
         .int()
-        .min(1)
-        .max(150)
-        .describe("Ordem do livro na Bíblia"),
+        .positive()
+        .describe("Ordem canônica do livro (1-73)"),
+      name: z.string().max(100).describe("Nome do livro"),
+      slug: z.string().max(10).describe("Slug do livro"),
+      niceName: z.string().max(100).describe("Nome amigável do livro"),
       testament: BibleCommonSchemasV1.testamentEnum.describe(
         "Testamento ao qual o livro pertence",
       ),
-      total_chapters: z
+      totalChapters: z
         .number()
         .int()
         .positive()
@@ -31,9 +32,9 @@ export class BibleCommonSchemasV1 {
   static readonly chapterSchema = z
     .object({
       id: z.uuid().describe("ID único do capítulo"),
-      book_id: z.uuid().describe("ID do livro ao qual o capítulo pertence"),
+      bookId: z.uuid().describe("ID do livro ao qual o capítulo pertence"),
       number: z.number().int().positive().describe("Número do capítulo"),
-      total_verses: z
+      totalVerses: z
         .number()
         .int()
         .positive()
@@ -46,7 +47,7 @@ export class BibleCommonSchemasV1 {
   static readonly verseSchema = z
     .object({
       id: z.uuid().describe("ID único do versículo"),
-      chapter_id: z
+      chapterId: z
         .uuid()
         .describe("ID do capítulo ao qual o versículo pertence"),
       number: z.number().int().positive().describe("Número do versículo"),
@@ -58,24 +59,24 @@ export class BibleCommonSchemasV1 {
 
   static readonly paginationViewModelSchema = z
     .object({
-      current_page: z.number().int().positive().describe("Página atual"),
-      total_pages: z
+      currentPage: z.number().int().positive().describe("Página atual"),
+      totalPages: z
         .number()
         .int()
         .positive()
         .describe("Número total de páginas"),
-      total_items: z
+      totalItems: z
         .number()
         .int()
         .nonnegative()
         .describe("Número total de itens"),
-      items_per_page: z
+      itemsPerPage: z
         .number()
         .int()
         .positive()
         .describe("Número de itens por página"),
-      has_next_page: z.boolean().describe("Indica se existe próxima página"),
-      has_prev_page: z.boolean().describe("Indica se existe página anterior"),
+      hasNextPage: z.boolean().describe("Indica se existe próxima página"),
+      hasPrevPage: z.boolean().describe("Indica se existe página anterior"),
     })
     .openapi("PaginationViewModel", {
       description: "Informações de paginação",
@@ -107,18 +108,18 @@ export class BibleCommonSchemasV1 {
     });
   }
 
-  static readonly bookOrderParamSchema = z.object({
-    order: z
+  static readonly dynamicIdParamSchema = z.object({
+    dynamicId: z
       .string()
-      .regex(/^\d+$/, "Ordem do livro deve ser um inteiro positivo válido")
+      .min(1)
       .openapi({
         param: {
-          name: "order",
+          name: "dynamicId",
           in: "path",
           required: true,
         },
-        example: "1",
-        description: "Ordem do livro na Bíblia (1-150)",
+        example: "genesis",
+        description: "Slug ou nome do livro (ex: 'genesis' ou 'Gênesis')",
       }),
   });
 
@@ -190,7 +191,7 @@ export const paginationViewModelSchema =
   BibleCommonSchemasV1.paginationViewModelSchema;
 export const createSuccessResponseSchema =
   BibleCommonSchemasV1.createSuccessResponseSchema;
-export const bookOrderParamSchema = BibleCommonSchemasV1.bookOrderParamSchema;
+export const dynamicIdParamSchema = BibleCommonSchemasV1.dynamicIdParamSchema;
 export const chapterNumberParamSchema =
   BibleCommonSchemasV1.chapterNumberParamSchema;
 export const verseNumberParamSchema =

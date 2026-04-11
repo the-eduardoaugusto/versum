@@ -1,6 +1,6 @@
 import { z } from "@hono/zod-openapi";
-import { BibleCommonSchemasV1 } from "./bible.v1.common.schema.ts";
 import { createErrorResponses } from "../../../utils/app/errors/openapi.ts";
+import { BibleCommonSchemasV1 } from "./bible.v1.common.schema.ts";
 
 export class BooksSchemasV1 {
   static readonly getBooksResponseSchema =
@@ -19,31 +19,32 @@ export class BooksSchemasV1 {
       },
       description: "Lista de livros da Bíblia retornada com sucesso",
     },
-    ...createErrorResponses([400, 500]),
+    ...createErrorResponses([400, 429, 500]),
   };
 
-  static readonly getBookByOrderResponseSchema =
+  static readonly getBookByDynamicIdResponseSchema =
     BibleCommonSchemasV1.createSuccessResponseSchema(
-      "GetBookByOrderResponse",
+      "GetBookByDynamicIdResponse",
       BibleCommonSchemasV1.bookSchema,
       true,
     );
 
-  static readonly getBookByOrderResponses = {
+  static readonly getBookByDynamicIdResponses = {
     200: {
       content: {
         "application/json": {
-          schema: BooksSchemasV1.getBookByOrderResponseSchema,
+          schema: BooksSchemasV1.getBookByDynamicIdResponseSchema,
         },
       },
       description: "Livro encontrado e retornado com sucesso",
     },
-    ...createErrorResponses([400, 404, 500]),
+    ...createErrorResponses([400, 404, 429, 500]),
   };
 }
 
 export const getBooksResponseSchema = BooksSchemasV1.getBooksResponseSchema;
 export const getBooksResponses = BooksSchemasV1.getBooksResponses;
-export const getBookByOrderResponseSchema =
-  BooksSchemasV1.getBookByOrderResponseSchema;
-export const getBookByOrderResponses = BooksSchemasV1.getBookByOrderResponses;
+export const getBookByDynamicIdResponseSchema =
+  BooksSchemasV1.getBookByDynamicIdResponseSchema;
+export const getBookByDynamicIdResponses =
+  BooksSchemasV1.getBookByDynamicIdResponses;
