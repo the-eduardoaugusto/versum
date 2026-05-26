@@ -165,3 +165,6 @@ export type UpdateAuthenticatedUserBody = z.infer<
 export type ExportUserDataResponse = z.infer<
   typeof UsersCommonSchemasV1.exportUserDataResponseSchema
 >;
+export type ExportUserData = z.infer<
+  typeof UsersCommonSchemasV1.exportDataObjectSchema
+>;

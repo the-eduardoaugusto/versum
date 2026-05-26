@@ -1,5 +1,6 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { AuthMiddleware } from "@/middlewares/auth.middleware.ts";
+import { requireConsent } from "@/middlewares/consent.middleware.ts";
 import { createErrorResponses } from "../../../utils/app/errors/openapi.ts";
 import { validationErrorHook } from "../../../utils/app/errors/validation.hook.ts";
 import type { ProfileControllerV1 } from "../controllers/profile.v1.controller.ts";

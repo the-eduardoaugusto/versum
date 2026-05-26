@@ -1,5 +1,5 @@
 import { boolean, index, pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
-import { users } from "@/infrastructure/db/schema";
+import { users } from "../../users/db/users.table";
 
 export const consentLogs = pgTable("consent_logs", {
   id: uuid("id").primaryKey().defaultRandom(),
