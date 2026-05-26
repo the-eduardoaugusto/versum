@@ -17,6 +17,7 @@
     "@biomejs/biome": "^2.4.9",
     "@types/bun": "latest",
     "@types/pg": "^8.20.0",
+    "@types/prompts": "^2.4.9",
     "biome": "^0.3.3",
     "drizzle-kit": "^0.31.10",
     "vitest": "^4.1.0"

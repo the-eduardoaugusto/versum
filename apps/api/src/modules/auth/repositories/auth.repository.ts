@@ -41,7 +41,7 @@ export class AuthRepository implements iAuthRepository {
     const [session] = await this.db
       .insert(sessions)
       .values({
-        userId: userId,
+        userId,
         ip,
         userAgent,
         tokenHash,

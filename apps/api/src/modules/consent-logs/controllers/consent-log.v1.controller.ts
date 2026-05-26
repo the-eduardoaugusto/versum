@@ -24,13 +24,11 @@ export class ConsentLogControllerV1 {
     const ip = c.req.header("x-forwarded-for")?.split(",")[0]?.trim()
       ?? (c.req.raw as { remoteAddress?: string }).remoteAddress
       ?? "unknown";
-    const userAgent = c.req.header("user-agent") ?? "unknown";
 
     const logs = await this.service.recordConsents({
       userId: session.userId,
       consents: body.consents,
       ip,
-      userAgent,
     });
 
     return c.json(SuccessViewModel.create({ consents: logs }), 201);

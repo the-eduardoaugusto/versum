@@ -49,8 +49,6 @@ export class ConsentLogCommonSchemasV1 {
       userId: z.string().uuid(),
       purpose: z.string(),
       granted: z.boolean(),
-      ip: z.string(),
-      userAgent: z.string(),
       createdAt: z.date(),
     })
     .openapi("ConsentLog", {

@@ -69,8 +69,6 @@ export class UsersCommonSchemasV1 {
       userId: z.string().openapi({ description: "ID do usuário" }),
       purpose: z.string().openapi({ description: "Finalidade do consentimento" }),
       granted: z.boolean().openapi({ description: "Se o consentimento foi concedido" }),
-      ip: z.string().openapi({ description: "Endereço IP" }),
-      userAgent: z.string().openapi({ description: "User-Agent" }),
       createdAt: z.string().datetime().openapi({ description: "Data do registro" }),
     })
     .openapi("ExportConsentLog", {
@@ -98,8 +96,6 @@ export class UsersCommonSchemasV1 {
       }),
       sessions: z.array(z.object({
         createdAt: z.string().datetime(),
-        ip: z.string(),
-        userAgent: z.string(),
         expiresAt: z.string().datetime(),
       })).openapi({
         description: "Sessões do usuário",

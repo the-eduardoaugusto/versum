@@ -69,8 +69,6 @@ describe("UserServiceV1", () => {
         id: "session-1",
         publicId: "pub-session-1",
         userId: mockUser.id,
-        ip: "127.0.0.1",
-        userAgent: "Mozilla/5.0",
         tokenHash: "hash123",
         createdAt: new Date("2024-01-01T00:00:00Z"),
         updatedAt: new Date("2024-01-01T00:00:00Z"),
@@ -84,8 +82,6 @@ describe("UserServiceV1", () => {
         userId: mockUser.id,
         purpose: "profile_content",
         granted: true,
-        ip: "127.0.0.1",
-        userAgent: "Mozilla/5.0",
         createdAt: new Date("2024-01-01T00:00:00Z"),
       },
     ],
@@ -325,7 +321,6 @@ describe("UserServiceV1", () => {
       expect(result.profile!.username).toBe("john");
       expect(result.profile!.name).toBe("John Doe");
       expect(result.sessions).toHaveLength(1);
-      expect(result.sessions[0]!.ip).toBe("127.0.0.1");
       expect(result.sessions[0]!).not.toHaveProperty("tokenHash");
       expect(result.readingHistory.journey).toHaveLength(1);
       expect(result.readingHistory.discovery).toHaveLength(1);

@@ -44,9 +44,15 @@ export class AuthMiddleware {
     });
     logger("debug", "[Auth] session from publicId:", session?.id);
 
+    const requestIp = ctx.req.header("x-forwarded-for")?.split(",")[0]?.trim()
+      ?? (ctx.req.raw as { remoteAddress?: string }).remoteAddress
+      ?? "unknown";
+    const requestUA = ctx.req.header("user-agent") ?? "unknown";
+
     const validatedSession = new ValidateSession({
       session,
-      forwardedFor: ctx.req.header("x-forwarded-for") ?? "unknown",
+      requestIp,
+      requestUA,
     });
     logger("debug", "[Auth] session validated, calling refreshSession");
 

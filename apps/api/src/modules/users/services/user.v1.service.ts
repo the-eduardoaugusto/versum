@@ -133,11 +133,9 @@ export class UserServiceV1 {
     }
 
     const mapSessions = (s: unknown) => {
-      const session = s as { createdAt: Date; ip: string; userAgent: string; expiresAt: Date };
+      const session = s as { createdAt: Date; expiresAt: Date };
       return {
         createdAt: session.createdAt.toISOString(),
-        ip: session.ip,
-        userAgent: session.userAgent,
         expiresAt: session.expiresAt.toISOString(),
       };
     };
@@ -169,14 +167,12 @@ export class UserServiceV1 {
     };
 
     const mapConsentLogs = (c: unknown) => {
-      const log = c as { id: string; userId: string; purpose: string; granted: boolean; ip: string; userAgent: string; createdAt: Date };
+      const log = c as { id: string; userId: string; purpose: string; granted: boolean; createdAt: Date };
       return {
         id: log.id,
         userId: log.userId,
         purpose: log.purpose,
         granted: log.granted,
-        ip: log.ip,
-        userAgent: log.userAgent,
         createdAt: log.createdAt.toISOString(),
       };
     };

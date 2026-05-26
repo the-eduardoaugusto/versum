@@ -10,6 +10,7 @@ export interface VerseWithContext {
   };
   book: {
     id: string;
+    order: number;
     name: string;
     slug: string;
   };
@@ -44,6 +45,7 @@ export class DiscoveryServiceV1 {
       },
       book: {
         id: chapter.book.id,
+        order: chapter.book.order,
         name: chapter.book.name,
         slug: chapter.book.slug,
       },

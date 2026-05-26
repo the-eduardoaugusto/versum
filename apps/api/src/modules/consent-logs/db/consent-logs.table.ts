@@ -6,8 +6,7 @@ export const consentLogs = pgTable("consent_logs", {
   userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   purpose: varchar("purpose", { length: 100 }).notNull(),
   granted: boolean("granted").notNull(),
-  ip: text("ip").notNull(),
-  userAgent: text("user_agent").notNull(),
+  ip: text("ip"),
   createdAt: timestamp("created_at", {
     precision: 3,
     withTimezone: true,
