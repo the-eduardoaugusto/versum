@@ -1,6 +1,4 @@
-export type RouteMatch =
-  | { path: string }
-  | { startWith: string };
+export type RouteMatch = { path: string } | { startWith: string };
 
 export type GuardRoute = RouteMatch & {
   kind: "guest" | "auth" | "onboarding" | "onboarding-complete";

@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans, IBM_Plex_Serif, Instrument_Sans, Instrument_Serif } from "next/font/google";
+import {
+  IBM_Plex_Mono,
+  IBM_Plex_Sans,
+  IBM_Plex_Serif,
+  Instrument_Sans,
+  Instrument_Serif,
+} from "next/font/google";
 import { ReactQueryProvider } from "@/components/provider/react-query-provider";
 import { ThemeProvider } from "@/components/provider/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -22,7 +28,6 @@ const fontMono = IBM_Plex_Mono({
   variable: "--font-mono",
   weight: ["100", "200", "300", "400", "500", "600", "700"],
 });
-
 
 const instrumentSans = Instrument_Sans({
   subsets: ["latin"],
@@ -67,9 +72,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <ReactQueryProvider>
-            {children}
-          </ReactQueryProvider>
+          <ReactQueryProvider>{children}</ReactQueryProvider>
           <Toaster />
         </ThemeProvider>
       </body>

@@ -4,7 +4,6 @@ import { createErrorResponses } from "../../../utils/app/errors/openapi.ts";
 import { validationErrorHook } from "../../../utils/app/errors/validation.hook.ts";
 import type { UsersControllerV1 } from "../controllers/users.v1.controller.ts";
 import {
-  deleteAuthenticatedUserResponseSchema,
   exportUserDataResponseSchema,
   getAuthenticatedUserResponseSchema,
   updateAuthenticatedUserBodySchema,

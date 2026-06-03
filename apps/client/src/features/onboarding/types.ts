@@ -11,10 +11,7 @@ export const onboardingFormSchema = z.object({
     .string()
     .min(3, "Username deve ter pelo menos 3 caracteres")
     .max(30, "Username muito longo")
-    .regex(
-      /^[a-z0-9_]+$/,
-      "Apenas letras minúsculas, números e underscores"
-    ),
+    .regex(/^[a-z0-9_]+$/, "Apenas letras minúsculas, números e underscores"),
   bio: z.string().min(1, { message: "A bio é obrigatória" }),
 });
 
@@ -74,7 +71,12 @@ export interface ErrorStep extends BaseStep {
   title: string;
 }
 
-export type OnboardingStep = InStep | ConsentStep | FormStep | OutStep | ErrorStep;
+export type OnboardingStep =
+  | InStep
+  | ConsentStep
+  | FormStep
+  | OutStep
+  | ErrorStep;
 
 /** Direção da transição entre steps: 1 = avançar, -1 = voltar */
 export type StepDirection = 1 | -1;

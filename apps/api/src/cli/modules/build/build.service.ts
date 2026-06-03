@@ -1,4 +1,4 @@
-import { readFileSync, existsSync, cpSync } from "node:fs";
+import { readFileSync, existsSync, } from "node:fs";
 import { readdir, mkdir, rm, writeFile, stat, cp } from "node:fs/promises";
 import { resolve, relative } from "node:path";
 import JSZip from "jszip";

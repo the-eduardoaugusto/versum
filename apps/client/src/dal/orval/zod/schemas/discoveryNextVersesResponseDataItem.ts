@@ -4,16 +4,16 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import type { DiscoveryNextVersesResponseDataItemBook } from './discoveryNextVersesResponseDataItemBook';
-import type { DiscoveryNextVersesResponseDataItemChapter } from './discoveryNextVersesResponseDataItemChapter';
+import type { DiscoveryNextVersesResponseDataItemBook } from "./discoveryNextVersesResponseDataItemBook";
+import type { DiscoveryNextVersesResponseDataItemChapter } from "./discoveryNextVersesResponseDataItemChapter";
 
 export type DiscoveryNextVersesResponseDataItem = {
   /** ID do versículo */
   id: string;
   /**
-     * Número do versículo
-     * @exclusiveMinimum 0
-     */
+   * Número do versículo
+   * @exclusiveMinimum 0
+   */
   number: number;
   /** Texto do versículo */
   text: string;

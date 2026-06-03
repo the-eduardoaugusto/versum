@@ -283,9 +283,9 @@ describe("UserServiceV1", () => {
       const magicLinksOrder = mockAuthRepository.deleteMagicLinksByEmail.mock.invocationCallOrder[0];
       const userOrder = mockRepository.deleteUser.mock.invocationCallOrder[0];
 
-      expect(sessionOrder).toBeLessThan(profileOrder!);
-      expect(profileOrder!).toBeLessThan(magicLinksOrder!);
-      expect(magicLinksOrder!).toBeLessThan(userOrder!);
+      expect(sessionOrder).toBeLessThan(profileOrder as number);
+      expect(profileOrder as number).toBeLessThan(magicLinksOrder as number);
+      expect(magicLinksOrder as number).toBeLessThan(userOrder as number);
     });
 
     it("should throw error when user not found", async () => {
@@ -318,14 +318,14 @@ describe("UserServiceV1", () => {
 
       expect(result.user.email).toBe("john@example.com");
       expect(result.profile).not.toBeNull();
-      expect(result.profile!.username).toBe("john");
-      expect(result.profile!.name).toBe("John Doe");
+      expect(result.profile?.username).toBe("john");
+      expect(result.profile?.name).toBe("John Doe");
       expect(result.sessions).toHaveLength(1);
-      expect(result.sessions[0]!).not.toHaveProperty("tokenHash");
+      expect(result.sessions[0] as object).not.toHaveProperty("tokenHash");
       expect(result.readingHistory.journey).toHaveLength(1);
       expect(result.readingHistory.discovery).toHaveLength(1);
       expect(result.annotations).toHaveLength(1);
-      expect(result.annotations[0]!.annotation).toBe("Great verse");
+      expect(result.annotations[0]?.annotation).toBe("Great verse");
       expect(result.likes).toHaveLength(1);
       expect(result.consentLogs).toHaveLength(1);
       expect(result.exportedAt).toBeDefined();

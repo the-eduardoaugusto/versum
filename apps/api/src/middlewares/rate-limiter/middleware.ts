@@ -1,4 +1,4 @@
-import { logger, sensitive } from "@versum/logger";
+
 import type { Context, Next } from "hono";
 import { redis } from "../../infrastructure/redis";
 

@@ -4,7 +4,7 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import type { ExportUserData } from './exportUserData';
+import type { ExportUserData } from "./exportUserData";
 
 /**
  * Resposta de sucesso para ExportUserDataResponse

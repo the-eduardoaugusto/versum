@@ -1,4 +1,4 @@
-import type { ConsentOption, ConsentStep, FormStep, OnboardingStep } from "./types";
+import type { ConsentOption, FormStep, OnboardingStep } from "./types";
 
 export const CONSENT_OPTIONS: ConsentOption[] = [
   {
@@ -10,7 +10,8 @@ export const CONSENT_OPTIONS: ConsentOption[] = [
   {
     purpose: "annotations",
     label: "Anotações",
-    description: "Permitir salvar minhas anotações e marcadores nos versículos.",
+    description:
+      "Permitir salvar minhas anotações e marcadores nos versículos.",
     required: false,
   },
   {

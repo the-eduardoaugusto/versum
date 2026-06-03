@@ -1,7 +1,7 @@
 "use client";
 
-import { LoginForm } from "./login-form";
 import { Toaster } from "@/components/ui/sonner";
+import { LoginForm } from "./login-form";
 
 export function LoginScreen() {
   return (

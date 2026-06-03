@@ -6,8 +6,8 @@
  */
 
 export type GetApiV1ReadingsDiscoveryNextParams = {
-/**
- * ID do capítulo (opcional)
- */
-chapterId?: string;
+  /**
+   * ID do capítulo (opcional)
+   */
+  chapterId?: string;
 };

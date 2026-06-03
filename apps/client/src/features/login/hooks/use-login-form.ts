@@ -1,7 +1,7 @@
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
-import { loginFormSchema } from "../types";
 import { usePostApiV1AuthMagicLink } from "@/dal/orval/tanstackQuery/auth/auth";
+import { loginFormSchema } from "../types";
 
 interface UseLoginFormOptions {
   onSuccess?: () => void;

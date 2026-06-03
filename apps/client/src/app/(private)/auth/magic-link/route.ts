@@ -26,7 +26,10 @@ export async function GET(req: NextRequest) {
     const clientIp = getClientIp(req);
     const userAgent = req.headers.get("user-agent") ?? "unknown";
 
-    const apiUrl = new URL("/api/v1/auth/magic-link", process.env.NEXT_PUBLIC_API_URL);
+    const apiUrl = new URL(
+      "/api/v1/auth/magic-link",
+      process.env.NEXT_PUBLIC_API_URL,
+    );
     apiUrl.searchParams.set("token", token);
 
     const res = await fetch(apiUrl.toString(), {

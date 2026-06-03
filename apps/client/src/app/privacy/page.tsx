@@ -2,17 +2,24 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Política de Privacidade — Versum",
-  description: "Política de privacidade do Versum — saiba como tratamos seus dados pessoais.",
+  description:
+    "Política de privacidade do Versum — saiba como tratamos seus dados pessoais.",
 };
 
 const sectionClass = "mb-10";
-const headingClass = "text-2xl font-bold tracking-tight font-instrument-serif mb-4";
-const subheadingClass = "text-lg font-semibold font-instrument-serif mt-6 mb-2";
-const textClass = "text-base leading-relaxed text-neutral-600 dark:text-neutral-400";
-const listClass = "list-disc pl-6 space-y-2 text-base leading-relaxed text-neutral-600 dark:text-neutral-400";
+const headingClass =
+  "text-2xl font-bold tracking-tight font-instrument-serif mb-4";
+const _subheadingClass =
+  "text-lg font-semibold font-instrument-serif mt-6 mb-2";
+const textClass =
+  "text-base leading-relaxed text-neutral-600 dark:text-neutral-400";
+const listClass =
+  "list-disc pl-6 space-y-2 text-base leading-relaxed text-neutral-600 dark:text-neutral-400";
 const tableClass = "w-full border-collapse text-sm";
-const thClass = "border border-neutral-300 dark:border-neutral-700 px-4 py-2 bg-neutral-100 dark:bg-neutral-800 text-left font-medium";
-const tdClass = "border border-neutral-300 dark:border-neutral-700 px-4 py-2 text-neutral-600 dark:text-neutral-400";
+const thClass =
+  "border border-neutral-300 dark:border-neutral-700 px-4 py-2 bg-neutral-100 dark:bg-neutral-800 text-left font-medium";
+const tdClass =
+  "border border-neutral-300 dark:border-neutral-700 px-4 py-2 text-neutral-600 dark:text-neutral-400";
 
 export default function PrivacyPage() {
   return (
@@ -26,8 +33,9 @@ export default function PrivacyPage() {
 
       <section className={sectionClass}>
         <p className={textClass}>
-          Sua privacidade é importante para nós. Esta Política de Privacidade descreve como o Versum coleta,
-          usa, armazena e protege seus dados pessoais, em conformidade com a Lei Geral de Proteção de Dados
+          Sua privacidade é importante para nós. Esta Política de Privacidade
+          descreve como o Versum coleta, usa, armazena e protege seus dados
+          pessoais, em conformidade com a Lei Geral de Proteção de Dados
           Pessoais (LGPD — Lei nº 13.709/2018).
         </p>
       </section>
@@ -148,7 +156,9 @@ export default function PrivacyPage() {
               </tr>
               <tr>
                 <td className={tdClass}>Links mágicos expirados</td>
-                <td className={tdClass}>30 dias após uso ou 7 dias se abandonados</td>
+                <td className={tdClass}>
+                  30 dias após uso ou 7 dias se abandonados
+                </td>
               </tr>
               <tr>
                 <td className={tdClass}>Registros de consentimento</td>
@@ -165,27 +175,41 @@ export default function PrivacyPage() {
 
       <section className={sectionClass}>
         <h2 className={headingClass}>4. Seus Direitos (LGPD Art. 18)</h2>
-        <p className={textClass}>Você pode exercer os seguintes direitos a qualquer momento:</p>
+        <p className={textClass}>
+          Você pode exercer os seguintes direitos a qualquer momento:
+        </p>
         <ul className={`${listClass} mt-4`}>
           <li>
             <strong>Acessar seus dados:</strong> Utilize{" "}
-            <code className="text-sm bg-neutral-100 dark:bg-neutral-800 px-1 rounded">GET /api/v1/users/@me/export</code>
+            <code className="text-sm bg-neutral-100 dark:bg-neutral-800 px-1 rounded">
+              GET /api/v1/users/@me/export
+            </code>
           </li>
           <li>
             <strong>Corrigir seus dados:</strong> Atualize seu perfil em{" "}
-            <code className="text-sm bg-neutral-100 dark:bg-neutral-800 px-1 rounded">PATCH /api/v1/profiles/@me</code>
+            <code className="text-sm bg-neutral-100 dark:bg-neutral-800 px-1 rounded">
+              PATCH /api/v1/profiles/@me
+            </code>
           </li>
           <li>
             <strong>Excluir sua conta:</strong> Utilize{" "}
-            <code className="text-sm bg-neutral-100 dark:bg-neutral-800 px-1 rounded">DELETE /api/v1/users/@me</code>
+            <code className="text-sm bg-neutral-100 dark:bg-neutral-800 px-1 rounded">
+              DELETE /api/v1/users/@me
+            </code>
           </li>
           <li>
             <strong>Revogar consentimento:</strong> Utilize{" "}
-            <code className="text-sm bg-neutral-100 dark:bg-neutral-800 px-1 rounded">POST /api/v1/consent</code> com{" "}
-            <code className="text-sm bg-neutral-100 dark:bg-neutral-800 px-1 rounded">granted: false</code>
+            <code className="text-sm bg-neutral-100 dark:bg-neutral-800 px-1 rounded">
+              POST /api/v1/consent
+            </code>{" "}
+            com{" "}
+            <code className="text-sm bg-neutral-100 dark:bg-neutral-800 px-1 rounded">
+              granted: false
+            </code>
           </li>
           <li>
-            <strong>Portabilidade:</strong> Solicite a exportação dos seus dados (acima)
+            <strong>Portabilidade:</strong> Solicite a exportação dos seus dados
+            (acima)
           </li>
         </ul>
       </section>
@@ -193,18 +217,26 @@ export default function PrivacyPage() {
       <section className={sectionClass}>
         <h2 className={headingClass}>5. Política de Cookies</h2>
         <p className={textClass}>
-          Utilizamos apenas cookies estritamente necessários para o funcionamento do serviço. O cookie de sessão
-          (<code className="text-sm bg-neutral-100 dark:bg-neutral-800 px-1 rounded">session</code> ou{" "}
-          <code className="text-sm bg-neutral-100 dark:bg-neutral-800 px-1 rounded">__Host-session</code>) é
-          um cookie HttpOnly e seguro, utilizado exclusivamente para manter sua sessão autenticada. Não usamos
-          cookies de rastreamento, publicidade ou terceiros.
+          Utilizamos apenas cookies estritamente necessários para o
+          funcionamento do serviço. O cookie de sessão (
+          <code className="text-sm bg-neutral-100 dark:bg-neutral-800 px-1 rounded">
+            session
+          </code>{" "}
+          ou{" "}
+          <code className="text-sm bg-neutral-100 dark:bg-neutral-800 px-1 rounded">
+            __Host-session
+          </code>
+          ) é um cookie HttpOnly e seguro, utilizado exclusivamente para manter
+          sua sessão autenticada. Não usamos cookies de rastreamento,
+          publicidade ou terceiros.
         </p>
       </section>
 
       <section className={sectionClass}>
         <h2 className={headingClass}>6. Segurança</h2>
         <p className={textClass}>
-          Implementamos medidas técnicas e organizacionais para proteger seus dados, incluindo:
+          Implementamos medidas técnicas e organizacionais para proteger seus
+          dados, incluindo:
         </p>
         <ul className={listClass}>
           <li>Hash de senhas com Argon2</li>
@@ -218,12 +250,15 @@ export default function PrivacyPage() {
       <section className={sectionClass}>
         <h2 className={headingClass}>7. Encarregado de Dados (DPO)</h2>
         <p className={textClass}>
-          Para questões relacionadas ao tratamento de dados pessoais, entre em contato com nosso Encarregado
-          de Dados (DPO):
+          Para questões relacionadas ao tratamento de dados pessoais, entre em
+          contato com nosso Encarregado de Dados (DPO):
         </p>
         <p className="mt-4 text-base">
           <strong>Email:</strong>{" "}
-          <a href="mailto:dpo@versum.app" className="underline hover:text-neutral-900 dark:hover:text-white">
+          <a
+            href="mailto:dpo@versum.app"
+            className="underline hover:text-neutral-900 dark:hover:text-white"
+          >
             dpo@versum.app
           </a>
         </p>
@@ -232,20 +267,23 @@ export default function PrivacyPage() {
       <section className={sectionClass}>
         <h2 className={headingClass}>8. Notificação de Violação</h2>
         <p className={textClass}>
-          Em caso de violação de dados pessoais que possa acarretar risco ou dano aos titulares,
-          notificaremos a Autoridade Nacional de Proteção de Dados (ANPD) no prazo de até 2 (dois)
-          dias úteis, conforme Art. 48 da LGPD, e comunicaremos diretamente os titulares afetados.
+          Em caso de violação de dados pessoais que possa acarretar risco ou
+          dano aos titulares, notificaremos a Autoridade Nacional de Proteção de
+          Dados (ANPD) no prazo de até 2 (dois) dias úteis, conforme Art. 48 da
+          LGPD, e comunicaremos diretamente os titulares afetados.
         </p>
       </section>
 
       <section className={sectionClass}>
         <h2 className={headingClass}>9. Contato</h2>
         <p className={textClass}>
-          Se você tiver dúvidas sobre esta Política de Privacidade ou sobre o tratamento dos seus dados,
-          entre em contato conosco:
+          Se você tiver dúvidas sobre esta Política de Privacidade ou sobre o
+          tratamento dos seus dados, entre em contato conosco:
         </p>
         <ul className={`${listClass} mt-4`}>
-          <li><strong>Email:</strong> dpo@versum.app</li>
+          <li>
+            <strong>Email:</strong> dpo@versum.app
+          </li>
         </ul>
       </section>
     </main>

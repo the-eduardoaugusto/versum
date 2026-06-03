@@ -10,28 +10,28 @@
  */
 export interface UpdateAuthenticatedProfileBody {
   /**
-     * Username único
-     * @minLength 3
-     * @maxLength 50
-     * @pattern ^[a-zA-Z0-9_]+$
-     */
+   * Username único
+   * @minLength 3
+   * @maxLength 50
+   * @pattern ^[a-zA-Z0-9_]+$
+   */
   username?: string;
   /**
-     * Nome de exibição
-     * @minLength 1
-     * @maxLength 100
-     */
+   * Nome de exibição
+   * @minLength 1
+   * @maxLength 100
+   */
   name?: string;
   /**
-     * Biografia do usuário
-     * @maxLength 500
-     * @nullable
-     */
+   * Biografia do usuário
+   * @maxLength 500
+   * @nullable
+   */
   bio?: string | null;
   /**
-     * URL da foto de perfil
-     * @maxLength 500
-     * @nullable
-     */
+   * URL da foto de perfil
+   * @maxLength 500
+   * @nullable
+   */
   pictureUrl?: string | null;
 }

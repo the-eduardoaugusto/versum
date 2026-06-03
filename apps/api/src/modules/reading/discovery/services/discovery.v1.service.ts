@@ -53,7 +53,7 @@ export class DiscoveryServiceV1 {
   }
 
   async markVersesAsRead({
-    userId,
+    userId: _userId,
     verseIds,
   }: {
     userId: string;

@@ -29,7 +29,10 @@ export default async function Layout({
   const guard = matchGuard(pathname);
 
   if (guard) {
-    const redirectTo = evaluateGuard(guard, { isAuthenticated, onboardingComplete });
+    const redirectTo = evaluateGuard(guard, {
+      isAuthenticated,
+      onboardingComplete,
+    });
     if (redirectTo) redirect(redirectTo);
   } else {
     if (!isAuthenticated) redirect(DEFAULT_GUARD.authRedirectTo);
