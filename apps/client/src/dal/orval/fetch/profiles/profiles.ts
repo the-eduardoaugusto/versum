@@ -4,113 +4,103 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
+
+import postApiV1ProfilesMeMutator from "../../../../lib/api-fetcher";
+import getApiV1ProfilesMeMutator from "../../../../lib/api-fetcher";
+import patchApiV1ProfilesMeMutator from "../../../../lib/api-fetcher";
+import getApiV1ProfilesUsernameMutator from "../../../../lib/api-fetcher";
 import type {
   CreateProfileBody,
   CreateProfileResponse,
   GetAuthenticatedProfileResponse,
   GetProfileByUsernameResponse,
   UpdateAuthenticatedProfileBody,
-  UpdateAuthenticatedProfileResponse
-} from '../schemas';
-
-import postApiV1ProfilesMeMutator from '../../../../lib/api-fetcher';
-import getApiV1ProfilesMeMutator from '../../../../lib/api-fetcher';
-import patchApiV1ProfilesMeMutator from '../../../../lib/api-fetcher';
-import getApiV1ProfilesUsernameMutator from '../../../../lib/api-fetcher';
+  UpdateAuthenticatedProfileResponse,
+} from "../schemas";
 
 export const getPostApiV1ProfilesMeUrl = () => {
-
-
-
-
-  return `/api/v1/profiles/@me`
-}
+  return `/api/v1/profiles/@me`;
+};
 
 /**
  * Cria um novo perfil para o usuário autenticado.
  * @summary Criar perfil do usuário autenticado
  */
-export const postApiV1ProfilesMe = async (createProfileBody?: CreateProfileBody, options?: RequestInit): Promise<CreateProfileResponse> => {
-
-  return postApiV1ProfilesMeMutator<CreateProfileResponse>(getPostApiV1ProfilesMeUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(createProfileBody)
-  }
-);}
-
+export const postApiV1ProfilesMe = async (
+  createProfileBody?: CreateProfileBody,
+  options?: RequestInit,
+): Promise<CreateProfileResponse> => {
+  return postApiV1ProfilesMeMutator<CreateProfileResponse>(
+    getPostApiV1ProfilesMeUrl(),
+    {
+      ...options,
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(createProfileBody),
+    },
+  );
+};
 
 export const getGetApiV1ProfilesMeUrl = () => {
-
-
-
-
-  return `/api/v1/profiles/@me`
-}
+  return `/api/v1/profiles/@me`;
+};
 
 /**
  * Retorna os dados do perfil do usuário autenticado.
  * @summary Obter perfil do usuário autenticado
  */
-export const getApiV1ProfilesMe = async ( options?: RequestInit): Promise<GetAuthenticatedProfileResponse> => {
-
-  return getApiV1ProfilesMeMutator<GetAuthenticatedProfileResponse>(getGetApiV1ProfilesMeUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
+export const getApiV1ProfilesMe = async (
+  options?: RequestInit,
+): Promise<GetAuthenticatedProfileResponse> => {
+  return getApiV1ProfilesMeMutator<GetAuthenticatedProfileResponse>(
+    getGetApiV1ProfilesMeUrl(),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
 
 export const getPatchApiV1ProfilesMeUrl = () => {
-
-
-
-
-  return `/api/v1/profiles/@me`
-}
+  return `/api/v1/profiles/@me`;
+};
 
 /**
  * Atualiza os dados do perfil do usuário autenticado.
  * @summary Atualizar perfil do usuário autenticado
  */
-export const patchApiV1ProfilesMe = async (updateAuthenticatedProfileBody?: UpdateAuthenticatedProfileBody, options?: RequestInit): Promise<UpdateAuthenticatedProfileResponse> => {
+export const patchApiV1ProfilesMe = async (
+  updateAuthenticatedProfileBody?: UpdateAuthenticatedProfileBody,
+  options?: RequestInit,
+): Promise<UpdateAuthenticatedProfileResponse> => {
+  return patchApiV1ProfilesMeMutator<UpdateAuthenticatedProfileResponse>(
+    getPatchApiV1ProfilesMeUrl(),
+    {
+      ...options,
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(updateAuthenticatedProfileBody),
+    },
+  );
+};
 
-  return patchApiV1ProfilesMeMutator<UpdateAuthenticatedProfileResponse>(getPatchApiV1ProfilesMeUrl(),
-  {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(updateAuthenticatedProfileBody)
-  }
-);}
-
-
-export const getGetApiV1ProfilesUsernameUrl = (username: string,) => {
-
-
-
-
-  return `/api/v1/profiles/${username}`
-}
+export const getGetApiV1ProfilesUsernameUrl = (username: string) => {
+  return `/api/v1/profiles/${username}`;
+};
 
 /**
  * Retorna os dados públicos de um perfil pelo username.
  * @summary Obter perfil por username
  */
-export const getApiV1ProfilesUsername = async (username: string, options?: RequestInit): Promise<GetProfileByUsernameResponse> => {
-
-  return getApiV1ProfilesUsernameMutator<GetProfileByUsernameResponse>(getGetApiV1ProfilesUsernameUrl(username),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
+export const getApiV1ProfilesUsername = async (
+  username: string,
+  options?: RequestInit,
+): Promise<GetProfileByUsernameResponse> => {
+  return getApiV1ProfilesUsernameMutator<GetProfileByUsernameResponse>(
+    getGetApiV1ProfilesUsernameUrl(username),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};

@@ -10,8 +10,7 @@ describe("ConsentLogServiceV1", () => {
     userId: "123e4567-e89b-12d3-a456-426614174001",
     purpose: "profile_content",
     granted: true,
-    ip: "127.0.0.1",
-    userAgent: "Mozilla/5.0",
+    ip: null,
     createdAt: new Date("2024-01-01T00:00:00Z"),
   };
 
@@ -51,8 +50,6 @@ describe("ConsentLogServiceV1", () => {
           { purpose: "profile_content", granted: true },
           { purpose: "annotations", granted: true },
         ],
-        ip: "127.0.0.1",
-        userAgent: "Mozilla/5.0",
       });
 
       expect(result).toEqual(logs);
@@ -70,8 +67,6 @@ describe("ConsentLogServiceV1", () => {
         service.recordConsents({
           userId: mockConsentLog.userId,
           consents: [{ purpose: "invalid_purpose", granted: true }],
-          ip: "127.0.0.1",
-          userAgent: "Mozilla/5.0",
         }),
       ).rejects.toThrow("Invalid consent purpose: invalid_purpose");
     });

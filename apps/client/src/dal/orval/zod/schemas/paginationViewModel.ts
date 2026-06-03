@@ -10,24 +10,24 @@
  */
 export interface PaginationViewModel {
   /**
-     * Página atual
-     * @exclusiveMinimum 0
-     */
+   * Página atual
+   * @exclusiveMinimum 0
+   */
   currentPage: number;
   /**
-     * Número total de páginas
-     * @exclusiveMinimum 0
-     */
+   * Número total de páginas
+   * @exclusiveMinimum 0
+   */
   totalPages: number;
   /**
-     * Número total de itens
-     * @minimum 0
-     */
+   * Número total de itens
+   * @minimum 0
+   */
   totalItems: number;
   /**
-     * Número de itens por página
-     * @exclusiveMinimum 0
-     */
+   * Número de itens por página
+   * @exclusiveMinimum 0
+   */
   itemsPerPage: number;
   /** Indica se existe próxima página */
   hasNextPage: boolean;

@@ -1,10 +1,10 @@
 "use client";
 
-import { useChangeNavColors } from "@/components/common/navbar";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { SplitText } from "gsap/all";
 import { useRef } from "react";
+import { useChangeNavColors } from "@/components/common/navbar";
 
 enum ShowingText {
   TEXT_1,
@@ -65,7 +65,7 @@ export default function NotFound() {
           ease: "power4.out",
           duration: 0.8,
           delay: 0.35,
-        }
+        },
       );
 
       showingText.current =

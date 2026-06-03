@@ -21,14 +21,14 @@ export class ConsentLogControllerV1 {
       throw new BadRequestError("At least one consent must be provided");
     }
 
-    const ip = c.req.header("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-    const userAgent = c.req.header("user-agent") ?? "unknown";
+    const ip = c.req.header("x-forwarded-for")?.split(",")[0]?.trim()
+      ?? (c.req.raw as { remoteAddress?: string }).remoteAddress
+      ?? "unknown";
 
     const logs = await this.service.recordConsents({
       userId: session.userId,
       consents: body.consents,
       ip,
-      userAgent,
     });
 
     return c.json(SuccessViewModel.create({ consents: logs }), 201);

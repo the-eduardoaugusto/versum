@@ -1,13 +1,13 @@
 import { AuthRepository } from "../../auth/repositories/auth.repository";
+import { db } from "../../../infrastructure/db";
 import type { Profile } from "../repositories/profile.types.repository";
 import { ProfileRepository } from "../repositories/profile.repository";
 import { UserRepository } from "../repositories/user.repository";
 import type {
   CreateUserParams,
   User,
-  UserExportData,
 } from "../repositories/user.types.repository";
-import type { ExportUserDataResponse } from "../schemas/v1/users.v1.common.schema";
+import type { ExportUserData } from "../schemas/v1/users.v1.common.schema";
 
 const MAX_EMAIL_LENGTH = 255;
 
@@ -15,19 +15,23 @@ export class UserServiceV1 {
   private readonly repository: UserRepository;
   private readonly authRepository: AuthRepository;
   private readonly profileRepository: ProfileRepository;
+  private readonly transaction: typeof db.transaction;
 
   constructor({
     repository,
     authRepository,
     profileRepository,
+    transaction,
   }: {
     repository?: UserRepository;
     authRepository?: AuthRepository;
     profileRepository?: ProfileRepository;
+    transaction?: typeof db.transaction;
   } = {}) {
     this.repository = repository ?? new UserRepository();
     this.authRepository = authRepository ?? new AuthRepository();
     this.profileRepository = profileRepository ?? new ProfileRepository();
+    this.transaction = transaction ?? db.transaction;
   }
 
   private validateEmail(email: string): void {
@@ -113,30 +117,71 @@ export class UserServiceV1 {
       throw new Error("User not found");
     }
 
-    await this.authRepository.deleteSessionsByUserId({ userId: id });
-    await this.profileRepository.deleteByUserId({ userId: id });
-    await this.repository.deleteUser({ id });
+    await this.transaction(async (tx) => {
+      await this.authRepository.deleteSessionsByUserId({ userId: id }, tx as any);
+      await this.profileRepository.deleteByUserId({ userId: id }, tx as any);
+      await this.authRepository.deleteMagicLinksByEmail({ email: user.email }, tx as any);
+      await this.repository.deleteUser({ id }, tx as any);
+    });
   }
 
-  async exportUserData({ id }: { id: string }): Promise<ExportUserDataResponse> {
+  async exportUserData({ id }: { id: string }): Promise<ExportUserData> {
     const data = await this.repository.findByIdWithAllData({ id });
 
     if (!data) {
       throw new Error("User not found");
     }
 
-    const sessions = (data.sessions ?? []).map((s: Record<string, unknown>) => ({
-      createdAt: (s.createdAt as Date).toISOString(),
-      ip: s.ip as string,
-      userAgent: s.userAgent as string,
-      expiresAt: (s.expiresAt as Date).toISOString(),
-    }));
+    const mapSessions = (s: unknown) => {
+      const session = s as { createdAt: Date; expiresAt: Date };
+      return {
+        createdAt: session.createdAt.toISOString(),
+        expiresAt: session.expiresAt.toISOString(),
+      };
+    };
+
+    const mapJourneyReadings = (r: unknown) => {
+      const reading = r as { chapterId: string; readAt: Date };
+      return { chapterId: reading.chapterId, readAt: reading.readAt.toISOString() };
+    };
+
+    const mapDiscoveryReadings = (r: unknown) => {
+      const reading = r as { verseId: string; readAt: Date };
+      return { verseId: reading.verseId, readAt: reading.readAt.toISOString() };
+    };
+
+    const mapMarks = (m: unknown) => {
+      const mark = m as { verseId: string; selectedVerseId: string; annotation: string | null; isPublic: boolean; createdAt: Date };
+      return {
+        verseId: mark.verseId,
+        selectedVerseId: mark.selectedVerseId,
+        annotation: mark.annotation ?? null,
+        isPublic: mark.isPublic,
+        createdAt: mark.createdAt.toISOString(),
+      };
+    };
+
+    const mapLikes = (l: unknown) => {
+      const like = l as { verseId: string; createdAt: Date };
+      return { verseId: like.verseId, createdAt: like.createdAt.toISOString() };
+    };
+
+    const mapConsentLogs = (c: unknown) => {
+      const log = c as { id: string; userId: string; purpose: string; granted: boolean; createdAt: Date };
+      return {
+        id: log.id,
+        userId: log.userId,
+        purpose: log.purpose,
+        granted: log.granted,
+        createdAt: log.createdAt.toISOString(),
+      };
+    };
 
     return {
       exportedAt: new Date().toISOString(),
       user: {
-        email: data.user.email,
-        createdAt: data.user.createdAt.toISOString(),
+        email: data.email,
+        createdAt: data.createdAt.toISOString(),
       },
       profile: data.profile
         ? {
@@ -146,37 +191,14 @@ export class UserServiceV1 {
             pictureUrl: data.profile.pictureUrl ?? null,
           }
         : null,
-      sessions,
+      sessions: (data.sessions ?? []).map(mapSessions),
       readingHistory: {
-        journey: (data.readings ?? []).map((r: Record<string, unknown>) => ({
-          chapterId: r.chapterId as string,
-          readAt: (r.readAt as Date).toISOString(),
-        })),
-        discovery: (data.discoveryReadings ?? []).map((r: Record<string, unknown>) => ({
-          verseId: r.verseId as string,
-          readAt: (r.readAt as Date).toISOString(),
-        })),
+        journey: (data.readings ?? []).map(mapJourneyReadings),
+        discovery: (data.discoveryReadings ?? []).map(mapDiscoveryReadings),
       },
-      annotations: (data.marks ?? []).map((m: Record<string, unknown>) => ({
-        verseId: m.verseId as string,
-        selectedVerseId: m.selectedVerseId as string,
-        annotation: (m.annotation as string | null) ?? null,
-        isPublic: m.isPublic as boolean,
-        createdAt: (m.createdAt as Date).toISOString(),
-      })),
-      likes: (data.likes ?? []).map((l: Record<string, unknown>) => ({
-        verseId: l.verseId as string,
-        createdAt: (l.createdAt as Date).toISOString(),
-      })),
-      consentLogs: (data.consentLogs ?? []).map((c: Record<string, unknown>) => ({
-        id: c.id as string,
-        userId: c.userId as string,
-        purpose: c.purpose as string,
-        granted: c.granted as boolean,
-        ip: c.ip as string,
-        userAgent: c.userAgent as string,
-        createdAt: (c.createdAt as Date).toISOString(),
-      })),
+      annotations: (data.marks ?? []).map(mapMarks),
+      likes: (data.likes ?? []).map(mapLikes),
+      consentLogs: (data.consentLogs ?? []).map(mapConsentLogs),
     };
   }
 }

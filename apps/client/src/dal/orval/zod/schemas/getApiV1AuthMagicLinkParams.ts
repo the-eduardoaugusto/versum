@@ -6,9 +6,9 @@
  */
 
 export type GetApiV1AuthMagicLinkParams = {
-/**
- * Token do magic link (public_id.token)
- * @minLength 1
- */
-token: string;
+  /**
+   * Token do magic link (public_id.token)
+   * @minLength 1
+   */
+  token: string;
 };

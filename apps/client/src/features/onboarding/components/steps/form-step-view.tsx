@@ -1,19 +1,19 @@
 "use client";
 
-import { useRef } from "react";
-import { cn } from "@/lib/utils";
+import { useGSAP } from "@gsap/react";
 import { useForm } from "@tanstack/react-form";
+import { gsap, SplitText } from "gsap/src/all";
+import { useRef } from "react";
+import { toast } from "sonner";
 import type z from "zod";
-import type { FormStep, OnboardingValues, StepDirection } from "../../types";
-import { onboardingFormSchema } from "../../types";
-import type { StepTransitionHandle } from "@/components/shared/step-transition";
-import { StepTransition } from "@/components/shared/step-transition";
 import { ActionButton } from "@/components/shared/action-button";
 import { FieldError } from "@/components/shared/field-error";
-import { useGSAP } from "@gsap/react";
-import { SplitText, gsap } from "gsap/src/all";
+import type { StepTransitionHandle } from "@/components/shared/step-transition";
+import { StepTransition } from "@/components/shared/step-transition";
 import { usePostApiV1ProfilesMe } from "@/dal/orval/tanstackQuery/profiles/profiles";
-import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import type { FormStep, OnboardingValues, StepDirection } from "../../types";
+import { onboardingFormSchema } from "../../types";
 
 interface StepAnimationProps {
   direction: StepDirection;
@@ -23,7 +23,10 @@ interface StepAnimationProps {
 type FormStepField = FormStep["field"];
 
 function fieldSchema(field: FormStepField) {
-  return onboardingFormSchema.pick({ [field]: true } as Record<FormStepField, true>);
+  return onboardingFormSchema.pick({ [field]: true } as Record<
+    FormStepField,
+    true
+  >);
 }
 
 interface FormStepViewProps extends StepAnimationProps {
@@ -37,20 +40,16 @@ interface FormStepViewProps extends StepAnimationProps {
   onError: (message: string) => void;
 }
 
-const allowedKeys: (keyof OnboardingValues)[] = [
-  'name',
-  'username',
-  'bio',
-]
+const allowedKeys: (keyof OnboardingValues)[] = ["name", "username", "bio"];
 
 function isValidPatch(obj: Partial<OnboardingValues>): obj is OnboardingValues {
-  if (typeof obj !== 'object' || obj === null) {
-    return false
+  if (typeof obj !== "object" || obj === null) {
+    return false;
   }
 
   return Object.keys(obj).every((key) =>
-    allowedKeys.includes(key as keyof OnboardingValues)
-  )
+    allowedKeys.includes(key as keyof OnboardingValues),
+  );
 }
 
 export function FormStepView({
@@ -69,7 +68,11 @@ export function FormStepView({
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const labelRef = useRef<HTMLParagraphElement | null>(null);
   const subtitleRef = useRef<HTMLParagraphElement | null>(null);
-  const { mutateAsync: createProfile, isPending } = usePostApiV1ProfilesMe();
+  const { mutateAsync: createProfile, isPending } = usePostApiV1ProfilesMe({
+    fetch: {
+      credentials: "include",
+    },
+  });
 
   const form = useForm({
     defaultValues: {
@@ -88,7 +91,10 @@ export function FormStepView({
       if (!isValidPatch(patch)) return;
 
       if (isLastFormStep) {
-        const allValues = onboardingFormSchema.parse({ ...collectedValues, ...patch });
+        const allValues = onboardingFormSchema.parse({
+          ...collectedValues,
+          ...patch,
+        });
 
         try {
           const res = await createProfile({
@@ -108,7 +114,10 @@ export function FormStepView({
             toast.success(`Bem-vindo, ${profile.name}!`);
           }
         } catch (e) {
-          const message = e instanceof Error ? e.message : "Não foi possível completar o cadastro.";
+          const message =
+            e instanceof Error
+              ? e.message
+              : "Não foi possível completar o cadastro.";
           toast.error(message);
           onError(message);
           return;
@@ -132,14 +141,38 @@ export function FormStepView({
   useGSAP(() => {
     if (labelRef.current && subtitleRef.current) {
       const splitedLabel = new SplitText(labelRef.current, { type: "words" });
-      const splitedSubtitle = new SplitText(subtitleRef.current, { type: "words" });
-      gsap.set(splitedLabel.words, { opacity: 0, transform: "translateY(20px)", filter: "blur(10px)" });
-      gsap.set(splitedSubtitle.words, { opacity: 0, transform: "translateY(20px)", filter: "blur(10px)" });
+      const splitedSubtitle = new SplitText(subtitleRef.current, {
+        type: "words",
+      });
+      gsap.set(splitedLabel.words, {
+        opacity: 0,
+        transform: "translateY(20px)",
+        filter: "blur(10px)",
+      });
+      gsap.set(splitedSubtitle.words, {
+        opacity: 0,
+        transform: "translateY(20px)",
+        filter: "blur(10px)",
+      });
 
       wrapperRef.current?.classList.remove("invisible");
 
-      gsap.to(splitedLabel.words, { opacity: 1, transform: "translateY(0)", filter: "blur(0px)", stagger: 0.1, duration: 1, ease: "power4.out" });
-      gsap.to(splitedSubtitle.words, { opacity: 1, transform: "translateY(0)", filter: "blur(0px)", stagger: 0.1, duration: 0.6, ease: "power4.out" });
+      gsap.to(splitedLabel.words, {
+        opacity: 1,
+        transform: "translateY(0)",
+        filter: "blur(0px)",
+        stagger: 0.1,
+        duration: 1,
+        ease: "power4.out",
+      });
+      gsap.to(splitedSubtitle.words, {
+        opacity: 1,
+        transform: "translateY(0)",
+        filter: "blur(0px)",
+        stagger: 0.1,
+        duration: 0.6,
+        ease: "power4.out",
+      });
 
       return () => {
         if (splitedLabel.words) {
@@ -148,18 +181,24 @@ export function FormStepView({
         if (splitedSubtitle.words) {
           gsap.killTweensOf(splitedSubtitle.words);
         }
-      }
+      };
     }
-  }, [])
+  }, []);
 
   return (
     <StepTransition ref={transitionRef}>
       <div className="flex h-full flex-col justify-center gap-6 px-8">
         <div ref={wrapperRef} className="invisible flex flex-col gap-2">
-          <p ref={labelRef} className="tracking-tight text-foreground overflow-hidden font-instrument-serif text-5xl">
+          <p
+            ref={labelRef}
+            className="tracking-tight text-foreground overflow-hidden font-instrument-serif text-5xl"
+          >
             {step.title}
           </p>
-          <p className="text-xl text-foreground/50 font-instrument-sans" ref={subtitleRef}>
+          <p
+            className="text-xl text-foreground/50 font-instrument-sans"
+            ref={subtitleRef}
+          >
             {step.description}
           </p>
         </div>
@@ -188,7 +227,6 @@ export function FormStepView({
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
                   autoComplete="off"
-                  autoFocus
                   className={cn(
                     "w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm",
                     "text-neutral-900 placeholder-neutral-400 outline-none ring-0",
@@ -220,4 +258,4 @@ export function FormStepView({
       </div>
     </StepTransition>
   );
-};
+}

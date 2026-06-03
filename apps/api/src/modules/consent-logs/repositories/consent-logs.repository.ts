@@ -1,4 +1,4 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "@/infrastructure/db";
 import { InternalServerError } from "@/utils/app/errors";
 import { consentLogs } from "../db/consent-logs.table";

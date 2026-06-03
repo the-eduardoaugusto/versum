@@ -1,7 +1,7 @@
-export { OnboardingFlow, OnboardingScreen } from "./components";
 export type { StepTransitionHandle } from "./components";
+export { OnboardingFlow, OnboardingScreen } from "./components";
 
-export { STEPS, FORM_STEPS, TOTAL_STEPS } from "./constants";
+export { FORM_STEPS, STEPS, TOTAL_STEPS } from "./constants";
 
 export type {
   ConsentOption,

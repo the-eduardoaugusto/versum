@@ -213,6 +213,17 @@ export class ProfileServiceV1 {
   async updateProfile(
     params: UpdateProfileParams & { userId: string },
   ): Promise<Profile> {
+    const hasConsent = await this.consentLogsRepository.hasConsent({
+      userId: params.userId,
+      purpose: "profile_content",
+    });
+
+    if (!hasConsent) {
+      throw new ForbiddenError(
+        "Consentimento para armazenar conteúdo do perfil não foi concedido",
+      );
+    }
+
     const profile = await this.repository.findByUserId({
       userId: params.userId,
     });

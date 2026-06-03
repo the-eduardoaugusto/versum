@@ -1,3 +1,3 @@
-export { matchGuard, evaluateGuard } from "./guards";
-export { guardRoutes, DEFAULT_GUARD } from "./config";
-export type { GuardRoute, RouteMatch, EvaluateGuardContext } from "./types";
+export { DEFAULT_GUARD, guardRoutes } from "./config";
+export { evaluateGuard, matchGuard } from "./guards";
+export type { EvaluateGuardContext, GuardRoute, RouteMatch } from "./types";

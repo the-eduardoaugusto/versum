@@ -4,8 +4,8 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import type { DiscoveryStatsResponseData } from './discoveryStatsResponseData';
-import type { PaginationViewModel } from './paginationViewModel';
+import type { DiscoveryStatsResponseData } from "./discoveryStatsResponseData";
+import type { PaginationViewModel } from "./paginationViewModel";
 
 /**
  * Resposta de sucesso para DiscoveryStatsResponse

@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { guardRoutes, DEFAULT_GUARD } from "./config";
+import { describe, expect, it } from "vitest";
+import { DEFAULT_GUARD, guardRoutes } from "./config";
 
 describe("guardRoutes", () => {
   it("possui 3 rotas", () => {
@@ -7,24 +7,30 @@ describe("guardRoutes", () => {
   });
 
   it("login usa startWith e kind guest", () => {
-    const login = guardRoutes.find((r) => "startWith" in r && r.startWith === "/login");
+    const login = guardRoutes.find(
+      (r) => "startWith" in r && r.startWith === "/login",
+    );
     expect(login).toBeDefined();
-    expect(login!.kind).toBe("guest");
-    expect(login!.redirectTo).toBe("/");
+    expect(login?.kind).toBe("guest");
+    expect(login?.redirectTo).toBe("/");
   });
 
   it("magic-link usa path exato e kind guest", () => {
-    const ml = guardRoutes.find((r) => "path" in r && r.path === "/auth/magic-link");
+    const ml = guardRoutes.find(
+      (r) => "path" in r && r.path === "/auth/magic-link",
+    );
     expect(ml).toBeDefined();
-    expect(ml!.kind).toBe("guest");
-    expect(ml!.redirectTo).toBe("/");
+    expect(ml?.kind).toBe("guest");
+    expect(ml?.redirectTo).toBe("/");
   });
 
   it("onboarding usa path exato e kind onboarding", () => {
-    const onboarding = guardRoutes.find((r) => "path" in r && r.path === "/onboarding");
+    const onboarding = guardRoutes.find(
+      (r) => "path" in r && r.path === "/onboarding",
+    );
     expect(onboarding).toBeDefined();
-    expect(onboarding!.kind).toBe("onboarding");
-    expect(onboarding!.redirectTo).toBe("/");
+    expect(onboarding?.kind).toBe("onboarding");
+    expect(onboarding?.redirectTo).toBe("/");
   });
 });
 

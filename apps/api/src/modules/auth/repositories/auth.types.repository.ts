@@ -43,7 +43,8 @@ export interface iAuthRepository {
   }): Promise<void>;
 
   revokeSessionByPublicId(params: { publicId: string }): Promise<void>;
-  deleteSessionsByUserId(params: { userId: string }): Promise<void>;
+  deleteSessionsByUserId(params: { userId: string }, tx?: unknown): Promise<void>;
+  deleteMagicLinksByEmail(params: { email: string }, tx?: unknown): Promise<void>;
   deleteExpiredMagicLinks(): Promise<number>;
   deleteExpiredSessions(): Promise<number>;
 }
