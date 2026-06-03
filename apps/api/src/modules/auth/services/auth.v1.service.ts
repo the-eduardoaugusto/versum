@@ -140,8 +140,12 @@ export class AuthServiceV1 {
 
   async refreshSession({
     sessionId,
+    requestIp,
+    requestUA,
   }: {
     sessionId: string;
+    requestIp?: string;
+    requestUA?: string;
   }): Promise<
     | { session: Session; rotated: false }
     | { session: Session; rotated: true; token: string }
@@ -152,6 +156,8 @@ export class AuthServiceV1 {
 
     const validatedSession = new ValidateSession({
       session,
+      requestIp,
+      requestUA,
     }).session;
 
     const refreshWindowMs = 1000 * 60 * 60 * 24 * 10; // 10 days before expiration

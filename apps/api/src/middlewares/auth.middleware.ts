@@ -58,6 +58,8 @@ export class AuthMiddleware {
 
     const refreshSessionResult = await this.service.refreshSession({
       sessionId: validatedSession.session.id,
+      requestIp,
+      requestUA,
     });
 
     logger(

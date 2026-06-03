@@ -77,8 +77,6 @@ export const GetApiV1UsersMeExportResponse = zod.object({
 }).nullable().describe('Perfil do usuário'),
   "sessions": zod.array(zod.object({
   "createdAt": zod.iso.datetime({"offset":true}),
-  "ip": zod.string(),
-  "userAgent": zod.string(),
   "expiresAt": zod.iso.datetime({"offset":true})
 })).describe('Sessões do usuário'),
   "readingHistory": zod.object({
@@ -107,8 +105,6 @@ export const GetApiV1UsersMeExportResponse = zod.object({
   "userId": zod.string().describe('ID do usuário'),
   "purpose": zod.string().describe('Finalidade do consentimento'),
   "granted": zod.boolean().describe('Se o consentimento foi concedido'),
-  "ip": zod.string().describe('Endereço IP'),
-  "userAgent": zod.string().describe('User-Agent'),
   "createdAt": zod.iso.datetime({"offset":true}).describe('Data do registro')
 }).describe('Registro de consentimento')).describe('Histórico de consentimento')
 }).optional().describe('Dados da resposta')

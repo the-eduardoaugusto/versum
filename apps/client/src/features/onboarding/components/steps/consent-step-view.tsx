@@ -40,7 +40,11 @@ export function ConsentStepView({
       return opt?.required ?? false;
     })),
   );
-  const { mutateAsync: postConsent, isPending } = usePostApiV1Consent();
+  const { mutateAsync: postConsent, isPending } = usePostApiV1Consent({
+    fetch: {
+      credentials: 'include',
+    },
+  });
 
   function toggle(purpose: string) {
     const opt = step.options.find((o) => o.purpose === purpose);

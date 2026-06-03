@@ -13,7 +13,7 @@ export class ValidateSession {
     session?: Session | null;
     requestIp?: string;
     requestUA?: string;
-  }) {
+    }) {
     if (!session) throw new UnauthorizedError("Session not found");
     if (session.expiresAt.getTime() < Date.now())
       throw new UnauthorizedError("Session expired");

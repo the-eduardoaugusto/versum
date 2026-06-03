@@ -36,8 +36,6 @@ export const GetApiV1ConsentResponse = zod.object({
   "userId": zod.uuid(),
   "purpose": zod.string(),
   "granted": zod.boolean(),
-  "ip": zod.string(),
-  "userAgent": zod.string(),
   "createdAt": zod.iso.datetime({"offset":true})
 }).describe('Registro de consentimento'))
 }).optional().describe('Dados da resposta')

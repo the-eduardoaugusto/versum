@@ -1,8 +1,8 @@
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { matchGuard, evaluateGuard, DEFAULT_GUARD } from "./routes";
-import { getSessionCookieName } from "@/lib/auth";
 import { getCachedUserAuth } from "@/dal/auth/get-cached-session";
+import { getSessionCookieName } from "@/lib/auth";
+import { DEFAULT_GUARD, evaluateGuard, matchGuard } from "./routes";
 
 export default async function Layout({
   children,
@@ -17,7 +17,7 @@ export default async function Layout({
 
   let onboardingComplete = false;
   if (isAuthenticated) {
-    const userData = await getCachedUserAuth(sessionCookie?.value);
+    const userData = await getCachedUserAuth();
 
     if (!userData) {
       redirect("/auth/clear-session");

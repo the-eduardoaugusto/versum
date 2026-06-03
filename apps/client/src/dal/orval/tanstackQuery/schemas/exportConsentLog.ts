@@ -17,10 +17,6 @@ export interface ExportConsentLog {
   purpose: string;
   /** Se o consentimento foi concedido */
   granted: boolean;
-  /** Endereço IP */
-  ip: string;
-  /** User-Agent */
-  userAgent: string;
   /** Data do registro */
   createdAt: string;
 }

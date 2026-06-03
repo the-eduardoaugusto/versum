@@ -1,19 +1,19 @@
 "use client";
 
-import { useRef } from "react";
-import { cn } from "@/lib/utils";
+import { useGSAP } from "@gsap/react";
 import { useForm } from "@tanstack/react-form";
+import { gsap, SplitText } from "gsap/src/all";
+import { useRef } from "react";
+import { toast } from "sonner";
 import type z from "zod";
-import type { FormStep, OnboardingValues, StepDirection } from "../../types";
-import { onboardingFormSchema } from "../../types";
-import type { StepTransitionHandle } from "@/components/shared/step-transition";
-import { StepTransition } from "@/components/shared/step-transition";
 import { ActionButton } from "@/components/shared/action-button";
 import { FieldError } from "@/components/shared/field-error";
-import { useGSAP } from "@gsap/react";
-import { SplitText, gsap } from "gsap/src/all";
+import type { StepTransitionHandle } from "@/components/shared/step-transition";
+import { StepTransition } from "@/components/shared/step-transition";
 import { usePostApiV1ProfilesMe } from "@/dal/orval/tanstackQuery/profiles/profiles";
-import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import type { FormStep, OnboardingValues, StepDirection } from "../../types";
+import { onboardingFormSchema } from "../../types";
 
 interface StepAnimationProps {
   direction: StepDirection;
@@ -69,7 +69,11 @@ export function FormStepView({
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const labelRef = useRef<HTMLParagraphElement | null>(null);
   const subtitleRef = useRef<HTMLParagraphElement | null>(null);
-  const { mutateAsync: createProfile, isPending } = usePostApiV1ProfilesMe();
+  const { mutateAsync: createProfile, isPending } = usePostApiV1ProfilesMe({
+    fetch: {
+      credentials: 'include',
+    }
+  });
 
   const form = useForm({
     defaultValues: {

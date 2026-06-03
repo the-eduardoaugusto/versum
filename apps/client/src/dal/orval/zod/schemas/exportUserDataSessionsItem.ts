@@ -7,7 +7,5 @@
 
 export type ExportUserDataSessionsItem = {
   createdAt: string;
-  ip: string;
-  userAgent: string;
   expiresAt: string;
 };
