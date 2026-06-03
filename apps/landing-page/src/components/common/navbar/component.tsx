@@ -1,9 +1,9 @@
 "use client";
 
-import gsap from "gsap";
 import { ListIcon } from "@phosphor-icons/react";
+import gsap from "gsap";
+import { useRef } from "react";
 import { useChangeNavColors } from "./use-change-nav-colors";
-import { useRef, useEffect } from "react";
 
 export function Navbar() {
   const navbarRef = useRef<HTMLElement>(null);

@@ -41,7 +41,7 @@ export class AuthRepository implements iAuthRepository {
     const [session] = await this.db
       .insert(sessions)
       .values({
-        userId: userId,
+        userId,
         ip,
         userAgent,
         tokenHash,
@@ -192,8 +192,14 @@ export class AuthRepository implements iAuthRepository {
       .where(and(eq(sessions.publicId, publicId), isNull(sessions.revokedAt)));
   }
 
-  async deleteSessionsByUserId({ userId }: { userId: string }): Promise<void> {
-    await this.db.delete(sessions).where(eq(sessions.userId, userId));
+  async deleteSessionsByUserId({ userId }: { userId: string }, tx?: typeof this.db): Promise<void> {
+    const client = tx ?? this.db;
+    await client.delete(sessions).where(eq(sessions.userId, userId));
+  }
+
+  async deleteMagicLinksByEmail({ email }: { email: string }, tx?: typeof this.db): Promise<void> {
+    const client = tx ?? this.db;
+    await client.delete(magicLinks).where(eq(magicLinks.email, email));
   }
 
   async deleteExpiredMagicLinks(): Promise<number> {
@@ -227,7 +233,7 @@ export class AuthRepository implements iAuthRepository {
   async deleteExpiredSessions(): Promise<number> {
     const ninetyDaysAgo = sql`now() - interval '90 days'`;
 
-    const result = await this.db
+    const revokedResult = await this.db
       .delete(sessions)
       .where(
         and(
@@ -237,6 +243,16 @@ export class AuthRepository implements iAuthRepository {
       )
       .returning({ id: sessions.id });
 
-    return result.length;
+    const expiredResult = await this.db
+      .delete(sessions)
+      .where(
+        and(
+          isNull(sessions.revokedAt),
+          lt(sessions.expiresAt, ninetyDaysAgo),
+        ),
+      )
+      .returning({ id: sessions.id });
+
+    return revokedResult.length + expiredResult.length;
   }
 }

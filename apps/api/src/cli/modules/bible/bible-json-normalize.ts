@@ -133,7 +133,7 @@ export function normalizeBibleJsonForSeed(
           );
         }
         const verses = Object.entries(
-          rawChapter as Record<string, string | CompactVerseWithGroup>,
+          rawChapter as unknown as CompactChapter,
         )
           .map(([verseNumber, verseContent]) =>
             toVerse(verseContent, Number(verseNumber)),

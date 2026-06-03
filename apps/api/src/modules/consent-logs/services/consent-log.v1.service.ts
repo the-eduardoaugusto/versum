@@ -1,3 +1,4 @@
+import { hashMetadata } from "../../../utils/crypto/metadata-hash.ts";
 import { CONSENT_PURPOSES } from "../schemas/v1/consent-log.v1.common.schema";
 import { ConsentLogsRepository } from "../repositories/consent-logs.repository";
 import type { ConsentLog, CreateConsentLogParams } from "../repositories/consent-logs.types.repository";
@@ -17,8 +18,7 @@ export class ConsentLogServiceV1 {
   async recordConsents(params: {
     userId: string;
     consents: ConsentInput[];
-    ip: string;
-    userAgent: string;
+    ip?: string;
   }): Promise<ConsentLog[]> {
     for (const consent of params.consents) {
       if (!CONSENT_PURPOSES.includes(consent.purpose as typeof CONSENT_PURPOSES[number])) {
@@ -30,8 +30,7 @@ export class ConsentLogServiceV1 {
       userId: params.userId,
       purpose: c.purpose,
       granted: c.granted,
-      ip: params.ip,
-      userAgent: params.userAgent,
+      ip: params.ip ? hashMetadata(params.ip) : undefined,
     }));
 
     return this.repository.createConsentLogs(rows);

@@ -4,59 +4,50 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import type {
-  ConsentHistoryResponse,
-  RecordConsentBody
-} from '../schemas';
 
-import postApiV1ConsentMutator from '../../../../lib/api-fetcher';
-import getApiV1ConsentMutator from '../../../../lib/api-fetcher';
+import postApiV1ConsentMutator from "../../../../lib/api-fetcher";
+import getApiV1ConsentMutator from "../../../../lib/api-fetcher";
+import type { ConsentHistoryResponse, RecordConsentBody } from "../schemas";
 
 export const getPostApiV1ConsentUrl = () => {
-
-
-
-
-  return `/api/v1/consent`
-}
+  return `/api/v1/consent`;
+};
 
 /**
  * Registra um ou mais consentimentos do usuário autenticado.
  * @summary Registrar consentimentos
  */
-export const postApiV1Consent = async (recordConsentBody?: RecordConsentBody, options?: RequestInit): Promise<ConsentHistoryResponse> => {
-
-  return postApiV1ConsentMutator<ConsentHistoryResponse>(getPostApiV1ConsentUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(recordConsentBody)
-  }
-);}
-
+export const postApiV1Consent = async (
+  recordConsentBody?: RecordConsentBody,
+  options?: RequestInit,
+): Promise<ConsentHistoryResponse> => {
+  return postApiV1ConsentMutator<ConsentHistoryResponse>(
+    getPostApiV1ConsentUrl(),
+    {
+      ...options,
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(recordConsentBody),
+    },
+  );
+};
 
 export const getGetApiV1ConsentUrl = () => {
-
-
-
-
-  return `/api/v1/consent`
-}
+  return `/api/v1/consent`;
+};
 
 /**
  * Retorna todos os registros de consentimento do usuário autenticado.
  * @summary Obter histórico de consentimentos
  */
-export const getApiV1Consent = async ( options?: RequestInit): Promise<ConsentHistoryResponse> => {
-
-  return getApiV1ConsentMutator<ConsentHistoryResponse>(getGetApiV1ConsentUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
+export const getApiV1Consent = async (
+  options?: RequestInit,
+): Promise<ConsentHistoryResponse> => {
+  return getApiV1ConsentMutator<ConsentHistoryResponse>(
+    getGetApiV1ConsentUrl(),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};

@@ -6,11 +6,11 @@
  */
 
 export type GetApiV1ReadingsJourneyFeedParams = {
-/**
- * Quantidade de itens no pre-fetch (0-4, padrão: 4)
- * @minimum 0
- * @maximum 4
- * @nullable
- */
-'buffer-size'?: number | null;
+  /**
+   * Quantidade de itens no pre-fetch (0-4, padrão: 4)
+   * @minimum 0
+   * @maximum 4
+   * @nullable
+   */
+  "buffer-size"?: number | null;
 };

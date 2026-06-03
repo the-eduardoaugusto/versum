@@ -5,6 +5,7 @@ import {
   UnauthorizedError,
 } from "../../../utils/app/errors/index.ts";
 import { env } from "../../../utils/env/index.ts";
+import { hashMetadata } from "../../../utils/crypto/metadata-hash.ts";
 import { UserRepository } from "../../users/repositories/user.repository.ts";
 import { ValidateSession } from "../helpers/validate-session.ts";
 import { AuthRepository } from "../repositories/auth.repository.ts";
@@ -68,12 +69,12 @@ export class AuthServiceV1 {
 
   async createSessionWithMagicLink({
     bruteMagicLinkToken,
-    userAgent,
     ip,
+    userAgent,
   }: {
     bruteMagicLinkToken: string;
-    userAgent: string;
     ip: string;
+    userAgent: string;
   }) {
     const [magicLinkPublicId, magicLinkToken] = bruteMagicLinkToken.split(".");
 
@@ -125,8 +126,8 @@ export class AuthServiceV1 {
 
     const session = await this.repository.createSession({
       userId: user.id,
-      userAgent,
-      ip,
+      ip: hashMetadata(ip),
+      userAgent: hashMetadata(userAgent),
       tokenHash: sessionTokenHash,
     });
 
@@ -139,8 +140,12 @@ export class AuthServiceV1 {
 
   async refreshSession({
     sessionId,
+    requestIp,
+    requestUA,
   }: {
     sessionId: string;
+    requestIp?: string;
+    requestUA?: string;
   }): Promise<
     | { session: Session; rotated: false }
     | { session: Session; rotated: true; token: string }
@@ -151,7 +156,8 @@ export class AuthServiceV1 {
 
     const validatedSession = new ValidateSession({
       session,
-      forwardedFor: session?.ip,
+      requestIp,
+      requestUA,
     }).session;
 
     const refreshWindowMs = 1000 * 60 * 60 * 24 * 10; // 10 days before expiration

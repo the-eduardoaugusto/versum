@@ -1,9 +1,9 @@
 "use client";
 
-import { forwardRef, useImperativeHandle, useRef } from "react";
-import type { ReactNode } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
+import type { ReactNode } from "react";
+import { forwardRef, useImperativeHandle, useRef } from "react";
 
 export interface StepTransitionHandle {
   triggerExit: (direction: number, onDone: () => void) => void;

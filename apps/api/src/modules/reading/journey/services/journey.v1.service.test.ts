@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type {
   ChapterWithContent,
-  JourneyRepository,
-} from "../repositories/journey.repository";
-import { JourneyService } from "./journey.service";
+  JourneyRepositoryV1,
+} from "../repositories/journey.v1.repository";
+import { JourneyServiceV1 } from "./journey.v1.service";
 
 const mockChapterData: ChapterWithContent = {
   chapter: {
@@ -47,8 +47,8 @@ const createMockRepository = () => ({
   getTotalChapters: vi.fn<() => Promise<number>>(),
 });
 
-describe("JourneyService", () => {
-  let service: JourneyService;
+describe("JourneyServiceV1", () => {
+  let service: JourneyServiceV1;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -61,8 +61,8 @@ describe("JourneyService", () => {
       mockRepo.findChaptersAfter.mockResolvedValue([]);
       mockRepo.getTotalChapters.mockResolvedValue(1189);
       mockRepo.getReadChaptersCount.mockResolvedValue(0);
-      service = new JourneyService({
-        repository: mockRepo as unknown as JourneyRepository,
+      service = new JourneyServiceV1({
+        repository: mockRepo as unknown as JourneyRepositoryV1,
       });
 
       const result = await service.getFeed("new-user", 4);
@@ -90,8 +90,8 @@ describe("JourneyService", () => {
       mockRepo.findChaptersAfter.mockResolvedValue([nextChapter]);
       mockRepo.getTotalChapters.mockResolvedValue(1189);
       mockRepo.getReadChaptersCount.mockResolvedValue(0);
-      service = new JourneyService({
-        repository: mockRepo as unknown as JourneyRepository,
+      service = new JourneyServiceV1({
+        repository: mockRepo as unknown as JourneyRepositoryV1,
       });
 
       const result = await service.getFeed("user-123", 4);
@@ -110,8 +110,8 @@ describe("JourneyService", () => {
       mockRepo.findNextChapterToRead.mockResolvedValue(mockChapterData);
       mockRepo.getTotalChapters.mockResolvedValue(1189);
       mockRepo.getReadChaptersCount.mockResolvedValue(0);
-      service = new JourneyService({
-        repository: mockRepo as unknown as JourneyRepository,
+      service = new JourneyServiceV1({
+        repository: mockRepo as unknown as JourneyRepositoryV1,
       });
 
       const result = await service.getFeed("user-123", 0);
@@ -125,8 +125,8 @@ describe("JourneyService", () => {
       mockRepo.findNextChapterToRead.mockResolvedValue(null);
       mockRepo.getTotalChapters.mockResolvedValue(1189);
       mockRepo.getReadChaptersCount.mockResolvedValue(1189);
-      service = new JourneyService({
-        repository: mockRepo as unknown as JourneyRepository,
+      service = new JourneyServiceV1({
+        repository: mockRepo as unknown as JourneyRepositoryV1,
       });
 
       const result = await service.getFeed("user-123", 4);
@@ -141,8 +141,8 @@ describe("JourneyService", () => {
       mockRepo.findChaptersAfter.mockResolvedValue([]);
       mockRepo.getTotalChapters.mockResolvedValue(100);
       mockRepo.getReadChaptersCount.mockResolvedValue(50);
-      service = new JourneyService({
-        repository: mockRepo as unknown as JourneyRepository,
+      service = new JourneyServiceV1({
+        repository: mockRepo as unknown as JourneyRepositoryV1,
       });
 
       const result = await service.getFeed("user-123", 4);
@@ -159,8 +159,8 @@ describe("JourneyService", () => {
       const mockRepo = createMockRepository();
       mockRepo.findNextChapterToRead.mockResolvedValue(mockChapterData);
       mockRepo.markChapterAsRead.mockResolvedValue();
-      service = new JourneyService({
-        repository: mockRepo as unknown as JourneyRepository,
+      service = new JourneyServiceV1({
+        repository: mockRepo as unknown as JourneyRepositoryV1,
       });
 
       const result = await service.markCurrentAsRead("user-123");
@@ -175,8 +175,8 @@ describe("JourneyService", () => {
     it("should return success even when no chapter to mark", async () => {
       const mockRepo = createMockRepository();
       mockRepo.findNextChapterToRead.mockResolvedValue(null);
-      service = new JourneyService({
-        repository: mockRepo as unknown as JourneyRepository,
+      service = new JourneyServiceV1({
+        repository: mockRepo as unknown as JourneyRepositoryV1,
       });
 
       const result = await service.markCurrentAsRead("user-123");
@@ -191,8 +191,8 @@ describe("JourneyService", () => {
       const mockRepo = createMockRepository();
       mockRepo.getReadChaptersCount.mockResolvedValue(100);
       mockRepo.getTotalChapters.mockResolvedValue(1189);
-      service = new JourneyService({
-        repository: mockRepo as unknown as JourneyRepository,
+      service = new JourneyServiceV1({
+        repository: mockRepo as unknown as JourneyRepositoryV1,
       });
 
       const result = await service.getStatus("user-123");
@@ -208,8 +208,8 @@ describe("JourneyService", () => {
       const mockRepo = createMockRepository();
       mockRepo.getReadChaptersCount.mockResolvedValue(1189);
       mockRepo.getTotalChapters.mockResolvedValue(1189);
-      service = new JourneyService({
-        repository: mockRepo as unknown as JourneyRepository,
+      service = new JourneyServiceV1({
+        repository: mockRepo as unknown as JourneyRepositoryV1,
       });
 
       const result = await service.getStatus("user-123");
@@ -222,8 +222,8 @@ describe("JourneyService", () => {
       const mockRepo = createMockRepository();
       mockRepo.getReadChaptersCount.mockResolvedValue(0);
       mockRepo.getTotalChapters.mockResolvedValue(1189);
-      service = new JourneyService({
-        repository: mockRepo as unknown as JourneyRepository,
+      service = new JourneyServiceV1({
+        repository: mockRepo as unknown as JourneyRepositoryV1,
       });
 
       const result = await service.getStatus("new-user");

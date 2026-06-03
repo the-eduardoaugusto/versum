@@ -6,4 +6,4 @@ export const metadata: Metadata = {
   description: "Complete seu perfil",
 };
 
-export default OnboardingScreen
+export default OnboardingScreen;

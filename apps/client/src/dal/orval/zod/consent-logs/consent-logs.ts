@@ -4,22 +4,32 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import * as zod from 'zod';
-
+import * as zod from "zod";
 
 /**
  * Registra um ou mais consentimentos do usuário autenticado.
  * @summary Registrar consentimentos
  */
 
-
-
-export const PostApiV1ConsentBody = zod.object({
-  "consents": zod.array(zod.object({
-  "purpose": zod.enum(['profile_content', 'annotations', 'likes', 'terms']).describe('Finalidade do consentimento'),
-  "granted": zod.boolean().describe('true = concedido, false = revogado')
-}).describe('Item de consentimento')).min(1).describe('Lista de consentimentos')
-}).describe('Payload para registrar consentimentos')
+export const PostApiV1ConsentBody = zod
+  .object({
+    consents: zod
+      .array(
+        zod
+          .object({
+            purpose: zod
+              .enum(["profile_content", "annotations", "likes", "terms"])
+              .describe("Finalidade do consentimento"),
+            granted: zod
+              .boolean()
+              .describe("true = concedido, false = revogado"),
+          })
+          .describe("Item de consentimento"),
+      )
+      .min(1)
+      .describe("Lista de consentimentos"),
+  })
+  .describe("Payload para registrar consentimentos");
 
 /**
  * Retorna todos os registros de consentimento do usuário autenticado.
@@ -27,19 +37,28 @@ export const PostApiV1ConsentBody = zod.object({
  */
 export const getApiV1ConsentResponseSuccessDefault = true;
 
-export const GetApiV1ConsentResponse = zod.object({
-  "success": zod.boolean().default(getApiV1ConsentResponseSuccessDefault).describe('Indica se a requisição foi bem-sucedida'),
-  "message": zod.string().optional().describe('Mensagem opcional de contexto'),
-  "data": zod.object({
-  "consents": zod.array(zod.object({
-  "id": zod.uuid(),
-  "userId": zod.uuid(),
-  "purpose": zod.string(),
-  "granted": zod.boolean(),
-  "ip": zod.string(),
-  "userAgent": zod.string(),
-  "createdAt": zod.iso.datetime({"offset":true})
-}).describe('Registro de consentimento'))
-}).optional().describe('Dados da resposta')
-}).describe('Resposta de sucesso para ConsentHistoryResponse')
-
+export const GetApiV1ConsentResponse = zod
+  .object({
+    success: zod
+      .boolean()
+      .default(getApiV1ConsentResponseSuccessDefault)
+      .describe("Indica se a requisição foi bem-sucedida"),
+    message: zod.string().optional().describe("Mensagem opcional de contexto"),
+    data: zod
+      .object({
+        consents: zod.array(
+          zod
+            .object({
+              id: zod.uuid(),
+              userId: zod.uuid(),
+              purpose: zod.string(),
+              granted: zod.boolean(),
+              createdAt: zod.iso.datetime({ offset: true }),
+            })
+            .describe("Registro de consentimento"),
+        ),
+      })
+      .optional()
+      .describe("Dados da resposta"),
+  })
+  .describe("Resposta de sucesso para ConsentHistoryResponse");

@@ -13,4 +13,5 @@ export const envSchema = z.object({
   WEB_CLIENT_APP_URL: z.url(),
   DISCORD_WEBHOOK_URL: z.string(),
   CRON_ENABLED: z.string().default("true"),
+  METADATA_HASH_SECRET: z.string().default("dev-secret-not-for-production"),
 });

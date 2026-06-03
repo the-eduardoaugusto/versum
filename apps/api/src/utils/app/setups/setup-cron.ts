@@ -1,6 +1,6 @@
 import { logger } from "@versum/logger";
-import { env } from "../../env/parser.ts";
 import { PurgeService } from "../../../modules/auth/services/purge.service.ts";
+import { env } from "../../env/parser.ts";
 
 export class SetupCron {
   constructor() {
@@ -13,12 +13,19 @@ export class SetupCron {
 
   private setupDailyPurge() {
     Bun.cron("0 3 * * *", async () => {
-      const service = new PurgeService();
-      const result = await service.runDailyPurge();
-      logger(
-        { level: "info", icon: "🧹" },
-        `[PURGE] Magic links: ${result.magicLinks} deletados, Sessões: ${result.sessions} deletadas`,
-      );
+      try {
+        const service = new PurgeService();
+        const result = await service.runDailyPurge();
+        logger(
+          { level: "info", icon: "🧹" },
+          `[PURGE] Magic links: ${result.magicLinks} deletados, Sessões: ${result.sessions} deletadas`,
+        );
+      } catch (error) {
+        logger(
+          "error",
+          `[PURGE] Falha ao executar purge: ${error instanceof Error ? error.message : String(error)}`,
+        );
+      }
     });
 
     logger("info", "[CRON] Purge job registrado — 03:00 diário");

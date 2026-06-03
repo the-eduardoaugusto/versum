@@ -4,7 +4,8 @@ export const sessions = pgTable("sessions", {
   id: uuid("id").primaryKey().defaultRandom(),
   publicId: uuid("public_id").notNull().defaultRandom().unique(),
   userId: uuid("user_id").notNull(),
-  ip: text("ip").notNull(),
+  ip: text("ip"),
+  userAgent: text("user_agent"),
   createdAt: timestamp("created_at", {
     precision: 3,
     withTimezone: true,
@@ -27,6 +28,5 @@ export const sessions = pgTable("sessions", {
     precision: 3,
     withTimezone: true,
   }),
-  userAgent: text("user_agent").notNull(),
   tokenHash: text("token_hash").notNull().unique(),
 });

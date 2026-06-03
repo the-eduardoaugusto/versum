@@ -2,6 +2,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { User, UserExportData } from "../repositories/user.types.repository";
 import { UserServiceV1 } from "./user.v1.service";
 
+const mockTransaction = vi.fn(async (cb: (tx: unknown) => Promise<void>) => {
+  await cb({});
+});
+
 describe("UserServiceV1", () => {
   let service: UserServiceV1;
 
@@ -12,7 +16,9 @@ describe("UserServiceV1", () => {
   };
 
   const mockUserExportData: UserExportData = {
-    user: mockUser,
+    id: mockUser.id,
+    email: mockUser.email,
+    createdAt: mockUser.createdAt,
     profile: {
       id: "profile-id",
       userId: mockUser.id,
@@ -63,8 +69,6 @@ describe("UserServiceV1", () => {
         id: "session-1",
         publicId: "pub-session-1",
         userId: mockUser.id,
-        ip: "127.0.0.1",
-        userAgent: "Mozilla/5.0",
         tokenHash: "hash123",
         createdAt: new Date("2024-01-01T00:00:00Z"),
         updatedAt: new Date("2024-01-01T00:00:00Z"),
@@ -78,8 +82,6 @@ describe("UserServiceV1", () => {
         userId: mockUser.id,
         purpose: "profile_content",
         granted: true,
-        ip: "127.0.0.1",
-        userAgent: "Mozilla/5.0",
         createdAt: new Date("2024-01-01T00:00:00Z"),
       },
     ],
@@ -98,6 +100,7 @@ describe("UserServiceV1", () => {
   const createMockAuthRepository = () => ({
     db: {},
     deleteSessionsByUserId: vi.fn<() => Promise<void>>(),
+    deleteMagicLinksByEmail: vi.fn<() => Promise<void>>(),
   });
 
   const createMockProfileRepository = () => ({
@@ -121,6 +124,7 @@ describe("UserServiceV1", () => {
         mockAuthRepository as unknown as import("../../auth/repositories/auth.repository").AuthRepository,
       profileRepository:
         mockProfileRepository as unknown as import("../repositories/profile.repository").ProfileRepository,
+      transaction: mockTransaction as unknown as typeof import("../../../infrastructure/db").db.transaction,
     });
 
   beforeEach(() => {
@@ -245,12 +249,13 @@ describe("UserServiceV1", () => {
   });
 
   describe("deleteUser", () => {
-    it("should delete user and related data", async () => {
+    it("should delete user and all related data", async () => {
       const mockRepository = createMockRepository();
       const mockAuthRepository = createMockAuthRepository();
       const mockProfileRepository = createMockProfileRepository();
       mockRepository.findById.mockResolvedValue(mockUser);
       mockAuthRepository.deleteSessionsByUserId.mockResolvedValue(undefined);
+      mockAuthRepository.deleteMagicLinksByEmail.mockResolvedValue(undefined);
       mockProfileRepository.deleteByUserId.mockResolvedValue(undefined);
       mockRepository.deleteUser.mockResolvedValue(undefined);
       service = createService({ mockRepository, mockAuthRepository, mockProfileRepository });
@@ -258,12 +263,13 @@ describe("UserServiceV1", () => {
       await service.deleteUser({ id: mockUser.id });
 
       expect(mockRepository.findById).toHaveBeenCalledWith({ id: mockUser.id });
-      expect(mockAuthRepository.deleteSessionsByUserId).toHaveBeenCalledWith({ userId: mockUser.id });
-      expect(mockProfileRepository.deleteByUserId).toHaveBeenCalledWith({ userId: mockUser.id });
-      expect(mockRepository.deleteUser).toHaveBeenCalledWith({ id: mockUser.id });
+      expect(mockAuthRepository.deleteSessionsByUserId).toHaveBeenCalledWith({ userId: mockUser.id }, expect.anything());
+      expect(mockProfileRepository.deleteByUserId).toHaveBeenCalledWith({ userId: mockUser.id }, expect.anything());
+      expect(mockAuthRepository.deleteMagicLinksByEmail).toHaveBeenCalledWith({ email: mockUser.email }, expect.anything());
+      expect(mockRepository.deleteUser).toHaveBeenCalledWith({ id: mockUser.id }, expect.anything());
     });
 
-    it("should delete sessions before profile before user", async () => {
+    it("should delete in correct order: sessions, profile, magic links, user", async () => {
       const mockRepository = createMockRepository();
       const mockAuthRepository = createMockAuthRepository();
       const mockProfileRepository = createMockProfileRepository();
@@ -274,10 +280,12 @@ describe("UserServiceV1", () => {
 
       const sessionOrder = mockAuthRepository.deleteSessionsByUserId.mock.invocationCallOrder[0];
       const profileOrder = mockProfileRepository.deleteByUserId.mock.invocationCallOrder[0];
+      const magicLinksOrder = mockAuthRepository.deleteMagicLinksByEmail.mock.invocationCallOrder[0];
       const userOrder = mockRepository.deleteUser.mock.invocationCallOrder[0];
 
-      expect(sessionOrder).toBeLessThan(profileOrder!);
-      expect(profileOrder!).toBeLessThan(userOrder!);
+      expect(sessionOrder).toBeLessThan(profileOrder as number);
+      expect(profileOrder as number).toBeLessThan(magicLinksOrder as number);
+      expect(magicLinksOrder as number).toBeLessThan(userOrder as number);
     });
 
     it("should throw error when user not found", async () => {
@@ -292,6 +300,7 @@ describe("UserServiceV1", () => {
       ).rejects.toThrow("User not found");
 
       expect(mockAuthRepository.deleteSessionsByUserId).not.toHaveBeenCalled();
+      expect(mockAuthRepository.deleteMagicLinksByEmail).not.toHaveBeenCalled();
       expect(mockProfileRepository.deleteByUserId).not.toHaveBeenCalled();
       expect(mockRepository.deleteUser).not.toHaveBeenCalled();
     });
@@ -309,15 +318,14 @@ describe("UserServiceV1", () => {
 
       expect(result.user.email).toBe("john@example.com");
       expect(result.profile).not.toBeNull();
-      expect(result.profile!.username).toBe("john");
-      expect(result.profile!.name).toBe("John Doe");
+      expect(result.profile?.username).toBe("john");
+      expect(result.profile?.name).toBe("John Doe");
       expect(result.sessions).toHaveLength(1);
-      expect(result.sessions[0].ip).toBe("127.0.0.1");
-      expect(result.sessions[0]).not.toHaveProperty("tokenHash");
+      expect(result.sessions[0] as object).not.toHaveProperty("tokenHash");
       expect(result.readingHistory.journey).toHaveLength(1);
       expect(result.readingHistory.discovery).toHaveLength(1);
       expect(result.annotations).toHaveLength(1);
-      expect(result.annotations[0].annotation).toBe("Great verse");
+      expect(result.annotations[0]?.annotation).toBe("Great verse");
       expect(result.likes).toHaveLength(1);
       expect(result.consentLogs).toHaveLength(1);
       expect(result.exportedAt).toBeDefined();
@@ -341,7 +349,9 @@ describe("UserServiceV1", () => {
       const mockAuthRepository = createMockAuthRepository();
       const mockProfileRepository = createMockProfileRepository();
       const partialData: UserExportData = {
-        user: mockUser,
+        id: mockUser.id,
+        email: mockUser.email,
+        createdAt: mockUser.createdAt,
         profile: null,
         readings: [],
         discoveryReadings: [],

@@ -1,14 +1,14 @@
 "use client";
 
+import { useGSAP } from "@gsap/react";
+import { gsap, SplitText } from "gsap/src/all";
+import { useRouter } from "next/navigation";
 import { useRef } from "react";
-import type { OnboardingValues, OutStep, StepDirection } from "../../types";
-import { onboardingFormSchema } from "../../types";
+import { ActionButton } from "@/components/shared/action-button";
 import type { StepTransitionHandle } from "@/components/shared/step-transition";
 import { StepTransition } from "@/components/shared/step-transition";
-import { ActionButton } from "@/components/shared/action-button";
-import { useGSAP } from "@gsap/react";
-import { SplitText, gsap } from "gsap/src/all";
-import { useRouter } from "next/navigation";
+import type { OnboardingValues, OutStep, StepDirection } from "../../types";
+import { onboardingFormSchema } from "../../types";
 
 interface StepAnimationProps {
   direction: StepDirection;
@@ -47,14 +47,38 @@ export function OutStepView({
   useGSAP(() => {
     if (labelRef.current && subtitleRef.current) {
       const splitedLabel = new SplitText(labelRef.current, { type: "words" });
-      const splitedSubtitle = new SplitText(subtitleRef.current, { type: "words" });
-      gsap.set(splitedLabel.words, { opacity: 0, transform: "translateY(20px)", filter: "blur(10px)" });
-      gsap.set(splitedSubtitle.words, { opacity: 0, transform: "translateY(20px)", filter: "blur(10px)" });
+      const splitedSubtitle = new SplitText(subtitleRef.current, {
+        type: "words",
+      });
+      gsap.set(splitedLabel.words, {
+        opacity: 0,
+        transform: "translateY(20px)",
+        filter: "blur(10px)",
+      });
+      gsap.set(splitedSubtitle.words, {
+        opacity: 0,
+        transform: "translateY(20px)",
+        filter: "blur(10px)",
+      });
 
       wrapperRef.current?.classList.remove("invisible");
 
-      gsap.to(splitedLabel.words, { opacity: 1, transform: "translateY(0)", filter: "blur(0px)", stagger: 0.1, duration: 1, ease: "power4.out" });
-      gsap.to(splitedSubtitle.words, { opacity: 1, transform: "translateY(0)", filter: "blur(0px)", stagger: 0.1, duration: 0.6, ease: "power4.out" });
+      gsap.to(splitedLabel.words, {
+        opacity: 1,
+        transform: "translateY(0)",
+        filter: "blur(0px)",
+        stagger: 0.1,
+        duration: 1,
+        ease: "power4.out",
+      });
+      gsap.to(splitedSubtitle.words, {
+        opacity: 1,
+        transform: "translateY(0)",
+        filter: "blur(0px)",
+        stagger: 0.1,
+        duration: 0.6,
+        ease: "power4.out",
+      });
 
       return () => {
         if (splitedLabel.words) {
@@ -63,19 +87,28 @@ export function OutStepView({
         if (splitedSubtitle.words) {
           gsap.killTweensOf(splitedSubtitle.words);
         }
-      }
+      };
     }
-  }, [])
+  }, []);
 
   return (
     <StepTransition ref={transitionRef}>
       <div className="flex h-full flex-col items-center justify-center px-8 text-center">
-        <div ref={wrapperRef} className="invisible flex flex-col items-center gap-2">
+        <div
+          ref={wrapperRef}
+          className="invisible flex flex-col items-center gap-2"
+        >
           <span className="text-5xl">🎉</span>
-          <p ref={labelRef} className="tracking-tight text-foreground overflow-hidden font-instrument-serif text-5xl">
+          <p
+            ref={labelRef}
+            className="tracking-tight text-foreground overflow-hidden font-instrument-serif text-5xl"
+          >
             {label}
           </p>
-          <p className="text-xl text-foreground/50 font-instrument-sans" ref={subtitleRef}>
+          <p
+            className="text-xl text-foreground/50 font-instrument-sans"
+            ref={subtitleRef}
+          >
             Tudo certo! Sua conta está pronta.
           </p>
         </div>
@@ -83,4 +116,4 @@ export function OutStepView({
       </div>
     </StepTransition>
   );
-};
+}

@@ -83,7 +83,8 @@ export class ProfileRepository implements iProfileRepository {
     return profile ? { exists: true, profileId: profile.id } : { exists: false };
   }
 
-  async deleteByUserId({ userId }: { userId: string }): Promise<void> {
-    await this.db.delete(profiles).where(eq(profiles.userId, userId));
+  async deleteByUserId({ userId }: { userId: string }, tx?: typeof this.db): Promise<void> {
+    const client = tx ?? this.db;
+    await client.delete(profiles).where(eq(profiles.userId, userId));
   }
 }

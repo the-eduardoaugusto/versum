@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { getSessionCookieName } from "@/lib/auth";
+import { getClientIp } from "@/lib/get-client-ip";
 
 export async function GET(req: NextRequest) {
   const sessionCookieName = getSessionCookieName();
@@ -22,12 +23,13 @@ export async function GET(req: NextRequest) {
   routeRedirect.pathname = "/";
 
   try {
-    const forwardedFor = req.headers.get("x-forwarded-for");
-    const realIp = req.headers.get("x-real-ip");
+    const clientIp = getClientIp(req);
     const userAgent = req.headers.get("user-agent") ?? "unknown";
-    const clientIp = forwardedFor?.split(",")[0]?.trim() ?? realIp ?? "unknown";
 
-    const apiUrl = new URL("/api/v1/auth/magic-link", process.env.NEXT_PUBLIC_API_URL);
+    const apiUrl = new URL(
+      "/api/v1/auth/magic-link",
+      process.env.NEXT_PUBLIC_API_URL,
+    );
     apiUrl.searchParams.set("token", token);
 
     const res = await fetch(apiUrl.toString(), {

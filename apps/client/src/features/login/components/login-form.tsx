@@ -1,14 +1,13 @@
 "use client";
 
+import { useGSAP } from "@gsap/react";
+import { gsap, SplitText } from "gsap/src/all";
 import { useRef } from "react";
-import { SignInIcon } from "@phosphor-icons/react";
-import { StepTransition } from "@/components/shared/step-transition";
-import type { StepTransitionHandle } from "@/components/shared/step-transition";
 import { ActionButton } from "@/components/shared/action-button";
 import { FieldError } from "@/components/shared/field-error";
+import type { StepTransitionHandle } from "@/components/shared/step-transition";
+import { StepTransition } from "@/components/shared/step-transition";
 import { useLoginForm } from "../hooks/use-login-form";
-import { useGSAP } from "@gsap/react";
-import { SplitText, gsap } from "gsap/src/all";
 
 export function LoginForm() {
   const transitionRef = useRef<StepTransitionHandle>(null);
@@ -102,7 +101,6 @@ export function LoginForm() {
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={field.handleBlur}
                   autoComplete="email"
-                  autoFocus
                   className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 placeholder-neutral-400 outline-none ring-0 transition focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:placeholder-neutral-500 dark:focus:border-white dark:focus:ring-white/10"
                 />
                 <FieldError field={field} />

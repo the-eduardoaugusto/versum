@@ -4,7 +4,7 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import type { User } from './user';
+import type { User } from "./user";
 
 /**
  * Dados da resposta

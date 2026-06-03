@@ -1,23 +1,24 @@
-import type { ConsentOption, ConsentStep, FormStep, OnboardingStep } from "./types";
+import type { ConsentOption, FormStep, OnboardingStep } from "./types";
 
 export const CONSENT_OPTIONS: ConsentOption[] = [
   {
     purpose: "profile_content",
     label: "Conteúdo do perfil",
     description: "Permitir armazenar nome, username, bio e foto do perfil.",
-    required: true,
+    required: false,
   },
   {
     purpose: "annotations",
     label: "Anotações",
-    description: "Permitir salvar minhas anotações e marcadores nos versículos.",
-    required: true,
+    description:
+      "Permitir salvar minhas anotações e marcadores nos versículos.",
+    required: false,
   },
   {
     purpose: "likes",
     label: "Favoritos",
     description: "Permitir salvar meus versículos favoritos.",
-    required: true,
+    required: false,
   },
   {
     purpose: "terms",

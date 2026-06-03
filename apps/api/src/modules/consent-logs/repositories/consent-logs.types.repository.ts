@@ -14,6 +14,5 @@ export interface CreateConsentLogParams {
   userId: string;
   purpose: string;
   granted: boolean;
-  ip: string;
-  userAgent: string;
+  ip?: string;
 }
