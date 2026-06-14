@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   const authCookie = req.cookies.get(sessionCookieName);
 
   if (authCookie) {
-    return NextResponse.redirect("/");
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
   const url = req.nextUrl.clone();
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
   const token = params.get("token") ? String(params.get("token")) : undefined;
 
   if (!token) {
-    return NextResponse.redirect("/login");
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 
   const routeRedirect = url.clone();
@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
 
     const res = await fetch(apiUrl.toString(), {
       method: "GET",
-      credentials: "include",
+      cache: "no-store",
       headers: {
         "x-forwarded-for": clientIp,
         "user-agent": userAgent,
@@ -49,9 +49,9 @@ export async function GET(req: NextRequest) {
 
     const redirectRes = NextResponse.redirect(routeRedirect.toString());
 
-    const setCookie = res.headers.get("set-cookie");
-    if (setCookie) {
-      redirectRes.headers.set("set-cookie", setCookie);
+    const setCookies = res.headers.getSetCookie();
+    for (const cookie of setCookies) {
+      redirectRes.headers.append("set-cookie", cookie);
     }
 
     return redirectRes;
