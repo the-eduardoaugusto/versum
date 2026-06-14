@@ -26,11 +26,13 @@ async function proxy(req: NextRequest) {
   const clientIp = getClientIp(req);
 
   const headers: Record<string, string> = { "x-forwarded-for": clientIp };
+  const userAgent = req.headers.get("user-agent");
   for (const [key, value] of req.headers.entries()) {
     if (FORWARD_HEADERS.has(key)) {
       headers[key] = value;
     }
   }
+  console.log("[PROXY:api] user-agent:", userAgent);
 
   const body =
     req.method !== "GET" && req.method !== "HEAD"

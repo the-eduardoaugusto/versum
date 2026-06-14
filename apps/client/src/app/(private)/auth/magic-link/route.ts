@@ -32,6 +32,8 @@ export async function GET(req: NextRequest) {
     );
     apiUrl.searchParams.set("token", token);
 
+    console.log("[PROXY:magic-link] user-agent:", userAgent);
+
     const res = await fetch(apiUrl.toString(), {
       method: "GET",
       credentials: "include",
