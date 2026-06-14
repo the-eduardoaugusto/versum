@@ -86,13 +86,13 @@ export function InStepView({ step, direction, onExitDone }: InStepViewProps) {
           <p
             ref={labelRef}
             className={cn(
-              "tracking-tight text-foreground overflow-hidden font-instrument-serif text-5xl",
+              "tracking-tight text-foreground overflow-hidden font-instrument-serif text-3xl sm:text-5xl text-center",
             )}
           >
             {step.label}
           </p>
           <p
-            className="text-xl text-foreground/50 font-instrument-sans"
+            className="text-base sm:text-xl text-foreground/50 font-instrument-sans text-center"
             ref={subtitleRef}
           >
             Vamos configurar sua conta em alguns passos rápidos.

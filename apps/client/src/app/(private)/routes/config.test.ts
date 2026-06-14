@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import { DEFAULT_GUARD, guardRoutes } from "./config";
 
 describe("guardRoutes", () => {
-  it("possui 3 rotas", () => {
-    expect(guardRoutes).toHaveLength(3);
+  it("possui 2 rotas", () => {
+    expect(guardRoutes).toHaveLength(2);
   });
 
   it("login usa startWith e kind guest", () => {
@@ -15,13 +15,11 @@ describe("guardRoutes", () => {
     expect(login?.redirectTo).toBe("/");
   });
 
-  it("magic-link usa path exato e kind guest", () => {
+  it("magic-link não está no guardRoutes (tratado pelo route handler)", () => {
     const ml = guardRoutes.find(
       (r) => "path" in r && r.path === "/auth/magic-link",
     );
-    expect(ml).toBeDefined();
-    expect(ml?.kind).toBe("guest");
-    expect(ml?.redirectTo).toBe("/");
+    expect(ml).toBeUndefined();
   });
 
   it("onboarding usa path exato e kind onboarding", () => {
