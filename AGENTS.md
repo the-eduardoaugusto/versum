@@ -1,91 +1,60 @@
 # AGENTS.md — Versum
 
-**Leia isso antes de fazer qualquer alteração no projeto.**
-
----
-
 ## Stack
-
-| Camada | Tecnologia |
-|--------|-----------|
-| Frontend (cliente) | Next.js 16, React 19, Tailwind CSS v4, shadcn/ui |
-| Backend (API) | Hono (OpenAPIHono), Drizzle ORM, Zod |
-| Database | PostgreSQL |
-| Auth | E-mail Magic Link + Infinity Session (cookie httpOnly) |
-| Package Manager | Bun |
-| Linter/Formatter | Biome |
+| Layer | Tech |
+|-------|------|
+| Frontend | Next.js 16, React 19, Tailwind v4, shadcn/ui |
+| Backend | Hono (OpenAPIHono), Drizzle ORM, Zod |
+| DB | PostgreSQL |
+| Auth | Magic Link + httpOnly cookie (infinite session) |
+| Runtime | Bun |
+| Lint | Biome |
 | Test | Vitest |
 | Codegen | Orval (OpenAPI → TanStack Query + Zod) |
 
----
+## Read Before Coding
+`.ai/prd.md` | `.ai/docs/naming-convention.md` | `.ai/docs/api-development.md` | `.ai/docs/git-flow.md` | `.ai/rules/`
 
-## Documentação Obrigatória
-
-Sempre leia estes arquivos antes de codificar:
-
-- `.ai/prd.md` — Product Requirements Document
-- `.ai/docs/naming-convention.md` — Database, API e código
-- `.ai/docs/api-development.md` — Como criar endpoints
-- `.ai/docs/git-flow.md` — Branches, commits e sandbox
-- `.ai/rules/` — Regras de desenvolvimento
-
----
-
-## Estrutura do Projeto
-
+## Structure
 ```
 versum/
-├── .ai/                 # Documentação e regras globais
-├── apps/
-│   ├── api/             # Backend REST (Hono)
-│   ├── client/          # Frontend (Next.js App Router)
-│   └── landing-page/    # Landing page marketing
-├── packages/
-│   └── logger/          # @versum/logger
-└── AGENTS.md            # Este arquivo
+├── .ai/                 # Docs & rules
+├── apps/api/            # REST backend (Hono)
+├── apps/client/         # Frontend (Next.js App Router)
+├── apps/landing-page/   # Marketing
+└── packages/logger/     # @versum/logger
 ```
 
----
+## Git — HARD RULE
+- Base: `development` — never commit directly
+- Naming: `feat/`, `fix/`, `refactor/`, `docs/`, `chore/`
+- AI prefix: `feat/ai-`, `fix/ai-`
+- Commits: Conventional Commits `type(scope): desc`
+- PR always targets `development`
 
-## Regras Obrigatórias para Agentes de IA
+## Pre-Coding Checklist
+1. Read AGENTS.md fully
+2. Read `.ai/docs/git-flow.md`
+3. Read `.ai/prd.md` + relevant `.ai/docs/` + `.ai/rules/`
+4. `git branch --show-current` — if `development`, STOP, create sub-branch
+5. `git checkout -b <type>/ai-<desc> development`
+6. `git stash && git pull origin development --rebase && git stash pop`
+7. Check existing code before creating new
 
-### 1. Versionamento (Git Flow) — REGRA ABSOLUTA
-- **Branch base:** `development` — **NUNCA trabalhe diretamente nela**
-- **Nomenclatura:** `feat/<descricao>`, `fix/<descricao>`, `refactor/<descricao>`, `docs/<descricao>`, `chore/<descricao>`
-- **Commits:** Conventional Commits — `tipo(escopo): descrição`
-- **Sandbox:** Branches criadas por IA usam prefixo `feat/ai-` ou `fix/ai-`
-- **PR:** Sempre abrir PR para `development` ao finalizar
-- ⚠️ **Violar esta regra = quebra o fluxo de revisão e integração contínua**
+## Code Rules
+| Concern | Rule |
+|---------|------|
+| DB columns | `snake_case` |
+| Drizzle props | `camelCase` |
+| API responses | `camelCase` + `SuccessViewModel.create()` |
+| Module files | `<name>.v1.<type>.ts` |
+| Cross-module imports | `@/` alias |
+| Local imports | relative, no `.ts` |
+| Components | PascalCase |
+| Tests | colocated (`service.test.ts`) |
 
-### 2. Antes de Codificar — CHECKLIST OBRIGATÓRIO
-1. Leia `AGENTS.md` (este arquivo) — **todo, do início ao fim**
-2. Leia `.ai/docs/git-flow.md` — **entenda o fluxo de branches**
-3. Leia `.ai/prd.md`
-4. Leia `.ai/docs/` pertinente ao que vai fazer
-5. Leia `.ai/rules/` pertinente
-6. **Verifique a branch atual** com `git branch --show-current`
-   - Se estiver em `development`, **PARE** e crie uma sub-branch
-   - Se estiver em outra branch sem prefixo `ai-`, considere criar uma nova
-7. Crie branch a partir de `development`: `git checkout -b <tipo>/ai-<descricao> development`
-8. **Atualize o repositório local** sem comprometer alterações:
-   ```bash
-   git stash
-   git pull origin development --rebase
-   git stash pop
-   ```
-9. Verifique exemplos existentes no código antes de criar algo novo
-
-### 3. Regras de Código
-- **Database:** `snake_case` nas colunas, `camelCase` nas propriedades Drizzle
-- **API Responses:** `camelCase`, sempre usar ViewModels (`SuccessViewModel.create()`)
-- **API módulos:** Seguir padrão `controllers/db/repositories/routes/schemas/services`
-- **Versão de API:** Usar sufixo `.v1.` em todos os arquivos de módulo (ex: `auth.v1.controller.ts`)
-- **Imports:** Usar `@/` alias (configurado em tsconfig)
-- **Components React:** PascalCase (`UserProfile.tsx`)
-- **Testes:** Colocar ao lado do arquivo que testam (`service.test.ts`)
-
-### 4. Importante
-- Este é um projeto **Bun** — nunca use npm/yarn/pnpm
-- Next.js 16 tem breaking changes — consulte `node_modules/next/dist/docs/` se necessário
-- Nunca commite `.env`, `.certs`, `node_modules`
-- Execute `biome check` e `tsc --noEmit` antes de cada commit
+## Constraints
+- Bun only — never npm/yarn/pnpm
+- Never commit `.env`, `.certs`, `node_modules`
+- `biome check` + `tsc --noEmit` before every commit
+- Next.js 16 has breaking changes — check `node_modules/next/dist/docs/`
