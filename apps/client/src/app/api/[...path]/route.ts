@@ -48,7 +48,11 @@ async function proxy(req: NextRequest) {
   const responseHeaders = new Headers();
   res.headers.forEach((value, key) => {
     if (key !== "content-encoding" && key !== "transfer-encoding") {
-      responseHeaders.set(key, value);
+      if (key === "set-cookie") {
+        responseHeaders.append(key, value);
+      } else {
+        responseHeaders.set(key, value);
+      }
     }
   });
 
