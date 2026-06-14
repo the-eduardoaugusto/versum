@@ -19,6 +19,8 @@ export default defineConfig({
     database: dbUrl.pathname.replace("/", ""),
     ssl: {
       ca,
+      cert: ca,
+      key: ca,
       rejectUnauthorized: false,
     },
   },
