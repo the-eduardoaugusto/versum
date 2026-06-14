@@ -3,13 +3,14 @@
 import { useGSAP } from "@gsap/react";
 import { useForm } from "@tanstack/react-form";
 import { gsap, SplitText } from "gsap/src/all";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import type z from "zod";
 import { ActionButton } from "@/components/shared/action-button";
 import { FieldError } from "@/components/shared/field-error";
 import type { StepTransitionHandle } from "@/components/shared/step-transition";
 import { StepTransition } from "@/components/shared/step-transition";
+import { getApiV1ProfilesUsername } from "@/dal/orval/fetch/profiles/profiles";
 import { usePostApiV1ProfilesMe } from "@/dal/orval/tanstackQuery/profiles/profiles";
 import { cn } from "@/lib/utils";
 import type { FormStep, OnboardingValues, StepDirection } from "../../types";
@@ -52,6 +53,17 @@ function isValidPatch(obj: Partial<OnboardingValues>): obj is OnboardingValues {
   );
 }
 
+async function checkUsernameAvailable(username: string): Promise<boolean> {
+  try {
+    await getApiV1ProfilesUsername(username);
+    return false; // profile found → username taken
+  } catch (e) {
+    const status = (e as { response?: { status?: number } }).response?.status;
+    if (status === 404) return true; // not found → available
+    return true; // network/auth error — don't block the user
+  }
+}
+
 export function FormStepView({
   step,
   defaultValue = "",
@@ -68,6 +80,7 @@ export function FormStepView({
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const labelRef = useRef<HTMLParagraphElement | null>(null);
   const subtitleRef = useRef<HTMLParagraphElement | null>(null);
+  const [apiError, setApiError] = useState<string | null>(null);
   const { mutateAsync: createProfile, isPending } = usePostApiV1ProfilesMe({
     fetch: {
       credentials: "include",
@@ -84,11 +97,21 @@ export function FormStepView({
       >,
     },
     onSubmit: async ({ value }) => {
+      setApiError(null);
+
       const patch = {
         [step.field]: value[step.field],
       } as Partial<OnboardingValues>;
 
       if (!isValidPatch(patch)) return;
+
+      if (step.field === "username") {
+        const available = await checkUsernameAvailable(value.username);
+        if (!available) {
+          setApiError("Este username já está em uso. Escolha outro.");
+          return;
+        }
+      }
 
       if (isLastFormStep) {
         const allValues = onboardingFormSchema.parse({
@@ -118,8 +141,7 @@ export function FormStepView({
             e instanceof Error
               ? e.message
               : "Não foi possível completar o cadastro.";
-          toast.error(message);
-          onError(message);
+          setApiError(message);
           return;
         }
       }
@@ -224,7 +246,10 @@ export function FormStepView({
                   type={step.inputType}
                   placeholder={step.placeholder}
                   value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
+                  onChange={(e) => {
+                    field.handleChange(e.target.value);
+                    if (apiError) setApiError(null);
+                  }}
                   onBlur={field.handleBlur}
                   autoComplete="off"
                   className={cn(
@@ -233,9 +258,15 @@ export function FormStepView({
                     "transition focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10",
                     "dark:border-neutral-700 dark:bg-neutral-800 dark:text-white",
                     "dark:placeholder-neutral-500 dark:focus:border-white dark:focus:ring-white/10",
+                    apiError && "border-red-500 dark:border-red-400",
                   )}
                 />
                 <FieldError field={field} />
+                {apiError && (
+                  <p className="mt-1.5 text-sm text-red-500 dark:text-red-400">
+                    {apiError}
+                  </p>
+                )}
               </div>
             )}
           </form.Field>
