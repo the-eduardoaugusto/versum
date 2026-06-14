@@ -1,4 +1,4 @@
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, isNotNull, isNull, lt, sql } from "drizzle-orm";
 import { db as drizzle } from "../../../infrastructure/db/index.ts";
 import { magicLinks } from "../db/magic-links.table.ts";
 import { sessions } from "../db/sessions.table.ts";
@@ -41,7 +41,7 @@ export class AuthRepository implements iAuthRepository {
     const [session] = await this.db
       .insert(sessions)
       .values({
-        userId: userId,
+        userId,
         ip,
         userAgent,
         tokenHash,
@@ -190,5 +190,69 @@ export class AuthRepository implements iAuthRepository {
         revokedAt: new Date(),
       })
       .where(and(eq(sessions.publicId, publicId), isNull(sessions.revokedAt)));
+  }
+
+  async deleteSessionsByUserId({ userId }: { userId: string }, tx?: typeof this.db): Promise<void> {
+    const client = tx ?? this.db;
+    await client.delete(sessions).where(eq(sessions.userId, userId));
+  }
+
+  async deleteMagicLinksByEmail({ email }: { email: string }, tx?: typeof this.db): Promise<void> {
+    const client = tx ?? this.db;
+    await client.delete(magicLinks).where(eq(magicLinks.email, email));
+  }
+
+  async deleteExpiredMagicLinks(): Promise<number> {
+    const thirtyDaysAgo = sql`now() - interval '30 days'`;
+    const sevenDaysAgo = sql`now() - interval '7 days'`;
+
+    const usedResult = await this.db
+      .delete(magicLinks)
+      .where(
+        and(
+          isNotNull(magicLinks.usedAt),
+          lt(magicLinks.expiresAt, thirtyDaysAgo),
+        ),
+      )
+      .returning({ id: magicLinks.id });
+
+    const abandonedResult = await this.db
+      .delete(magicLinks)
+      .where(
+        and(
+          isNull(magicLinks.usedAt),
+          isNull(magicLinks.invalidatedAt),
+          lt(magicLinks.expiresAt, sevenDaysAgo),
+        ),
+      )
+      .returning({ id: magicLinks.id });
+
+    return usedResult.length + abandonedResult.length;
+  }
+
+  async deleteExpiredSessions(): Promise<number> {
+    const ninetyDaysAgo = sql`now() - interval '90 days'`;
+
+    const revokedResult = await this.db
+      .delete(sessions)
+      .where(
+        and(
+          isNotNull(sessions.revokedAt),
+          lt(sessions.revokedAt, ninetyDaysAgo),
+        ),
+      )
+      .returning({ id: sessions.id });
+
+    const expiredResult = await this.db
+      .delete(sessions)
+      .where(
+        and(
+          isNull(sessions.revokedAt),
+          lt(sessions.expiresAt, ninetyDaysAgo),
+        ),
+      )
+      .returning({ id: sessions.id });
+
+    return revokedResult.length + expiredResult.length;
   }
 }

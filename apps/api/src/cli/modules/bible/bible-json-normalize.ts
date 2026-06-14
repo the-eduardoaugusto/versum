@@ -82,9 +82,103 @@ function isBookNode(raw: unknown): raw is {
   return typeof ch === "object" && ch !== null && !Array.isArray(ch);
 }
 
+function normalizeBookEntry(
+  rawBook: unknown,
+  bookKey: string,
+  index: number,
+  existingBooks: Array<{ name: string; slug: string; niceName: string }>,
+): NormalizedBook {
+  if (!isBookNode(rawBook)) {
+    throw new Error(
+      `Livro "${bookKey}": cada entrada deve ter "chapters" como mapa (capítulo → versículos).`,
+    );
+  }
+
+  const normalizedKey = normalizeBookKey(bookKey);
+  const existing = existingBooks.find((book) =>
+    [book.name, book.slug, book.niceName]
+      .filter(Boolean)
+      .map(normalizeBookKey)
+      .includes(normalizedKey),
+  );
+
+  const chapters = Object.entries(rawBook.chapters)
+    .map(([chapterNumber, rawChapter]) => {
+      if (
+        typeof rawChapter !== "object" ||
+        rawChapter === null ||
+        Array.isArray(rawChapter)
+      ) {
+        throw new Error(
+          `Livro "${bookKey}" capítulo ${chapterNumber}: esperado objeto de versículos.`,
+        );
+      }
+      const verses = Object.entries(
+        rawChapter as unknown as CompactChapter,
+      )
+        .map(([verseNumber, verseContent]) =>
+          toVerse(verseContent, Number(verseNumber)),
+        )
+        .sort((a, b) => a.verse - b.verse);
+
+      return {
+        chapter: Number(chapterNumber),
+        verses,
+      };
+    })
+    .sort((a, b) => a.chapter - b.chapter);
+
+  return {
+    name: existing?.name || rawBook.name || bookKey,
+    niceName: existing?.niceName || rawBook.niceName || toNiceName(bookKey),
+    slug: existing?.slug || rawBook.slug || slugify(bookKey).slice(0, 10),
+    order: index + 1,
+    chapters,
+  };
+}
+
+function normalizeBooks(
+  root: Record<string, unknown>,
+  existingBooks: Array<{ name: string; slug: string; niceName: string }>,
+): NormalizedBook[] {
+  if ("books" in root && Array.isArray(root.books)) {
+    return (root.books as unknown[]).map((book, index) => {
+      const bookObj = book as Record<string, unknown>;
+      const chaptersRaw = bookObj.chapters;
+      if (!chaptersRaw || !Array.isArray(chaptersRaw)) {
+        throw new Error(
+          `Livro "${bookObj.name ?? index}": "chapters" deve ser um array.`,
+        );
+      }
+      const chaptersMap: Record<string, Record<string, string>> = {};
+      for (const ch of chaptersRaw) {
+        const chObj = ch as { chapter?: number; verses?: Array<{ verse: number; text: string }> };
+        const chNum = String(chObj.chapter ?? 0);
+        chaptersMap[chNum] = {};
+        const verses = chObj.verses ?? [];
+        for (const v of verses) {
+          chaptersMap[chNum][String(v.verse)] = v.text;
+        }
+      }
+      const wrappedBook = {
+        name: bookObj.name as string,
+        slug: bookObj.slug as string,
+        niceName: (bookObj.niceName as string) || toNiceName(bookObj.name as string),
+        chapters: chaptersMap,
+      };
+      return normalizeBookEntry(wrappedBook, wrappedBook.name, index, existingBooks);
+    });
+  }
+
+  return Object.entries(root).map(([bookKey, rawBook], index) =>
+    normalizeBookEntry(rawBook, bookKey, index, existingBooks),
+  );
+}
+
 /**
- * Formato esperado (`bible.json` atual):
- * `{ "genesis": { "name": "...", "slug": "...", "niceName": "...", "chapters": { "1": { "1": "..." } } } }`
+ * Formato aceito:
+ * - `{ "genesis": { "name": "...", "chapters": { "1": { "1": "..." } } } }` (formato original)
+ * - `{ "books": [ { "name": "...", "chapters": [ { "chapter": 1, "verses": [...] } ] } ] }` (formato gerado)
  */
 export function normalizeBibleJsonForSeed(
   parsedJson: unknown,
@@ -100,61 +194,7 @@ export function normalizeBibleJsonForSeed(
 
   const root = parsedJson as Record<string, unknown>;
 
-  if ("books" in root) {
-    throw new Error(
-      'Formato com "books"[] não é suportado. Use chaves por livro e um objeto "chapters" por livro.',
-    );
-  }
-
-  const books = Object.entries(root).map(([bookKey, rawBook], index) => {
-    if (!isBookNode(rawBook)) {
-      throw new Error(
-        `Livro "${bookKey}": cada entrada deve ter "chapters" como mapa (capítulo → versículos).`,
-      );
-    }
-
-    const normalizedKey = normalizeBookKey(bookKey);
-    const existing = existingBooks.find((book) =>
-      [book.name, book.slug, book.niceName]
-        .filter(Boolean)
-        .map(normalizeBookKey)
-        .includes(normalizedKey),
-    );
-
-    const chapters = Object.entries(rawBook.chapters)
-      .map(([chapterNumber, rawChapter]) => {
-        if (
-          typeof rawChapter !== "object" ||
-          rawChapter === null ||
-          Array.isArray(rawChapter)
-        ) {
-          throw new Error(
-            `Livro "${bookKey}" capítulo ${chapterNumber}: esperado objeto de versículos.`,
-          );
-        }
-        const verses = Object.entries(
-          rawChapter as Record<string, string | CompactVerseWithGroup>,
-        )
-          .map(([verseNumber, verseContent]) =>
-            toVerse(verseContent, Number(verseNumber)),
-          )
-          .sort((a, b) => a.verse - b.verse);
-
-        return {
-          chapter: Number(chapterNumber),
-          verses,
-        };
-      })
-      .sort((a, b) => a.chapter - b.chapter);
-
-    return {
-      name: existing?.name || rawBook.name || bookKey,
-      niceName: existing?.niceName || rawBook.niceName || toNiceName(bookKey),
-      slug: existing?.slug || rawBook.slug || slugify(bookKey).slice(0, 10),
-      order: index + 1,
-      chapters,
-    };
-  });
+  const books = normalizeBooks(root, existingBooks);
 
   return { books };
 }

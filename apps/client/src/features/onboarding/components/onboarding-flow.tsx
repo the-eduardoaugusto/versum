@@ -1,10 +1,16 @@
 "use client";
 
-import { useMemo, useCallback } from "react";
+import { useCallback, useMemo } from "react";
+import { FORM_STEPS, STEPS } from "../constants";
 import { useOnboardingState } from "../hooks/use-onboarding-state";
-import { InStepView, FormStepView, OutStepView, ErrorStepView } from "./steps";
-import { STEPS, FORM_STEPS } from "../constants";
-import { onboardingFormSchema } from "../types";
+import { type OnboardingValues, onboardingFormSchema } from "../types";
+import {
+  ConsentStepView,
+  ErrorStepView,
+  FormStepView,
+  InStepView,
+  OutStepView,
+} from "./steps";
 
 interface OnboardingFlowProps {
   onComplete: (values: OnboardingValues) => void;
@@ -13,19 +19,22 @@ interface OnboardingFlowProps {
 export { FORM_STEPS, type OnboardingValues };
 
 export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
-  const { state, goNext, goBack, complete, setError, clearError } = useOnboardingState();
+  const { state, goNext, goBack, complete, setError, clearError } =
+    useOnboardingState();
   const { currentIndex, direction, collectedValues, error } = state;
 
   const currentStep = STEPS[currentIndex];
 
   const firstFormStepIndex = useMemo(
     () => STEPS.findIndex((s) => s.kind === "form"),
-    []
+    [],
   );
 
   const lastFormStepIndex = useMemo(() => {
     let last = -1;
-    STEPS.forEach((s, i) => { if (s.kind === "form") last = i; });
+    STEPS.forEach((s, i) => {
+      if (s.kind === "form") last = i;
+    });
     return last;
   }, []);
 
@@ -39,7 +48,9 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 
   return (
     <div
-      className={"relative mx-auto flex w-9/10 md:w-[720px] h-svh flex-col items-center justify-center overflow-hidden"}
+      className={
+        "relative mx-auto flex w-9/10 md:w-[720px] h-svh flex-col items-center justify-center overflow-hidden"
+      }
     >
       <div className="flex flex-col items-center justify-center">
         {error ? (
@@ -55,6 +66,15 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
             step={currentStep}
             direction={direction}
             onExitDone={goNext}
+          />
+        ) : currentStep.kind === "consent" ? (
+          <ConsentStepView
+            key={currentStep.id}
+            step={currentStep}
+            direction={direction}
+            onExitDone={noop}
+            onNext={() => goNext({})}
+            onError={setError}
           />
         ) : currentStep.kind === "form" ? (
           <FormStepView

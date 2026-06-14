@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useRef, Dispatch, SetStateAction } from "react";
-import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { type Dispatch, type SetStateAction, useRef } from "react";
 import { CounterDigit } from "./counter-digit";
 import "./style.css";
 
@@ -61,7 +61,7 @@ export function LoadingScreen({
           const animDuration = (Math.random() * 0.4 + 0.2) * 1000;
           const pauseDuration = (Math.random() * 0.3 + 0.1) * 1000;
           await new Promise((resolve) =>
-            setTimeout(resolve, animDuration + pauseDuration)
+            setTimeout(resolve, animDuration + pauseDuration),
           );
         }
 
@@ -78,7 +78,7 @@ export function LoadingScreen({
 
       animate();
     },
-    { scope: container }
+    { scope: container },
   );
 
   if (!isLoading) return null;

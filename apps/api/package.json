@@ -7,15 +7,18 @@
     "dev": "bun run --watch src/server.ts",
     "start": "bun run src/server.ts",
     "lint": "biome lint",
+    "format": "biome format --write",
+    "typecheck": "tsc --noEmit",
     "test": "vitest",
     "cli": "bun run src/cli/index.ts",
     "zip": "bun run src/cli/scripts/zip.ts",
     "generate:bible:json": "bun run generate-bible-json-from-parresia.ts"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.9",
+    "@biomejs/biome": "^2.4.16",
     "@types/bun": "latest",
     "@types/pg": "^8.20.0",
+    "@types/prompts": "^2.4.9",
     "biome": "^0.3.3",
     "drizzle-kit": "^0.31.10",
     "vitest": "^4.1.0"

@@ -1,13 +1,13 @@
 import { eq } from "drizzle-orm";
+import { InternalServerError } from "@/utils/app/errors";
 import { db as drizzle } from "../../../infrastructure/db/index";
 import { profiles } from "../../../infrastructure/db/schema";
 import type {
-  CreateProfileParams,
-  iProfileRepository,
-  Profile,
-  UpdateProfileParams,
+    CreateProfileParams,
+    iProfileRepository,
+    Profile,
+    UpdateProfileParams,
 } from "./profile.types.repository";
-import { InternalServerError } from "@/utils/app/errors";
 
 export class ProfileRepository implements iProfileRepository {
   private readonly db: typeof drizzle;
@@ -81,5 +81,10 @@ export class ProfileRepository implements iProfileRepository {
       columns: { id: true },
     });
     return profile ? { exists: true, profileId: profile.id } : { exists: false };
+  }
+
+  async deleteByUserId({ userId }: { userId: string }, tx?: typeof this.db): Promise<void> {
+    const client = tx ?? this.db;
+    await client.delete(profiles).where(eq(profiles.userId, userId));
   }
 }

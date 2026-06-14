@@ -5,7 +5,7 @@ import * as schema from "./schema.ts";
 
 const cert = await Bun.file(".certs/postgre-certificate.pem").text();
 
-const dbUrl = new URL(env.DATABASE_URL!);
+const dbUrl = new URL(env.DATABASE_URL);
 
 const pgPool = new Pool({
   connectionString: env.DATABASE_URL,
@@ -24,5 +24,5 @@ const pgPool = new Pool({
 
 export const db = drizzle(pgPool, {
   schema,
-  logger: true,
+  logger: env.BUN_ENV === "development",
 });

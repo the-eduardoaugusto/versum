@@ -1,7 +1,5 @@
-import {
-  NotFoundError,
-  UnauthorizedError,
-} from "../../../utils/app/errors/index.ts";
+import { UnauthorizedError } from "../../../utils/app/errors/index.ts";
+import { hashMetadata } from "../../../utils/crypto/metadata-hash.ts";
 import type { Session } from "../repositories/auth.types.repository.ts";
 
 export class ValidateSession {
@@ -9,16 +7,26 @@ export class ValidateSession {
 
   constructor({
     session,
-    forwardedFor,
+    requestIp,
+    requestUA,
   }: {
     session?: Session | null;
-    forwardedFor?: string;
-  }) {
-    if (!session) throw new NotFoundError("Session not found");
+    requestIp?: string;
+    requestUA?: string;
+    }) {
+    if (!session) throw new UnauthorizedError("Session not found");
     if (session.expiresAt.getTime() < Date.now())
       throw new UnauthorizedError("Session expired");
     if (session.revokedAt)
       throw new UnauthorizedError("Session revoked");
+
+    if (session.ip && requestIp && session.ip !== hashMetadata(requestIp)) {
+      throw new UnauthorizedError("Session IP does not match");
+    }
+
+    if (session.userAgent && requestUA && session.userAgent !== hashMetadata(requestUA)) {
+      throw new UnauthorizedError("Session user-agent does not match");
+    }
 
     this.session = session;
   }

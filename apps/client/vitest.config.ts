@@ -1,5 +1,5 @@
+import path from "node:path";
 import { defineConfig } from "vitest/config";
-import path from "path";
 
 export default defineConfig({
   resolve: {
@@ -11,5 +11,7 @@ export default defineConfig({
     include: ["src/**/*.test.{ts,tsx}"],
     testTimeout: 5000,
     passWithNoTests: true,
+    environment: "jsdom",
+    setupFiles: ["./src/test-setup.ts"],
   },
 });

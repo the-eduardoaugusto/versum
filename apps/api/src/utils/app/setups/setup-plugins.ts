@@ -27,6 +27,7 @@ export class SetupPlugins {
       cors({
         origin: [
           "http://localhost:3000",
+          "https://localhost:3000",
           "https://app.versum.eduardoaugusto.work",
         ],
         credentials: true,

@@ -1,57 +1,52 @@
-# API Development Guide
+# API Development
 
-## Project Structure
-
+## Structure
 ```
 apps/api/src/
-├── modules/
-│   ├── auth/
-│   │   ├── db/           # Drizzle schemas
-│   │   ├── repositories/
-│   │   ├── services/
-│   │   └── routes/       # Hono routes
-│   ├── bible/
-│   │   ├── db/
-│   │   ├── repositories/
-│   │   ├── services/
-│   │   └── routes/
-│   └── users/
-│       └── ...
-├── view-models/          # Response DTOs
-└── infrastructure/
-    └── db/               # DB config
+├── modules/<name>/
+│   ├── controllers/   # Hono handlers
+│   ├── db/            # Drizzle schemas + relations
+│   ├── helpers/       # Optional utils
+│   ├── repositories/  # DB access
+│   ├── routes/        # OpenAPI route definitions
+│   ├── schemas/       # Zod OpenAPI schemas
+│   └── services/      # Business logic
+├── view-models/       # Response DTOs
+├── middlewares/
+└── infrastructure/    # db/ redis/ resend/
 ```
 
-## Creating a New Module
+## New Module Steps
+1. Create `modules/<name>/` with all subdirs
+2. All files versioned: `<name>.v1.<type>.ts`
+3. Schema → repo → service → Zod schemas → routes
+4. Register in `src/modules/routes.ts`
 
-1. Create Drizzle schema in `modules/<name>/db/`
-2. Create repository in `modules/<name>/repositories/`
-3. Create service in `modules/<name>/services/`
-4. Create routes in `modules/<name>/routes/`
-5. Register routes in server
+## Naming
+DB cols: `snake_case` | Drizzle props: `camelCase` | API: `camelCase` | Files: `auth.v1.controller.ts`
 
-## Naming Convention
-
-**CRITICAL:** Follow `.ai/docs/naming-convention.md`
-
-- Database columns: `snake_case`
-- API responses: `camelCase`
-
-## View Models Pattern
-
-Always wrap responses with View Models:
-
+## Response Pattern
 ```typescript
-import { SuccessViewModel } from "@/view-models/default/success.view-model";
-import { PaginationViewModel } from "@/view-models/default/pagination.view-model";
-
-return SuccessViewModel.create(data, PaginationViewModel.create({ ... }));
+// ALWAYS
+return c.json(SuccessViewModel.create(data), 200);
+return c.json(SuccessViewModel.create(data, PaginationViewModel.create({...})), 200);
+// NEVER
+return c.json({ profile }, 200);
+return c.json({ message: "ok" }, 200);
 ```
 
-## OpenAPI Documentation
+## Errors
+```typescript
+import { BadRequestError, NotFoundError, UnauthorizedError } from "@/utils/app/errors";
+throw new NotFoundError("Profile not found"); // auto-caught by error handler
+```
 
-Update `apps/client/openapi.yaml` whenever you add/modify endpoints:
+## OpenAPI
+Update `apps/client/openapi.yaml` for every endpoint change. Descriptions in English. Props camelCase.
 
-- Use Portuguese for descriptions
-- Define request/response schemas
-- Property names MUST be `camelCase`
+## Imports
+- Within module: relative, no `.ts`
+- Cross-module: `@/` alias
+
+## Tests
+Colocated: `auth.v1.service.test.ts` | Vitest | Mock external deps (DB, redis, email)
