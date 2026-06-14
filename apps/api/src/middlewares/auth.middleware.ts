@@ -1,10 +1,10 @@
+import { logger } from "@versum/logger";
 import type { Context, Next } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import { ValidateSession } from "../modules/auth/helpers/validate-session.ts";
 import { AuthRepository } from "../modules/auth/repositories/auth.repository.ts";
 import { AuthServiceV1 } from "../modules/auth/services/auth.v1.service.ts";
 import { UnauthorizedError } from "../utils/app/errors/index.ts";
-import { logger } from "@versum/logger";
 
 const isSecure = Bun.env.COOKIE_SECURE === "true";
 const cookieName = isSecure ? "__Host-session" : "session";
@@ -44,9 +44,10 @@ export class AuthMiddleware {
     });
     logger("debug", "[Auth] session from publicId:", session?.id);
 
-    const requestIp = ctx.req.header("x-forwarded-for")?.split(",")[0]?.trim()
-      ?? (ctx.req.raw as { remoteAddress?: string }).remoteAddress
-      ?? "unknown";
+    const requestIp =
+      ctx.req.header("x-forwarded-for")?.split(",")[0]?.trim() ??
+      (ctx.req.raw as { remoteAddress?: string }).remoteAddress ??
+      "unknown";
     const requestUA = ctx.req.header("user-agent") ?? "unknown";
 
     const validatedSession = new ValidateSession({
@@ -74,7 +75,7 @@ export class AuthMiddleware {
         path: "/",
         httpOnly: true,
         secure: isSecure,
-        sameSite: isSecure ? "Strict" : "Lax",
+        sameSite: "Lax",
         maxAge: 60 * 60 * 24 * 30, // 30 days
       });
 

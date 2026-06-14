@@ -8,7 +8,7 @@ const isSecure = Bun.env.COOKIE_SECURE === "true";
 const cookieOptions = {
   httpOnly: true,
   secure: isSecure,
-  sameSite: (isSecure ? "strict" : "lax") as "strict" | "lax",
+  sameSite: "lax" as const,
   path: "/",
 };
 
