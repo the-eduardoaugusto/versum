@@ -4,8 +4,8 @@ import {
   InternalServerError,
   UnauthorizedError,
 } from "../../../utils/app/errors/index.ts";
-import { env } from "../../../utils/env/index.ts";
 import { hashMetadata } from "../../../utils/crypto/metadata-hash.ts";
+import { env } from "../../../utils/env/index.ts";
 import { UserRepository } from "../../users/repositories/user.repository.ts";
 import { ValidateSession } from "../helpers/validate-session.ts";
 import { AuthRepository } from "../repositories/auth.repository.ts";
@@ -105,10 +105,10 @@ export class AuthServiceV1 {
 
     if (!tokenIsValid) throw new UnauthorizedError("Magic links don't match!");
 
-    await this.repository.updateMagicLink({
+    const invalidated = await this.repository.invalidateMagicLink({
       publicId: magicLinkPublicId,
-      invalidatedAt: new Date(),
     });
+    if (!invalidated) throw new UnauthorizedError("Magic link already used!");
 
     let user = await this.userRepository.findByEmail({
       email: magicLink.email,
@@ -193,7 +193,21 @@ export class AuthServiceV1 {
     };
   }
 
-  async revokeSession({ sessionPublicId }: { sessionPublicId: string }) {
+  async revokeSession({
+    sessionPublicId,
+    rawToken,
+  }: {
+    sessionPublicId: string;
+    rawToken: string;
+  }) {
+    const session = await this.repository.getSessionByPublicId({
+      publicId: sessionPublicId,
+    });
+    if (!session) throw new UnauthorizedError("Session not found");
+
+    const tokenIsValid = await argon2.verify(session.tokenHash, rawToken);
+    if (!tokenIsValid) throw new UnauthorizedError("Invalid session token");
+
     await this.repository.revokeSessionByPublicId({
       publicId: sessionPublicId,
     });

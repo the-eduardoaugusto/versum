@@ -61,9 +61,10 @@ export class AuthControllerV1 {
     const cookieName = isSecure ? "__Host-session" : "session";
     const sessionCookie = getCookie(c, cookieName);
     if (!sessionCookie) throw new BadRequestError("Session cookie not found");
-    const sessionPublicId = sessionCookie.split(".")[0];
-    if (!sessionPublicId) throw new BadRequestError("Invalid session cookie");
-    await this.service.revokeSession({ sessionPublicId });
+    const [sessionPublicId, rawToken] = sessionCookie.split(".");
+    if (!sessionPublicId || !rawToken)
+      throw new BadRequestError("Invalid session cookie");
+    await this.service.revokeSession({ sessionPublicId, rawToken });
     setCookie(c, cookieName, "", {
       ...cookieOptions,
       expires: new Date(0),
