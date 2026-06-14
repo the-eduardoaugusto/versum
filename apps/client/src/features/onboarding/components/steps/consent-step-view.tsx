@@ -155,19 +155,19 @@ export function ConsentStepView({
         <div ref={wrapperRef} className="invisible flex flex-col gap-2">
           <p
             ref={titleRef}
-            className="tracking-tight text-foreground overflow-hidden font-instrument-serif text-5xl"
+            className="tracking-tight text-foreground overflow-hidden font-instrument-serif text-3xl sm:text-5xl"
           >
             Privacidade
           </p>
           <p
-            className="text-xl text-foreground/50 font-instrument-sans"
+            className="text-base sm:text-xl text-foreground/50 font-instrument-sans"
             ref={subtitleRef}
           >
             Sua privacidade é importante. Escolha como seus dados serão usados.
           </p>
         </div>
 
-        <div className="flex flex-col gap-3 my-4">
+        <div className="flex flex-col gap-3 my-4 overflow-y-auto max-h-[40vh]">
           {step.options.map((option) => (
             <button
               key={option.purpose}
