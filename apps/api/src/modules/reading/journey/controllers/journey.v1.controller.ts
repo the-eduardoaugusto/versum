@@ -1,7 +1,7 @@
 import type { Context } from "hono";
 import { ZodError } from "zod";
-import { SuccessViewModel } from "@/view-models/default/success.view-model.ts";
 import type { Session } from "@/modules/auth/repositories/auth.types.repository.ts";
+import { SuccessViewModel } from "@/view-models/default/success.view-model.ts";
 import { JourneyServiceV1 } from "../services/journey.v1.service.ts";
 
 export class JourneyControllerV1 {

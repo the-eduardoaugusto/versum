@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function useChapterPagination(
   containerRef: React.RefObject<HTMLDivElement | null>,
@@ -6,8 +6,9 @@ export function useChapterPagination(
   const [activePage, setActivePage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const rafRef = useRef<number | null>(null);
+  const updateRef = useRef<() => void>(() => {});
 
-  const update = useCallback(() => {
+  updateRef.current = () => {
     const el = containerRef.current;
     if (!el) return;
 
@@ -22,23 +23,23 @@ export function useChapterPagination(
     const page = Math.round(el.scrollLeft / el.clientWidth);
     const clamped = Math.max(0, Math.min(page, count - 1));
     setActivePage(clamped);
-  }, [containerRef]);
+  };
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
 
-    update();
+    updateRef.current();
 
     const handleScroll = () => {
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
       }
-      rafRef.current = requestAnimationFrame(update);
+      rafRef.current = requestAnimationFrame(() => updateRef.current());
     };
 
     const handleResize = () => {
-      update();
+      updateRef.current();
     };
 
     el.addEventListener("scroll", handleScroll, { passive: true });
@@ -51,7 +52,7 @@ export function useChapterPagination(
         cancelAnimationFrame(rafRef.current);
       }
     };
-  }, [containerRef, update]);
+  }, [containerRef]);
 
   return { activePage, pageCount };
 }

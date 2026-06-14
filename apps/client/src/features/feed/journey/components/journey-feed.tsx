@@ -1,12 +1,11 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useActiveChapter, useKeyboardNavigation } from "../hooks";
 import { useJourneyFeed } from "../hooks/use-journey-feed";
 import { ChapterSkeleton } from "./chapter-skeleton";
 import { ChapterView } from "./chapter-view";
 import { FeedEmpty } from "./feed-empty";
-import { FeedProgressBar } from "./feed-progress";
 
 export function JourneyFeed() {
   const {
@@ -27,14 +26,10 @@ export function JourneyFeed() {
       : false,
   );
 
-  const handleFetchNextPage = useCallback(async () => {
-    await fetchNextPage();
-  }, [fetchNextPage]);
-
   useActiveChapter(containerRef, {
     chapters,
     isAtEnd: progress?.isAtEnd ?? false,
-    fetchNextPage: handleFetchNextPage,
+    fetchNextPage,
   });
 
   useKeyboardNavigation({
@@ -53,7 +48,7 @@ export function JourneyFeed() {
 
   if (isLoading) {
     return (
-      <div ref={containerRef} style={feedStyle}>
+      <div ref={containerRef} className="hide-scrollbar" style={feedStyle}>
         <ChapterSkeleton count={3} />
       </div>
     );
@@ -80,11 +75,11 @@ export function JourneyFeed() {
   return (
     <div
       ref={containerRef}
+      className="hide-scrollbar"
       style={feedStyle}
       role="feed"
       aria-roledescription="feed de leitura"
     >
-      <FeedProgressBar progress={progress} />
       {chapters.map((chapter) => (
         <ChapterView key={chapter.id} chapter={chapter} />
       ))}
