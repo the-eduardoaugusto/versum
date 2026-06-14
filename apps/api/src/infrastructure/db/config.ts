@@ -3,7 +3,13 @@ import { Pool } from "pg";
 import { env } from "../../utils/env/index.ts";
 import * as schema from "./schema.ts";
 
-const cert = await Bun.file(".certs/postgre-certificate.pem").text();
+let ca: string | undefined;
+try {
+  const text = await Bun.file(".certs/postgre-certificate.pem").text();
+  if (text.trim()) ca = text;
+} catch {
+  ca = undefined;
+}
 
 const dbUrl = new URL(env.DATABASE_URL);
 
@@ -15,9 +21,7 @@ const pgPool = new Pool({
   password: dbUrl.password,
   database: dbUrl.pathname.replace("/", ""),
   ssl: {
-    ca: cert,
-    cert,
-    key: cert,
+    ca,
     rejectUnauthorized: false,
   },
 });
