@@ -122,10 +122,10 @@ jobs:
       - name: Write DB certificate
         env:
           DB_CERT: ${{ secrets.DB_CERT }}
-        run: echo "$DB_CERT" > apps/api/.certs/postgre-certificate.pem
+        run: printf '%s' "$DB_CERT" > apps/api/.certs/postgre-certificate.pem
 
       - name: Sync database schema
-        run: cd apps/api && bun drizzle-kit push --force
+        run: cd apps/api && bun drizzle-kit push
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 

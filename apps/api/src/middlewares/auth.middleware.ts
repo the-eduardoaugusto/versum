@@ -30,8 +30,8 @@ export class AuthMiddleware {
       "debug",
       "[Auth] cookieName:",
       cookieName,
-      "sessionCookie:",
-      sessionCookie,
+      "present:",
+      !!sessionCookie,
     );
     if (!sessionCookie) throw new UnauthorizedError("Session cookie not found");
     const [sessionCookiePublicId] = sessionCookie.split(".");

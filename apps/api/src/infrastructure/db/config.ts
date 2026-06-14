@@ -20,12 +20,12 @@ const pgPool = new Pool({
   user: dbUrl.username,
   password: dbUrl.password,
   database: dbUrl.pathname.replace("/", ""),
-  ssl: {
-    ca,
-    cert: ca,
-    key: ca,
-    rejectUnauthorized: false,
-  },
+  ssl: ca
+    ? {
+        ca,
+        rejectUnauthorized: true,
+      }
+    : undefined,
 });
 
 export const db = drizzle(pgPool, {
