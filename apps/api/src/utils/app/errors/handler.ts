@@ -4,6 +4,7 @@ import { logger } from "@versum/logger";
 import {
   BadRequestError,
   BaseError,
+  ConflictError,
   ForbiddenError,
   InternalServerError,
   NotFoundError,
@@ -53,6 +54,7 @@ export class ErrorHandler {
     if (err instanceof NotFoundError) return 404;
     if (err instanceof UnauthorizedError) return 401;
     if (err instanceof ForbiddenError) return 403;
+    if (err instanceof ConflictError) return 409;
     if (err instanceof InternalServerError) return 500;
 
     return 400;
