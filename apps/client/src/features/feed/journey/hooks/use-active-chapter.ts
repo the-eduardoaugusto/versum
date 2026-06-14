@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getPostApiV1ReadingsJourneyNextUrl } from "@/dal/orval/tanstackQuery/journey/journey";
 import type { FeedChapter } from "../types";
 
@@ -27,27 +27,24 @@ export function useActiveChapter(
   const [activeChapterId, setActiveChapterId] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasBeenActiveRef = useRef<Set<string>>(new Set());
+  const hasBeenReadRef = useRef<Set<string>>(new Set());
+  const isAtEndRef = useRef(isAtEnd);
+  const chaptersRef = useRef(chapters);
+  const fetchNextPageRef = useRef(fetchNextPage);
 
-  const markPreviousAsRead = useCallback(
-    async (chapterId: string) => {
-      if (isAtEnd) return;
-      if (!hasBeenActiveRef.current.has(chapterId)) return;
+  isAtEndRef.current = isAtEnd;
+  chaptersRef.current = chapters;
+  fetchNextPageRef.current = fetchNextPage;
 
-      try {
-        await markChapterAsRead();
-      } catch {
-        console.error("Failed to mark chapter as read");
-      }
-    },
-    [isAtEnd],
-  );
-
+  // biome-ignore lint/correctness/useExhaustiveDependencies: chapters is a trigger dep — not read directly inside but causes re-run when chapters mount or paginate
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
     const chapterElements =
       container.querySelectorAll<HTMLElement>("[data-chapter-id]");
+
+    if (chapterElements.length === 0) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -62,7 +59,25 @@ export function useActiveChapter(
               clearTimeout(debounceRef.current);
             }
             debounceRef.current = setTimeout(() => {
-              markPreviousAsRead(chapterId);
+              if (isAtEndRef.current) return;
+              if (!hasBeenActiveRef.current.has(chapterId)) return;
+              if (hasBeenReadRef.current.has(chapterId)) return;
+              hasBeenReadRef.current.add(chapterId);
+              markChapterAsRead()
+                .then(() => {
+                  // Buffer fetch must happen AFTER the POST so the server pointer
+                  // has advanced and GET /feed returns the next set of chapters.
+                  const exitedIndex = chaptersRef.current.findIndex(
+                    (c) => c.id === chapterId,
+                  );
+                  const nearEnd =
+                    exitedIndex >= 0 &&
+                    exitedIndex >= chaptersRef.current.length - 2;
+                  if (nearEnd) {
+                    fetchNextPageRef.current();
+                  }
+                })
+                .catch(() => console.error("Failed to mark chapter as read"));
             }, 500);
           }
         }
@@ -83,17 +98,12 @@ export function useActiveChapter(
         clearTimeout(debounceRef.current);
       }
     };
-  }, [containerRef, markPreviousAsRead]);
+  }, [containerRef, chapters]);
 
   useEffect(() => {
     if (!activeChapterId) return;
     hasBeenActiveRef.current.add(activeChapterId);
+  }, [activeChapterId]);
 
-    const activeIndex = chapters.findIndex((c) => c.id === activeChapterId);
-    if (activeIndex >= 0 && activeIndex >= chapters.length - 2) {
-      fetchNextPage();
-    }
-  }, [activeChapterId, chapters, fetchNextPage]);
-
-  return { activeChapterId, markPreviousAsRead };
+  return { activeChapterId };
 }
