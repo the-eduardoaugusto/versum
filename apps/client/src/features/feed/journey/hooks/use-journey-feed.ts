@@ -1,11 +1,8 @@
 "use client";
 
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useCallback, useEffect, useMemo, useRef } from "react";
-import {
-  getGetApiV1ReadingsJourneyFeedUrl,
-  getPostApiV1ReadingsJourneyNextUrl,
-} from "@/dal/orval/tanstackQuery/journey/journey";
+import { useMemo } from "react";
+import { getGetApiV1ReadingsJourneyFeedUrl } from "@/dal/orval/tanstackQuery/journey/journey";
 import type { FeedChapter, FeedProgress } from "../types";
 
 function toProgress(
@@ -70,14 +67,6 @@ interface FeedResponse {
   };
 }
 
-interface NextResponse {
-  success?: boolean;
-  message?: string;
-  data?: {
-    success: boolean;
-  };
-}
-
 function extractChapters(response: FeedResponse): FeedChapter[] {
   const data = response?.data;
   if (!data) return [];
@@ -129,22 +118,7 @@ async function fetchFeed(
   return res.json();
 }
 
-async function fetchNext(): Promise<NextResponse> {
-  const url = getPostApiV1ReadingsJourneyNextUrl();
-  const res = await fetch(url, {
-    method: "POST",
-    credentials: "include",
-  });
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status}`);
-  }
-  return res.json();
-}
-
 export function useJourneyFeed() {
-  const seenChapterIds = useRef<Set<string>>(new Set());
-  const chaptersRef = useRef<FeedChapter[]>([]);
-
   const query = useInfiniteQuery({
     queryKey: ["journey-feed"],
     queryFn: async ({ signal }) => {
@@ -161,42 +135,30 @@ export function useJourneyFeed() {
     retry: 2,
   });
 
-  const progress = useMemo(
-    () => toProgress(query.data?.pages?.[0]?.data?.progress),
-    [query.data],
-  );
+  const progress = toProgress(query.data?.pages?.[0]?.data?.progress);
 
   const chapters = useMemo(() => {
     const allPages = query.data?.pages ?? [];
-    const newChapters: FeedChapter[] = [];
+    const seenIds = new Set<string>();
+    const result: FeedChapter[] = [];
 
     for (const page of allPages) {
       const extracted = extractChapters(page);
       for (const chapter of extracted) {
-        if (!seenChapterIds.current.has(chapter.id)) {
-          seenChapterIds.current.add(chapter.id);
-          newChapters.push(chapter);
+        if (!seenIds.has(chapter.id)) {
+          seenIds.add(chapter.id);
+          result.push(chapter);
         }
       }
     }
 
-    chaptersRef.current = newChapters;
-    return newChapters;
-  }, [query.data]);
+    return result;
+  }, [query.data?.pages]);
 
-  useEffect(() => {
-    return () => {
-      seenChapterIds.current.clear();
-      chaptersRef.current = [];
-    };
-  }, []);
-
-  const fetchNextPage = useCallback(async () => {
+  const fetchNextPage = async () => {
     if (!query.hasNextPage || query.isFetchingNextPage) return;
-
-    await fetchNext();
     await query.fetchNextPage();
-  }, [query.hasNextPage, query.isFetchingNextPage, query.fetchNextPage]);
+  };
 
   return {
     chapters,
