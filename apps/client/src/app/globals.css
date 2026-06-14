@@ -132,6 +132,13 @@
   --shadow-2xl: 0 1px 3px 0px hsl(21.2903 75.6098% 8.0392% / 0.15);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
+  --navbar-height: 58px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --navbar-height: 0px;
+  }
 }
 
 .dark {
@@ -209,5 +216,19 @@
   }
   html {
     @apply font-serif;
+  }
+}
+
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --navbar-height: 0px;
   }
 }
