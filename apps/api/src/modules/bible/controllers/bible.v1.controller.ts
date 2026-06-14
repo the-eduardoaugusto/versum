@@ -87,7 +87,7 @@ export class BibleControllerV1 {
   getChapter = async (c: Context) => {
     const dynamicId = c.req.param("dynamicId");
     const chapterNumber = this.parsePositiveInt(
-      c.req.param("number")!,
+      c.req.param("number") ?? "",
       "Chapter number",
     );
 
@@ -106,7 +106,7 @@ export class BibleControllerV1 {
   getVerses = async (c: Context) => {
     const dynamicId = c.req.param("dynamicId");
     const chapterNumber = this.parsePositiveInt(
-      c.req.param("number")!,
+      c.req.param("number") ?? "",
       "Chapter number",
     );
     const { page, limit } = parsePagination(c.req.query());
@@ -138,11 +138,11 @@ export class BibleControllerV1 {
   getVerse = async (c: Context) => {
     const dynamicId = c.req.param("dynamicId");
     const chapterNumber = this.parsePositiveInt(
-      c.req.param("number")!,
+      c.req.param("number") ?? "",
       "Chapter number",
     );
     const verseNumber = this.parsePositiveInt(
-      c.req.param("verse")!,
+      c.req.param("verse") ?? "",
       "Verse number",
     );
 

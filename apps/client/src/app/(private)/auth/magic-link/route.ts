@@ -1,6 +1,6 @@
-import kubbClient from "@kubb/plugin-client/clients/fetch";
 import { type NextRequest, NextResponse } from "next/server";
 import { getSessionCookieName } from "@/lib/auth";
+import { getClientIp } from "@/lib/get-client-ip";
 
 export async function GET(req: NextRequest) {
   const sessionCookieName = getSessionCookieName();
@@ -23,16 +23,19 @@ export async function GET(req: NextRequest) {
   routeRedirect.pathname = "/";
 
   try {
-    const forwardedFor = req.headers.get("x-forwarded-for");
-    const realIp = req.headers.get("x-real-ip");
+    const clientIp = getClientIp(req);
     const userAgent = req.headers.get("user-agent") ?? "unknown";
-    const clientIp = forwardedFor?.split(",")[0]?.trim() ?? realIp ?? "unknown";
 
-    const res = await kubbClient({
+    const apiUrl = new URL(
+      "/api/v1/auth/magic-link",
+      process.env.NEXT_PUBLIC_API_URL,
+    );
+    apiUrl.searchParams.set("token", token);
+
+    console.log("[PROXY:magic-link] user-agent:", userAgent);
+
+    const res = await fetch(apiUrl.toString(), {
       method: "GET",
-      url: "/api/v1/auth/magic-link",
-      params: { token },
-      baseURL: process.env.NEXT_PUBLIC_API_URL,
       credentials: "include",
       headers: {
         "x-forwarded-for": clientIp,
@@ -40,9 +43,13 @@ export async function GET(req: NextRequest) {
       },
     });
 
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`);
+    }
+
     const redirectRes = NextResponse.redirect(routeRedirect.toString());
 
-    const setCookie = res.headers?.get("set-cookie");
+    const setCookie = res.headers.get("set-cookie");
     if (setCookie) {
       redirectRes.headers.set("set-cookie", setCookie);
     }

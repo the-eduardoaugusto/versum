@@ -1,5 +1,8 @@
 import { useCallback, useReducer } from "react";
-import { onboardingReducer, type OnboardingReducerState } from "../reducers/onboarding-state";
+import {
+  type OnboardingReducerState,
+  onboardingReducer,
+} from "../reducers/onboarding-state";
 import type { OnboardingValues } from "../types";
 
 const INITIAL_STATE: OnboardingReducerState = {

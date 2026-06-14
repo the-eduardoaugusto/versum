@@ -6,6 +6,7 @@ import type {
   iUserRepository,
   UpdateUserParams,
   User,
+  UserExportData,
 } from "./user.types.repository";
 import { InternalServerError } from "@/utils/app/errors";
 import type { Profile } from "./profile.types.repository";
@@ -44,6 +45,23 @@ export class UserRepository implements iUserRepository {
     return user ?? null;
   }
 
+  async findByIdWithAllData({ id }: { id: string }): Promise<UserExportData | null> {
+    const user = await this.db.query.users.findFirst({
+      where: (users, { eq }) => eq(users.id, id),
+      with: {
+        profile: true,
+        readings: true,
+        discoveryReadings: true,
+        likes: true,
+        marks: true,
+        sessions: true,
+        consentLogs: true,
+      },
+    });
+
+    return user ?? null;
+  }
+
   async findByEmail({ email }: { email: string }): Promise<User | null> {
     const user = await this.db.query.users.findFirst({
       where: (users, { eq }) => eq(users.email, email.toLowerCase()),
@@ -64,5 +82,10 @@ export class UserRepository implements iUserRepository {
     }
 
     return updated;
+  }
+
+  async deleteUser({ id }: { id: string }, tx?: typeof this.db): Promise<void> {
+    const client = tx ?? this.db;
+    await client.delete(users).where(eq(users.id, id));
   }
 }

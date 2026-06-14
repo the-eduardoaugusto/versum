@@ -10,7 +10,10 @@
   "private": true,
   "scripts": {
     "install-deps": "bun install --frozen-lockfile",
-    "i-deps": "bun install --frozen-lockfile"
+    "i-deps": "bun install --frozen-lockfile",
+    "lint": "bun --filter '*' lint",
+    "format": "bun --filter '*' format",
+    "typecheck": "bun --filter '*' typecheck"
   },
   "workspaces": [
     "packages/*",

@@ -7,12 +7,11 @@ import {
   createProfileBodySchema,
   createProfileResponseSchema,
   getAuthenticatedProfileResponseSchema,
-  profileSchema,
+  getProfileByUsernameResponseSchema,
   updateAuthenticatedProfileBodySchema,
   updateAuthenticatedProfileResponseSchema,
   usernameParamSchema,
 } from "../schemas/v1/profiles.v1.common.schema.ts";
-import { z } from "zod";
 
 export const createProfileRoutesV1 = (controller: ProfileControllerV1) => {
   const router = new OpenAPIHono({
@@ -113,7 +112,7 @@ export const createProfileRoutesV1 = (controller: ProfileControllerV1) => {
       200: {
         content: {
           "application/json": {
-            schema: profileSchema,
+            schema: getProfileByUsernameResponseSchema,
           },
         },
         description: "Perfil retornado com sucesso",

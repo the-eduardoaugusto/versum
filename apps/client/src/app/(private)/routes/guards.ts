@@ -1,11 +1,9 @@
-import type { GuardRoute, EvaluateGuardContext } from "./types";
 import { guardRoutes } from "./config";
+import type { EvaluateGuardContext, GuardRoute } from "./types";
 
 export function matchGuard(pathname: string): GuardRoute | undefined {
   return guardRoutes.find((r) =>
-    "startWith" in r
-      ? pathname.startsWith(r.startWith)
-      : r.path === pathname,
+    "startWith" in r ? pathname.startsWith(r.startWith) : r.path === pathname,
   );
 }
 

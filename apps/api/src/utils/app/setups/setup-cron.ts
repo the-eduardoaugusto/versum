@@ -1,0 +1,33 @@
+import { logger } from "@versum/logger";
+import { PurgeService } from "../../../modules/auth/services/purge.service.ts";
+import { env } from "../../env/parser.ts";
+
+export class SetupCron {
+  constructor() {
+    if (env.CRON_ENABLED !== "true") {
+      logger("info", "[CRON] Desabilitado via CRON_ENABLED env var");
+      return;
+    }
+    this.setupDailyPurge();
+  }
+
+  private setupDailyPurge() {
+    Bun.cron("0 3 * * *", async () => {
+      try {
+        const service = new PurgeService();
+        const result = await service.runDailyPurge();
+        logger(
+          { level: "info", icon: "🧹" },
+          `[PURGE] Magic links: ${result.magicLinks} deletados, Sessões: ${result.sessions} deletadas`,
+        );
+      } catch (error) {
+        logger(
+          "error",
+          `[PURGE] Falha ao executar purge: ${error instanceof Error ? error.message : String(error)}`,
+        );
+      }
+    });
+
+    logger("info", "[CRON] Purge job registrado — 03:00 diário");
+  }
+}

@@ -1,3 +1,4 @@
+
 import type { Context, Next } from "hono";
 import { redis } from "../../infrastructure/redis";
 
@@ -39,6 +40,7 @@ export class RateLimiterMiddleware {
   async middleware(c: Context, next: Next) {
     try {
       const identifier = this.getKey(c);
+
       const windowStart = Math.floor(Date.now() / this.windowMs);
       const redisKey = `rate_limit:${identifier}:${c.req.path}:${windowStart}`;
 

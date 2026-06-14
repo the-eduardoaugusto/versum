@@ -1,10 +1,17 @@
 import type { Context } from "hono";
-import {
-  BadRequestError,
-  ConflictError,
-} from "../../../utils/app/errors/index";
-import type { Session } from "../../auth/repositories/auth.types.repository";
+import { setCookie } from "hono/cookie";
+import type { Session } from "@/modules/auth/repositories/auth.types.repository";
+import { BadRequestError, ConflictError } from "@/utils/app/errors/index";
+import { SuccessViewModel } from "@/view-models/default/success.view-model";
 import { UserServiceV1 } from "../services/user.v1.service";
+
+const isSecure = Bun.env.COOKIE_SECURE === "true";
+const cookieOptions = {
+  httpOnly: true,
+  secure: isSecure,
+  sameSite: (isSecure ? "strict" : "lax") as "strict" | "lax",
+  path: "/",
+};
 
 const userService = new UserServiceV1();
 
@@ -25,12 +32,12 @@ export class UsersControllerV1 {
     const onboardingIsCompleted = !!user.profile;
 
     return c.json(
-      {
+      SuccessViewModel.create({
         user: {
           email: user.email,
         },
         onboardingIsCompleted,
-      },
+      }),
       200,
     );
   };
@@ -52,11 +59,11 @@ export class UsersControllerV1 {
       });
 
       return c.json(
-        {
+        SuccessViewModel.create({
           user: {
             email: user.email,
           },
-        },
+        }),
         200,
       );
     } catch (error) {
@@ -65,5 +72,27 @@ export class UsersControllerV1 {
       }
       throw error;
     }
+  };
+
+  exportUserData = async (c: Context) => {
+    const session = c.get("session") as Session;
+
+    const data = await this.service.exportUserData({ id: session.userId });
+
+    return c.json(SuccessViewModel.create(data), 200);
+  };
+
+  deleteAuthenticatedUser = async (c: Context) => {
+    const session = c.get("session") as Session;
+
+    await this.service.deleteUser({ id: session.userId });
+
+    const cookieName = isSecure ? "__Host-session" : "session";
+    setCookie(c, cookieName, "", {
+      ...cookieOptions,
+      expires: new Date(0),
+    });
+
+    return c.body(null, 204);
   };
 }

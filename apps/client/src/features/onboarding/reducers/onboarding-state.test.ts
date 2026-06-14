@@ -1,8 +1,11 @@
-import { describe, it, expect } from "vitest";
-import { onboardingReducer } from "./onboarding-state";
+import { describe, expect, it } from "vitest";
+import { TOTAL_STEPS } from "../constants";
 import type { OnboardingReducerState } from "./onboarding-state";
+import { onboardingReducer } from "./onboarding-state";
 
-function createState(overrides: Partial<OnboardingReducerState> = {}): OnboardingReducerState {
+function createState(
+  overrides: Partial<OnboardingReducerState> = {},
+): OnboardingReducerState {
   return {
     currentIndex: 0,
     direction: 1,
@@ -23,14 +26,18 @@ describe("onboardingReducer", () => {
     });
 
     it("não ultrapassa o último índice", () => {
-      const state = createState({ currentIndex: 4 });
+      const lastIndex = TOTAL_STEPS - 1;
+      const state = createState({ currentIndex: lastIndex });
       const next = onboardingReducer(state, { type: "NEXT" });
-      expect(next.currentIndex).toBe(4);
+      expect(next.currentIndex).toBe(lastIndex);
     });
 
     it("acumula patch nos collectedValues", () => {
       const state = createState({ collectedValues: { name: "João" } });
-      const next = onboardingReducer(state, { type: "NEXT", patch: { username: "joao" } });
+      const next = onboardingReducer(state, {
+        type: "NEXT",
+        patch: { username: "joao" },
+      });
       expect(next.collectedValues).toEqual({ name: "João", username: "joao" });
     });
 
@@ -73,7 +80,10 @@ describe("onboardingReducer", () => {
   describe("SET_ERROR", () => {
     it("define a mensagem de erro", () => {
       const state = createState();
-      const errored = onboardingReducer(state, { type: "SET_ERROR", error: "Falhou" });
+      const errored = onboardingReducer(state, {
+        type: "SET_ERROR",
+        error: "Falhou",
+      });
       expect(errored.error).toBe("Falhou");
     });
   });

@@ -1,10 +1,5 @@
 "use client";
 
-import HeroImg from "@/assets/img/hero-img.webp";
-import { fragmentShader, vertexShader } from "@/assets/shader/home-page";
-import { LoadingScreen } from "@/components/common/loading-screen/component";
-import { useChangeNavColors } from "@/components/common/navbar";
-import { hexToRGB } from "@/utils/hexToRGB";
 import { useGSAP } from "@gsap/react";
 import { ArrowElbowDownRightIcon } from "@phosphor-icons/react";
 import gsap from "gsap";
@@ -14,6 +9,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import * as THREE from "three";
+import HeroImg from "@/assets/img/hero-img.webp";
+import { fragmentShader, vertexShader } from "@/assets/shader/home-page";
+import { LoadingScreen } from "@/components/common/loading-screen/component";
+import { useChangeNavColors } from "@/components/common/navbar";
+import { hexToRGB } from "@/utils/hexToRGB";
 import { AboutSection } from "../components/common/about-section/about-section";
 
 export default function Home() {
@@ -214,7 +214,7 @@ export default function Home() {
             opacity = fadeProgress;
           }
 
-          if (index == 0) {
+          if (index === 0) {
             const current = Math.max(
               0,
               parseFloat(
@@ -252,103 +252,101 @@ export default function Home() {
   return (
     <main className="w-screen overflow-x-hidden">
       <LoadingScreen isLoading={isLoading} setIsLoading={setIsLoading} />
-      <>
-        <section
-          id="hero"
-          ref={heroRef}
-          className="relative w-full h-[175svh] text-[#F4EAD8] overflow-hidden"
-        >
-          <div id="hero-img">
-            <Image
-              src={HeroImg}
-              alt="Jesus"
-              sizes="auto"
-              priority
-              className="w-full h-full object-cover absolute brightness-70"
-            />
-          </div>
-          <header
-            id="hero-header"
-            className="absolute w-full h-svh flex flex-col
+      <section
+        id="hero"
+        ref={heroRef}
+        className="relative w-full h-[175svh] text-[#F4EAD8] overflow-hidden"
+      >
+        <div id="hero-img">
+          <Image
+            src={HeroImg}
+            alt="Jesus"
+            sizes="auto"
+            priority
+            className="w-full h-full object-cover absolute brightness-70"
+          />
+        </div>
+        <header
+          id="hero-header"
+          className="absolute w-full h-svh flex flex-col
         justify-center items-center gap-2 text-center"
+        >
+          <h1
+            ref={heroHeaderTitleRef}
+            className="uppercase font-medium leading-[0.9] font-instrument-serif overflow-hidden"
+            style={{ fontSize: "clamp(4rem, 7.5vw, 10rem)" }}
           >
-            <h1
-              ref={heroHeaderTitleRef}
-              className="uppercase font-medium leading-[0.9] font-instrument-serif overflow-hidden"
-              style={{ fontSize: "clamp(4rem, 7.5vw, 10rem)" }}
-            >
-              Versum
-            </h1>
-            <p
-              ref={heroHeaderParagraphRef}
-              className="font-instrument-sans text-lg lg:text-xl font-normal w-75/100 overflow-hidden text-shadow-2xs"
-            >
-              Leia a Bíblia do seu jeito, sem perder o caminho.
-            </p>
-            <div
-              ref={heroLinksRef}
-              className="flex flex-col md:flex-row gap-2 md:gap-10 overflow-hidden"
-            >
-              <Link
-                href="/login"
-                className="text-amber-50 text-lg flex items-end
+            Versum
+          </h1>
+          <p
+            ref={heroHeaderParagraphRef}
+            className="font-instrument-sans text-lg lg:text-xl font-normal w-75/100 overflow-hidden text-shadow-2xs"
+          >
+            Leia a Bíblia do seu jeito, sem perder o caminho.
+          </p>
+          <div
+            ref={heroLinksRef}
+            className="flex flex-col md:flex-row gap-2 md:gap-10 overflow-hidden"
+          >
+            <Link
+              href="/login"
+              className="text-amber-50 text-lg flex items-end
               justify-center text-center gap-4 font-instrument-sans
               z-99 group "
-              >
-                <ArrowElbowDownRightIcon weight="duotone" size={24} />
-                <span className="relative hover:cursor-pointer">
-                  Começar agora
-                  <div
-                    className="h-[0.4] w-0 group-hover:w-full bg-amber-50 -mt-0.5
+            >
+              <ArrowElbowDownRightIcon weight="duotone" size={24} />
+              <span className="relative hover:cursor-pointer">
+                Começar agora
+                <div
+                  className="h-[0.4] w-0 group-hover:w-full bg-amber-50 -mt-0.5
                 transition-all duration-300 ease-out"
-                  />
-                </span>
-              </Link>
-              <Link
-                href="/login"
-                className="text-amber-50 text-lg flex items-end
+                />
+              </span>
+            </Link>
+            <Link
+              href="/login"
+              className="text-amber-50 text-lg flex items-end
               justify-center text-center gap-4 font-instrument-sans
               z-99 group"
-              >
-                <ArrowElbowDownRightIcon
-                  weight="duotone"
-                  size={24}
-                  className="mt-2"
-                />
-                <span className="relative hover:cursor-pointer">
-                  Apoie o projeto
-                  <div
-                    className="h-[0.4] w-0 group-hover:w-full bg-amber-50 -mt-0.5
-                transition-all duration-300 ease-out"
-                  />
-                </span>
-              </Link>
-            </div>
-          </header>
-          <canvas
-            ref={canvasRef}
-            id="hero-canvas"
-            className="absolute bottom-0 w-full h-full pointer-events-none"
-          ></canvas>
-          <div
-            id="hero-content"
-            className="absolute bottom-0 w-full h-[125svh] flex flex-col justify-center
-        items-center text-center gap-2 text-[#302f2c] pointer-events-none"
-          >
-            <p
-              className="uppercase font-medium leading-[0.98] font-instrument-serif
-            w-[100%-4rem] lg:w-75/100"
-              ref={heroParagraphRef}
-              style={{ fontSize: "clamp(2.5rem, 4.5vw, 5rem)" }}
             >
-              "Ainda que eu andasse pelo vale da sombra da morte, não temeria
-              mal algum, porque tu estás comigo."
-            </p>
-            <p>— Salmos 23:4</p>
+              <ArrowElbowDownRightIcon
+                weight="duotone"
+                size={24}
+                className="mt-2"
+              />
+              <span className="relative hover:cursor-pointer">
+                Apoie o projeto
+                <div
+                  className="h-[0.4] w-0 group-hover:w-full bg-amber-50 -mt-0.5
+                transition-all duration-300 ease-out"
+                />
+              </span>
+            </Link>
           </div>
-        </section>
-        <AboutSection />
-      </>
+        </header>
+        <canvas
+          ref={canvasRef}
+          id="hero-canvas"
+          className="absolute bottom-0 w-full h-full pointer-events-none"
+        ></canvas>
+        <div
+          id="hero-content"
+          className="absolute bottom-0 w-full h-[125svh] flex flex-col justify-center
+        items-center text-center gap-2 text-[#302f2c] pointer-events-none"
+        >
+          <p
+            className="uppercase font-medium leading-[0.98] font-instrument-serif
+            w-[100%-4rem] lg:w-75/100"
+            ref={heroParagraphRef}
+            style={{ fontSize: "clamp(2.5rem, 4.5vw, 5rem)" }}
+          >
+            "Ainda que eu andasse pelo vale da sombra da morte, não temeria mal
+            algum, porque tu estás comigo."
+          </p>
+          <p>— Salmos 23:4</p>
+        </div>
+      </section>
+      <AboutSection />
     </main>
   );
 }
