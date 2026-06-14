@@ -1,144 +1,62 @@
-# Plano de Resposta a Incidentes de Segurança
+# Incident Response Plan
 
-> **DPO:** dpo@versum.app
->
-> **Prazo de notificação à ANPD:** 2 dias úteis (Art. 48 LGPD)
+DPO: dpo@versum.app | LGPD notification deadline: 2 business days (Art. 48)
 
----
+## Classification
+| Level | Description | SLA |
+|-------|-------------|-----|
+| Low | No personal data exposure | 24h investigate |
+| Medium | Limited non-sensitive exposure | 12h contain |
+| High | Identifiable data exposed | 4h contain |
+| Critical | Massive sensitive data exposure | Immediate |
 
-## 1. Definição de Violação de Dados Pessoais
+## Personal Data Breach
+Accidental/unlawful destruction, loss, alteration, unauthorized disclosure, or unauthorized access to personal data.
 
-Uma violação de dados pessoais é um incidente de segurança que resulta em:
+## Flow
 
-- **Destruição** acidental ou ilícita de dados pessoais
-- **Perda** acidental ou ilícita de dados pessoais
-- **Alteração** acidental ou ilícita de dados pessoais
-- **Divulgação** não autorizada de dados pessoais
-- **Acesso** não autorizado a dados pessoais
+**Detection**
+- Automated: rate limit exceeded | auth 500 | invalid token attempts
+- Manual: user/partner reports | log audit
 
-## 2. Classificação de Incidentes
+**Triage (30 min)**
+1. Confirm personal data involved
+2. Classify level
+3. Notify DPO if ≥ Medium
+4. Open incident record
 
-| Nível | Descrição | Exemplos | Prazo de Resposta |
-|-------|-----------|----------|-------------------|
-| **Baixo** | Sem exposição de dados pessoais | Tentativa de força bruta frustrada, scan de porta | 24h para investigar |
-| **Médio** | Exposição limitada de dados não sensíveis | Acesso indevido a logs, vazamento de IP | 12h para conter |
-| **Alto** | Exposição de dados pessoais identificáveis | Vazamento de emails, acesso a tokens de sessão | 4h para conter |
-| **Crítico** | Exposição massiva de dados sensíveis | Acesso ao banco de dados completo, vazamento de token hashes | Imediato |
+**Containment (2h–24h)**
+- Isolate affected systems (Engineering)
+- Rotate compromised keys/tokens (Engineering)
+- Block malicious IPs (DevOps)
+- Forensic snapshot (logs + DB) (Engineering)
 
-## 3. Fluxo de Detecção e Resposta
+**Investigation (48h)**
+- Root cause | data scope | affected users | timeline
 
-### 3.1 Detecção
+**Notification (2 business days)**
+- ANPD: data nature, breach circumstances, containment, risks, DPO contact
+- Users (if required): incident desc, affected data, measures, recommendations
 
-- **Automática:**
-  - Rate limiting excedido → alerta de múltiplas tentativas
-  - Erro 500 no módulo de autenticação → alerta de possível incidente
-  - Tentativas de acesso com tokens inválidos → alerta de força bruta
-
-- **Manual:**
-  - Reporte de usuários
-  - Reporte de parceiros (Resend, hospedagem)
-  - Descoberta em auditoria de logs
-
-### 3.2 Triagem (30 min)
-
-1. Confirmar se o incidente envolve dados pessoais
-2. Classificar o nível (Baixo/Médio/Alto/Crítico)
-3. Notificar o DPO imediatamente se nível ≥ Médio
-4. Abrir registro do incidente no repositório
-
-### 3.3 Contenção (2h-24h)
-
-| Ação | Responsável |
-|------|-------------|
-| Isolar sistemas afetados | Engenharia |
-| Rotacionar chaves/tokens comprometidos | Engenharia |
-| Bloquear IPs maliciosos | DevOps |
-| Fazer snapshot forense (logs, DB) | Engenharia |
-| Preservar evidências | Engenharia |
-
-### 3.4 Investigação (48h)
-
-1. Identificar causa raiz
-2. Determinar escopo: quais dados foram acessados/expostos
-3. Identificar titulares afetados
-4. Documentar cronologia do incidente
-
-### 3.5 Notificação (2 dias úteis)
-
-**Para a ANPD (Art. 48):**
-- Natureza dos dados pessoais afetados
-- Circunstâncias da violação
-- Medidas de contenção adotadas
-- Riscos potenciais aos titulares
-- Contato do DPO
-
-**Para os titulares (quando necessário):**
-- Descrição clara do incidente
-- Dados pessoais afetados
-- Medidas de proteção adotadas
-- Recomendações para o titular (ex.: alterar senhas em outros serviços)
-- Contato do DPO
-
-## 4. Template de Notificação à ANPD
-
+## ANPD Template
 ```
-Assunto: Notificação de Violação de Dados Pessoais — Versum
-
-Data do incidente: [DATA]
-Data desta notificação: [DATA]
-
-1. Descrição do incidente:
-   [Descrever o que aconteceu, como foi detectado]
-
-2. Dados pessoais afetados:
-   [Listar tipos de dados: email, nome, IP, etc.]
-
-3. Titulares afetados:
-   [Número aproximado de usuários]
-
-4. Circunstâncias:
-   - Causa: [causa raiz]
-   - Data/hora da violação: [timestamp]
-   - Data/hora da detecção: [timestamp]
-   - Sistema comprometido: [sistema]
-
-5. Medidas de contenção adotadas:
-   [Listar ações já tomadas]
-
-6. Riscos potenciais:
-   [Descrever riscos para os titulares]
-
-7. Contato do DPO:
-   Nome: [Nome]
-   Email: dpo@versum.app
-   Telefone: [telefone]
+Subject: Personal Data Breach Notification — Versum
+Incident date: [DATE] | Notification date: [DATE]
+1. Description: [what happened / how detected]
+2. Data types: [email, name, IP, etc.]
+3. Affected subjects: [approx. N users]
+4. Root cause: [cause] | Breach: [timestamp] | Detection: [timestamp] | System: [system]
+5. Containment: [actions taken]
+6. Risks: [risks to data subjects]
+7. DPO: dpo@versum.app
 ```
 
-## 5. Responsabilidades
+## Automated Alerts (Discord Webhook)
+Triggers: multiple failed logins | invalid token attempts | auth 500
+Payload: timestamp + requester IP + route + error code
 
-| Função | Responsável | Contato |
-|--------|-------------|---------|
-| DPO | — | dpo@versum.app |
-| Engenharia | Time de desenvolvimento | — |
-| DevOps | Time de infraestrutura | — |
-| Jurídico | — | — |
-
-## 6. Pós-Incidente
-
-1. Análise de causa raiz (post-mortem)
-2. Implementação de medidas corretivas
-3. Atualização deste plano
-4. Relatório final arquivado
-
-## 7. Alertas Automáticos (Discord Webhook)
-
-Em caso de:
-- Múltiplas tentativas de login falhas (rate limit excedido)
-- Tentativas de acesso a tokens inválidos
-- Erro 500 inesperado no módulo de autenticação
-
-O sistema deve enviar alerta para o canal de segurança no Discord indicando:
-- Timestamp
-- IP do solicitante
-- Rota afetada
-- Código do erro
+## Post-Incident
+1. Root cause analysis (post-mortem)
+2. Implement corrective measures
+3. Update this plan
+4. Archive final report

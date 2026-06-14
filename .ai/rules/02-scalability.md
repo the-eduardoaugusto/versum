@@ -1,25 +1,15 @@
 # Scalability Rules
 
-## Performance
-- Avoid N+1 queries; use eager loading or batch queries
-- Implement caching for expensive operations
-- Use pagination for large datasets
-- Optimize database queries with proper indexes
-
-## Architecture
-- Design with separation of concerns
-- Use dependency injection to improve testability
-- Implement stateless services when possible
-- Design APIs to be horizontally scalable
-
-## Database
-- Use appropriate database for each use case
-- Implement connection pooling
-- Use read replicas for read-heavy operations
-- Design schema with scaling in mind
-
-## Async Processing
-- Offload long-running tasks to background jobs
-- Use message queues for async communication
-- Implement proper retry mechanisms
-- Handle failures gracefully with exponential backoff
+- No N+1 queries — eager load or batch
+- Cache expensive operations
+- Paginate large datasets
+- Proper DB indexes
+- Separation of concerns
+- Dependency injection for testability
+- Stateless services
+- APIs designed for horizontal scaling
+- Connection pooling
+- Read replicas for read-heavy ops
+- Background jobs for long-running tasks
+- Message queues for async communication
+- Retry with exponential backoff
