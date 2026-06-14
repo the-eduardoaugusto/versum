@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useChapterPagination } from "../hooks/use-chapter-pagination";
 import type { FeedChapter, VerseData, VersePage } from "../types";
 import { ChapterHeader } from "./chapter-header";
@@ -56,11 +56,14 @@ function packPages(
 }
 
 export function ChapterView({ chapter }: ChapterViewProps) {
+  console.log("ChapterView render:", chapter.id);
   const pagesContainerRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
   const [pages, setPages] = useState<VersePage[]>([]);
 
-  const measure = useCallback(() => {
+  const measureRefCallback = useRef<() => void>(() => {});
+
+  measureRefCallback.current = () => {
     const c = pagesContainerRef.current;
     const m = measureRef.current;
     if (!c || !m) return;
@@ -75,18 +78,19 @@ export function ChapterView({ chapter }: ChapterViewProps) {
 
     const availableHeight = c.clientHeight - PAGE_VERTICAL_PADDING;
     setPages(packPages(chapter.verses, verseHeights, availableHeight));
-  }, [chapter.verses]);
+  };
 
   useLayoutEffect(() => {
     const container = pagesContainerRef.current;
     if (!container) return;
 
-    measure();
+    const fn = () => measureRefCallback.current();
+    fn();
 
-    const ro = new ResizeObserver(measure);
+    const ro = new ResizeObserver(fn);
     ro.observe(container);
     return () => ro.disconnect();
-  }, [measure]);
+  }, []);
 
   const { activePage } = useChapterPagination(pagesContainerRef);
   const pageCount = pages.length;

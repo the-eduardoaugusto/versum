@@ -27,7 +27,6 @@ vi.mock("../hooks/use-journey-progress", () => ({
 vi.mock("../hooks/use-active-chapter", () => ({
   useActiveChapter: () => ({
     activeChapterId: null,
-    markPreviousAsRead: vi.fn(),
   }),
 }));
 

@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  type ReactNode,
-  useCallback,
-  useContext,
-  useRef,
-} from "react";
+import { createContext, type ReactNode, useContext, useRef } from "react";
 import { useActiveChapter } from "../hooks/use-active-chapter";
 import { useJourneyFeed } from "../hooks/use-journey-feed";
 import { useJourneyProgress } from "../hooks/use-journey-progress";
@@ -32,14 +26,10 @@ export function FeedProvider({ children }: { children: ReactNode }) {
   const progress = useJourneyProgress();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleFetchNextPage = useCallback(async () => {
-    await feed.fetchNextPage();
-  }, [feed.fetchNextPage]);
-
   const { activeChapterId } = useActiveChapter(containerRef, {
     chapters: feed.chapters,
     isAtEnd: feed.progress?.isAtEnd ?? false,
-    fetchNextPage: handleFetchNextPage,
+    fetchNextPage: feed.fetchNextPage,
   });
 
   const value: FeedContextValue = {
@@ -51,7 +41,7 @@ export function FeedProvider({ children }: { children: ReactNode }) {
     error: feed.error,
     hasNextPage: feed.hasNextPage,
     isFetchingNextPage: feed.isFetchingNextPage,
-    fetchNextPage: handleFetchNextPage,
+    fetchNextPage: feed.fetchNextPage,
     isMarking: progress.isMarking,
   };
 

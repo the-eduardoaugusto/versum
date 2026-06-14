@@ -6,7 +6,7 @@ export default function ApplicationLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
+    <div className="min-h-svh max-h-svh flex flex-col md:flex-row">
       <AppNavbar />
 
       <main className="flex-1 max-h-svh max-w-screen order-first md:order-0">
