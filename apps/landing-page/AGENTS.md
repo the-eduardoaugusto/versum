@@ -1,13 +1,11 @@
 @../AGENTS.md
 
-# Landing Page App — Contexto Específico
+# Landing Page — Specific Context
 
-## Stack
-- **Framework:** Next.js 16 (Pages Router)
+Stack: Next.js 16 (Pages Router)
 
-## Convenções Específicas
-- **Performance:** Manter lightweight, mínimo JavaScript
-- **Componentes:** Cada componente em sua própria pasta (`<nome>/component.tsx`)
-- **Estilo:** Tailwind CSS v4 + CSS Modules quando necessário
-- **SEO:** Meta tags e HTML semântico obrigatório
-- **Animações:** GSAP, Lenis (smooth scroll), Three.js (shaders)
+- Lightweight: minimal JS
+- Components: own folder (`<name>/component.tsx`)
+- Style: Tailwind v4 + CSS Modules when needed
+- SEO: meta tags + semantic HTML required
+- Animations: GSAP + Lenis (smooth scroll) + Three.js (shaders)
