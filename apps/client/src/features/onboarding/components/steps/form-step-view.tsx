@@ -191,12 +191,12 @@ export function FormStepView({
         <div ref={wrapperRef} className="invisible flex flex-col gap-2">
           <p
             ref={labelRef}
-            className="tracking-tight text-foreground overflow-hidden font-instrument-serif text-5xl"
+            className="tracking-tight text-foreground overflow-hidden font-instrument-serif text-3xl sm:text-5xl"
           >
             {step.title}
           </p>
           <p
-            className="text-xl text-foreground/50 font-instrument-sans"
+            className="text-base sm:text-xl text-foreground/50 font-instrument-sans"
             ref={subtitleRef}
           >
             {step.description}

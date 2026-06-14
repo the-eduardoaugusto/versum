@@ -101,12 +101,12 @@ export function OutStepView({
           <span className="text-5xl">🎉</span>
           <p
             ref={labelRef}
-            className="tracking-tight text-foreground overflow-hidden font-instrument-serif text-5xl"
+            className="tracking-tight text-foreground overflow-hidden font-instrument-serif text-3xl sm:text-5xl"
           >
             {label}
           </p>
           <p
-            className="text-xl text-foreground/50 font-instrument-sans"
+            className="text-base sm:text-xl text-foreground/50 font-instrument-sans"
             ref={subtitleRef}
           >
             Tudo certo! Sua conta está pronta.
