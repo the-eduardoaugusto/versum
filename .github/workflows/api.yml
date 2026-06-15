@@ -113,18 +113,8 @@ jobs:
       - name: Generate build zip
         run: cd apps/api && bun run zip
 
-      - name: Create certificate directory
-        run: mkdir -p apps/api/.certs
-
-      - name: Write DB certificate
-        env:
-          DB_CERT: ${{ secrets.DB_CERT }}
-        run: printf '%s' "$DB_CERT" > apps/api/.certs/postgre-certificate.pem
-
-      - name: Sync database schema
-        run: cd apps/api && bun drizzle-kit push --force
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      - name: Migrate
+        run: cd apps/api && bun drizzle-kit migrate
 
       - name: Setup Square Cloud
         uses: squarecloudofc/github-action@v2
