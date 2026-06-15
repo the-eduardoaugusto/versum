@@ -304,6 +304,66 @@ describe("ProfileServiceV1", () => {
     });
   });
 
+  describe("updateProfilePicture", () => {
+    it("should update pictureUrl and return updated profile", async () => {
+      const mockRepository = createMockRepository();
+      const mockConsentLogsRepository = createMockConsentLogsRepository();
+      const updatedProfile = { ...mockProfile, pictureUrl: "https://res.cloudinary.com/versum/profiles/user1.jpg" };
+      mockConsentLogsRepository.hasConsent.mockResolvedValue(true);
+      mockRepository.findByUserId.mockResolvedValue(mockProfile);
+      mockRepository.update.mockResolvedValue(updatedProfile);
+      service = createService({ mockRepository, mockConsentLogsRepository });
+
+      const result = await service.updateProfilePicture({
+        userId: mockProfile.userId,
+        pictureUrl: "https://res.cloudinary.com/versum/profiles/user1.jpg",
+      });
+
+      expect(result).toEqual(updatedProfile);
+      expect(mockRepository.update).toHaveBeenCalledWith({
+        id: mockProfile.id,
+        pictureUrl: "https://res.cloudinary.com/versum/profiles/user1.jpg",
+      });
+    });
+
+    it("should throw ForbiddenError when consent not granted", async () => {
+      const mockRepository = createMockRepository();
+      const mockConsentLogsRepository = createMockConsentLogsRepository();
+      mockConsentLogsRepository.hasConsent.mockResolvedValue(false);
+      service = createService({ mockRepository, mockConsentLogsRepository });
+
+      await expect(
+        service.updateProfilePicture({
+          userId: mockProfile.userId,
+          pictureUrl: "https://res.cloudinary.com/versum/profiles/user1.jpg",
+        }),
+      ).rejects.toThrow("Consentimento para armazenar conteúdo do perfil não foi concedido");
+
+      expect(mockConsentLogsRepository.hasConsent).toHaveBeenCalledWith({
+        userId: mockProfile.userId,
+        purpose: "profile_content",
+      });
+      expect(mockRepository.update).not.toHaveBeenCalled();
+    });
+
+    it("should throw NotFoundError when profile does not exist", async () => {
+      const mockRepository = createMockRepository();
+      const mockConsentLogsRepository = createMockConsentLogsRepository();
+      mockConsentLogsRepository.hasConsent.mockResolvedValue(true);
+      mockRepository.findByUserId.mockResolvedValue(null);
+      service = createService({ mockRepository, mockConsentLogsRepository });
+
+      await expect(
+        service.updateProfilePicture({
+          userId: "nonexistent-user",
+          pictureUrl: "https://res.cloudinary.com/versum/profiles/user1.jpg",
+        }),
+      ).rejects.toThrow("Profile not found");
+
+      expect(mockRepository.update).not.toHaveBeenCalled();
+    });
+  });
+
   describe("updateProfile", () => {
     beforeEach(() => {
       vi.clearAllMocks();

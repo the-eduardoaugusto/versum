@@ -10,8 +10,8 @@
  */
 export interface User {
   /**
-   * E-mail do usuário
-   * @maxLength 255
-   */
+     * E-mail do usuário
+     * @maxLength 255
+     */
   email: string;
 }

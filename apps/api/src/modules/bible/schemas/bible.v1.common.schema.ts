@@ -84,26 +84,26 @@ export class BibleCommonSchemasV1 {
 
   static createSuccessResponseSchema<T extends z.ZodType>(
     name: string,
-    dataSchema: T,
+    dataSchema?: T,
     includePagination = false,
   ) {
-    const schema = z.object({
+    const fields: Record<string, z.ZodType> = {
       success: z
         .boolean()
         .default(true)
         .describe("Indica se a requisição foi bem-sucedida"),
       message: z.string().optional().describe("Mensagem opcional de contexto"),
-      data: dataSchema.optional().describe("Dados da resposta"),
-      pagination: includePagination
-        ? BibleCommonSchemasV1.paginationViewModelSchema
-            .optional()
-            .describe("Informações de paginação")
-        : BibleCommonSchemasV1.paginationViewModelSchema
-            .optional()
-            .describe("Informações de paginação"),
-    });
+    };
 
-    return schema.openapi(name, {
+    if (dataSchema && !(dataSchema instanceof z.ZodUndefined)) {
+      fields.data = dataSchema.optional().describe("Dados da resposta");
+    }
+
+    fields.pagination = BibleCommonSchemasV1.paginationViewModelSchema
+      .optional()
+      .describe("Informações de paginação");
+
+    return z.object(fields).openapi(name, {
       description: `Resposta de sucesso para ${name}`,
     });
   }

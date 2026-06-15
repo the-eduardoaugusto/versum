@@ -1,7 +1,9 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
+import { bodyLimit } from "hono/body-limit";
 import { AuthMiddleware } from "@/middlewares/auth.middleware.ts";
-import { createErrorResponses } from "../../../utils/app/errors/openapi.ts";
+import { createErrorResponse, createErrorResponses } from "../../../utils/app/errors/openapi.ts";
 import { validationErrorHook } from "../../../utils/app/errors/validation.hook.ts";
+import { ApiErrorViewModel } from "../../../view-models/default/error.view-model.ts";
 import type { ProfileControllerV1 } from "../controllers/profile.v1.controller.ts";
 import {
   createProfileBodySchema,
@@ -10,8 +12,12 @@ import {
   getProfileByUsernameResponseSchema,
   updateAuthenticatedProfileBodySchema,
   updateAuthenticatedProfileResponseSchema,
+  updateProfilePictureResponseSchema,
+  uploadProfilePictureBodySchema,
   usernameParamSchema,
 } from "../schemas/v1/profiles.v1.common.schema.ts";
+
+const PROFILE_PICTURE_MAX_SIZE_BYTES = 5 * 1024 * 1024;
 
 export const createProfileRoutesV1 = (controller: ProfileControllerV1) => {
   const router = new OpenAPIHono({
@@ -121,12 +127,60 @@ export const createProfileRoutesV1 = (controller: ProfileControllerV1) => {
     },
   });
 
+  const uploadPictureRoute = createRoute({
+    method: "put",
+    path: "/@me/picture",
+    tags: ["Profiles"],
+    summary: "Atualizar foto de perfil",
+    description:
+      "Faz upload de uma nova foto de perfil e atualiza o perfil do usuário. Formatos aceitos: JPEG e PNG. Tamanho máximo: 5MB.",
+    security: [{ cookieAuth: [] }],
+    request: {
+      body: {
+        content: {
+          "multipart/form-data": {
+            schema: uploadProfilePictureBodySchema,
+          },
+        },
+        required: true,
+      },
+    },
+    responses: {
+      200: {
+        content: {
+          "application/json": {
+            schema: updateProfilePictureResponseSchema,
+          },
+        },
+        description: "Foto de perfil atualizada com sucesso",
+      },
+      413: createErrorResponse("Arquivo muito grande. Tamanho máximo: 5MB"),
+      ...createErrorResponses([400, 401, 403, 404, 429, 500]),
+    },
+  });
+
   router.use("/*", authMiddleware.validateSession);
+
+  router.use(
+    "/@me/picture",
+    bodyLimit({
+      maxSize: PROFILE_PICTURE_MAX_SIZE_BYTES,
+      onError: (c) =>
+        c.json(
+          new ApiErrorViewModel(
+            "File too large. Maximum size is 5MB",
+            "PAYLOAD_TOO_LARGE",
+          ),
+          413,
+        ),
+    }),
+  );
 
   router.openapi(createProfileRoute, controller.createProfile);
   router.openapi(getMeRoute, controller.getAuthenticatedProfile);
   router.openapi(updateMeRoute, controller.updateAuthenticatedProfile);
   router.openapi(getByUsernameRoute, controller.getProfileByUsername);
+  router.openapi(uploadPictureRoute, controller.updateProfilePicture);
 
   return router;
 };

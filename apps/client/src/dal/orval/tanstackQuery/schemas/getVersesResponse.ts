@@ -4,8 +4,8 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import type { PaginationViewModel } from "./paginationViewModel";
-import type { Verse } from "./verse";
+import type { PaginationViewModel } from './paginationViewModel';
+import type { Verse } from './verse';
 
 /**
  * Resposta de sucesso para GetVersesResponse

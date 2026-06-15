@@ -4,7 +4,10 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-
+import {
+  useMutation,
+  useQuery
+} from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -17,9 +20,8 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult,
-} from "@tanstack/react-query";
-import { useMutation, useQuery } from "@tanstack/react-query";
+  UseQueryResult
+} from '@tanstack/react-query';
 
 import type {
   ApiErrorResponse,
@@ -29,742 +31,657 @@ import type {
   GetProfileByUsernameResponse,
   UpdateAuthenticatedProfileBody,
   UpdateAuthenticatedProfileResponse,
-} from "../schemas";
+  UpdateProfilePictureResponse,
+  UploadProfilePictureBody
+} from '../schemas';
+
+
+
+
 
 export type postApiV1ProfilesMeResponse201 = {
-  data: CreateProfileResponse;
-  status: 201;
-};
+  data: CreateProfileResponse
+  status: 201
+}
 
 export type postApiV1ProfilesMeResponse400 = {
-  data: ApiErrorResponse;
-  status: 400;
-};
+  data: ApiErrorResponse
+  status: 400
+}
 
 export type postApiV1ProfilesMeResponse401 = {
-  data: ApiErrorResponse;
-  status: 401;
-};
+  data: ApiErrorResponse
+  status: 401
+}
 
 export type postApiV1ProfilesMeResponse409 = {
-  data: ApiErrorResponse;
-  status: 409;
-};
+  data: ApiErrorResponse
+  status: 409
+}
 
 export type postApiV1ProfilesMeResponse429 = {
-  data: ApiErrorResponse;
-  status: 429;
-};
+  data: ApiErrorResponse
+  status: 429
+}
 
 export type postApiV1ProfilesMeResponse500 = {
-  data: ApiErrorResponse;
-  status: 500;
-};
+  data: ApiErrorResponse
+  status: 500
+}
 
-export type postApiV1ProfilesMeResponseSuccess =
-  postApiV1ProfilesMeResponse201 & {
-    headers: Headers;
-  };
-export type postApiV1ProfilesMeResponseError = (
-  | postApiV1ProfilesMeResponse400
-  | postApiV1ProfilesMeResponse401
-  | postApiV1ProfilesMeResponse409
-  | postApiV1ProfilesMeResponse429
-  | postApiV1ProfilesMeResponse500
-) & {
+export type postApiV1ProfilesMeResponseSuccess = (postApiV1ProfilesMeResponse201) & {
+  headers: Headers;
+};
+export type postApiV1ProfilesMeResponseError = (postApiV1ProfilesMeResponse400 | postApiV1ProfilesMeResponse401 | postApiV1ProfilesMeResponse409 | postApiV1ProfilesMeResponse429 | postApiV1ProfilesMeResponse500) & {
   headers: Headers;
 };
 
-export type postApiV1ProfilesMeResponse =
-  | postApiV1ProfilesMeResponseSuccess
-  | postApiV1ProfilesMeResponseError;
+export type postApiV1ProfilesMeResponse = (postApiV1ProfilesMeResponseSuccess | postApiV1ProfilesMeResponseError)
 
 export const getPostApiV1ProfilesMeUrl = () => {
-  return `/api/v1/profiles/@me`;
-};
+
+
+
+
+  return `/api/v1/profiles/@me`
+}
 
 /**
  * Cria um novo perfil para o usuário autenticado.
  * @summary Criar perfil do usuário autenticado
  */
-export const postApiV1ProfilesMe = async (
-  createProfileBody?: CreateProfileBody,
-  options?: RequestInit,
-): Promise<postApiV1ProfilesMeResponse> => {
-  const res = await fetch(getPostApiV1ProfilesMeUrl(), {
+export const postApiV1ProfilesMe = async (createProfileBody?: CreateProfileBody, options?: RequestInit): Promise<postApiV1ProfilesMeResponse> => {
+
+  const res = await fetch(getPostApiV1ProfilesMeUrl(),
+  {
     ...options,
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(createProfileBody),
-  });
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(createProfileBody)
+  }
+)
+
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
-  const data: postApiV1ProfilesMeResponse["data"] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as postApiV1ProfilesMeResponse;
-};
+  const data: postApiV1ProfilesMeResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as postApiV1ProfilesMeResponse
+}
 
-export const getPostApiV1ProfilesMeMutationOptions = <
-  TError = ApiErrorResponse,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postApiV1ProfilesMe>>,
-    TError,
-    { data?: CreateProfileBody },
-    TContext
-  >;
-  fetch?: RequestInit;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof postApiV1ProfilesMe>>,
-  TError,
-  { data?: CreateProfileBody },
-  TContext
-> => {
-  const mutationKey = ["postApiV1ProfilesMe"];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postApiV1ProfilesMe>>,
-    { data?: CreateProfileBody }
-  > = (props) => {
-    const { data } = props ?? {};
 
-    return postApiV1ProfilesMe(data, fetchOptions);
-  };
 
-  return { mutationFn, ...mutationOptions };
-};
+export const getPostApiV1ProfilesMeMutationOptions = <TError = ApiErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1ProfilesMe>>, TError,{data?: CreateProfileBody}, TContext>, fetch?: RequestInit}
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1ProfilesMe>>, TError,{data?: CreateProfileBody}, TContext> => {
 
-export type PostApiV1ProfilesMeMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postApiV1ProfilesMe>>
->;
-export type PostApiV1ProfilesMeMutationBody = CreateProfileBody | undefined;
-export type PostApiV1ProfilesMeMutationError = ApiErrorResponse;
+const mutationKey = ['postApiV1ProfilesMe'];
+const {mutation: mutationOptions, fetch: fetchOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, fetch: undefined};
 
-/**
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1ProfilesMe>>, {data?: CreateProfileBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  postApiV1ProfilesMe(data,fetchOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiV1ProfilesMeMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1ProfilesMe>>>
+    export type PostApiV1ProfilesMeMutationBody = CreateProfileBody | undefined
+    export type PostApiV1ProfilesMeMutationError = ApiErrorResponse
+
+    /**
  * @summary Criar perfil do usuário autenticado
  */
-export const usePostApiV1ProfilesMe = <
-  TError = ApiErrorResponse,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postApiV1ProfilesMe>>,
-      TError,
-      { data?: CreateProfileBody },
-      TContext
-    >;
-    fetch?: RequestInit;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof postApiV1ProfilesMe>>,
-  TError,
-  { data?: CreateProfileBody },
-  TContext
-> => {
-  return useMutation(
-    getPostApiV1ProfilesMeMutationOptions(options),
-    queryClient,
-  );
-};
-export type getApiV1ProfilesMeResponse200 = {
-  data: GetAuthenticatedProfileResponse;
-  status: 200;
-};
+export const usePostApiV1ProfilesMe = <TError = ApiErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1ProfilesMe>>, TError,{data?: CreateProfileBody}, TContext>, fetch?: RequestInit}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiV1ProfilesMe>>,
+        TError,
+        {data?: CreateProfileBody},
+        TContext
+      > => {
+      return useMutation(getPostApiV1ProfilesMeMutationOptions(options), queryClient);
+    }
+    export type getApiV1ProfilesMeResponse200 = {
+  data: GetAuthenticatedProfileResponse
+  status: 200
+}
 
 export type getApiV1ProfilesMeResponse401 = {
-  data: ApiErrorResponse;
-  status: 401;
-};
+  data: ApiErrorResponse
+  status: 401
+}
 
 export type getApiV1ProfilesMeResponse404 = {
-  data: ApiErrorResponse;
-  status: 404;
-};
+  data: ApiErrorResponse
+  status: 404
+}
 
 export type getApiV1ProfilesMeResponse429 = {
-  data: ApiErrorResponse;
-  status: 429;
-};
+  data: ApiErrorResponse
+  status: 429
+}
 
 export type getApiV1ProfilesMeResponse500 = {
-  data: ApiErrorResponse;
-  status: 500;
-};
+  data: ApiErrorResponse
+  status: 500
+}
 
-export type getApiV1ProfilesMeResponseSuccess =
-  getApiV1ProfilesMeResponse200 & {
-    headers: Headers;
-  };
-export type getApiV1ProfilesMeResponseError = (
-  | getApiV1ProfilesMeResponse401
-  | getApiV1ProfilesMeResponse404
-  | getApiV1ProfilesMeResponse429
-  | getApiV1ProfilesMeResponse500
-) & {
+export type getApiV1ProfilesMeResponseSuccess = (getApiV1ProfilesMeResponse200) & {
+  headers: Headers;
+};
+export type getApiV1ProfilesMeResponseError = (getApiV1ProfilesMeResponse401 | getApiV1ProfilesMeResponse404 | getApiV1ProfilesMeResponse429 | getApiV1ProfilesMeResponse500) & {
   headers: Headers;
 };
 
-export type getApiV1ProfilesMeResponse =
-  | getApiV1ProfilesMeResponseSuccess
-  | getApiV1ProfilesMeResponseError;
+export type getApiV1ProfilesMeResponse = (getApiV1ProfilesMeResponseSuccess | getApiV1ProfilesMeResponseError)
 
 export const getGetApiV1ProfilesMeUrl = () => {
-  return `/api/v1/profiles/@me`;
-};
+
+
+
+
+  return `/api/v1/profiles/@me`
+}
 
 /**
  * Retorna os dados do perfil do usuário autenticado.
  * @summary Obter perfil do usuário autenticado
  */
-export const getApiV1ProfilesMe = async (
-  options?: RequestInit,
-): Promise<getApiV1ProfilesMeResponse> => {
-  const res = await fetch(getGetApiV1ProfilesMeUrl(), {
+export const getApiV1ProfilesMe = async ( options?: RequestInit): Promise<getApiV1ProfilesMeResponse> => {
+
+  const res = await fetch(getGetApiV1ProfilesMeUrl(),
+  {
     ...options,
-    method: "GET",
-  });
+    method: 'GET'
+
+
+  }
+)
+
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
-  const data: getApiV1ProfilesMeResponse["data"] = body ? JSON.parse(body) : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as getApiV1ProfilesMeResponse;
-};
+  const data: getApiV1ProfilesMeResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getApiV1ProfilesMeResponse
+}
+
+
+
+
 
 export const getGetApiV1ProfilesMeQueryKey = () => {
-  return [`/api/v1/profiles/@me`] as const;
-};
+    return [
+    `/api/v1/profiles/@me`
+    ] as const;
+    }
 
-export const getGetApiV1ProfilesMeQueryOptions = <
-  TData = Awaited<ReturnType<typeof getApiV1ProfilesMe>>,
-  TError = ApiErrorResponse,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof getApiV1ProfilesMe>>,
-      TError,
-      TData
-    >
-  >;
-  fetch?: RequestInit;
-}) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetApiV1ProfilesMeQueryKey();
+export const getGetApiV1ProfilesMeQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1ProfilesMe>>, TError = ApiErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ProfilesMe>>, TError, TData>>, fetch?: RequestInit}
+) => {
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getApiV1ProfilesMe>>
-  > = ({ signal }) => getApiV1ProfilesMe({ signal, ...fetchOptions });
+const {query: queryOptions, fetch: fetchOptions} = options ?? {};
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getApiV1ProfilesMe>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1ProfilesMeQueryKey();
 
-export type GetApiV1ProfilesMeQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getApiV1ProfilesMe>>
->;
-export type GetApiV1ProfilesMeQueryError = ApiErrorResponse;
 
-export function useGetApiV1ProfilesMe<
-  TData = Awaited<ReturnType<typeof getApiV1ProfilesMe>>,
-  TError = ApiErrorResponse,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ProfilesMe>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1ProfilesMe>>> = ({ signal }) => getApiV1ProfilesMe({ signal, ...fetchOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1ProfilesMe>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiV1ProfilesMeQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1ProfilesMe>>>
+export type GetApiV1ProfilesMeQueryError = ApiErrorResponse
+
+
+export function useGetApiV1ProfilesMe<TData = Awaited<ReturnType<typeof getApiV1ProfilesMe>>, TError = ApiErrorResponse>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ProfilesMe>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiV1ProfilesMe>>,
           TError,
           Awaited<ReturnType<typeof getApiV1ProfilesMe>>
-        >,
-        "initialData"
-      >;
-    fetch?: RequestInit;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetApiV1ProfilesMe<
-  TData = Awaited<ReturnType<typeof getApiV1ProfilesMe>>,
-  TError = ApiErrorResponse,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ProfilesMe>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, fetch?: RequestInit}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiV1ProfilesMe<TData = Awaited<ReturnType<typeof getApiV1ProfilesMe>>, TError = ApiErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ProfilesMe>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiV1ProfilesMe>>,
           TError,
           Awaited<ReturnType<typeof getApiV1ProfilesMe>>
-        >,
-        "initialData"
-      >;
-    fetch?: RequestInit;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetApiV1ProfilesMe<
-  TData = Awaited<ReturnType<typeof getApiV1ProfilesMe>>,
-  TError = ApiErrorResponse,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ProfilesMe>>,
-        TError,
-        TData
-      >
-    >;
-    fetch?: RequestInit;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, fetch?: RequestInit}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiV1ProfilesMe<TData = Awaited<ReturnType<typeof getApiV1ProfilesMe>>, TError = ApiErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ProfilesMe>>, TError, TData>>, fetch?: RequestInit}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Obter perfil do usuário autenticado
  */
 
-export function useGetApiV1ProfilesMe<
-  TData = Awaited<ReturnType<typeof getApiV1ProfilesMe>>,
-  TError = ApiErrorResponse,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ProfilesMe>>,
-        TError,
-        TData
-      >
-    >;
-    fetch?: RequestInit;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetApiV1ProfilesMeQueryOptions(options);
+export function useGetApiV1ProfilesMe<TData = Awaited<ReturnType<typeof getApiV1ProfilesMe>>, TError = ApiErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ProfilesMe>>, TError, TData>>, fetch?: RequestInit}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetApiV1ProfilesMeQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
 
+
+
+
+
+
 export type patchApiV1ProfilesMeResponse200 = {
-  data: UpdateAuthenticatedProfileResponse;
-  status: 200;
-};
+  data: UpdateAuthenticatedProfileResponse
+  status: 200
+}
 
 export type patchApiV1ProfilesMeResponse400 = {
-  data: ApiErrorResponse;
-  status: 400;
-};
+  data: ApiErrorResponse
+  status: 400
+}
 
 export type patchApiV1ProfilesMeResponse401 = {
-  data: ApiErrorResponse;
-  status: 401;
-};
+  data: ApiErrorResponse
+  status: 401
+}
 
 export type patchApiV1ProfilesMeResponse404 = {
-  data: ApiErrorResponse;
-  status: 404;
-};
+  data: ApiErrorResponse
+  status: 404
+}
 
 export type patchApiV1ProfilesMeResponse409 = {
-  data: ApiErrorResponse;
-  status: 409;
-};
+  data: ApiErrorResponse
+  status: 409
+}
 
 export type patchApiV1ProfilesMeResponse429 = {
-  data: ApiErrorResponse;
-  status: 429;
-};
+  data: ApiErrorResponse
+  status: 429
+}
 
 export type patchApiV1ProfilesMeResponse500 = {
-  data: ApiErrorResponse;
-  status: 500;
-};
+  data: ApiErrorResponse
+  status: 500
+}
 
-export type patchApiV1ProfilesMeResponseSuccess =
-  patchApiV1ProfilesMeResponse200 & {
-    headers: Headers;
-  };
-export type patchApiV1ProfilesMeResponseError = (
-  | patchApiV1ProfilesMeResponse400
-  | patchApiV1ProfilesMeResponse401
-  | patchApiV1ProfilesMeResponse404
-  | patchApiV1ProfilesMeResponse409
-  | patchApiV1ProfilesMeResponse429
-  | patchApiV1ProfilesMeResponse500
-) & {
+export type patchApiV1ProfilesMeResponseSuccess = (patchApiV1ProfilesMeResponse200) & {
+  headers: Headers;
+};
+export type patchApiV1ProfilesMeResponseError = (patchApiV1ProfilesMeResponse400 | patchApiV1ProfilesMeResponse401 | patchApiV1ProfilesMeResponse404 | patchApiV1ProfilesMeResponse409 | patchApiV1ProfilesMeResponse429 | patchApiV1ProfilesMeResponse500) & {
   headers: Headers;
 };
 
-export type patchApiV1ProfilesMeResponse =
-  | patchApiV1ProfilesMeResponseSuccess
-  | patchApiV1ProfilesMeResponseError;
+export type patchApiV1ProfilesMeResponse = (patchApiV1ProfilesMeResponseSuccess | patchApiV1ProfilesMeResponseError)
 
 export const getPatchApiV1ProfilesMeUrl = () => {
-  return `/api/v1/profiles/@me`;
-};
+
+
+
+
+  return `/api/v1/profiles/@me`
+}
 
 /**
  * Atualiza os dados do perfil do usuário autenticado.
  * @summary Atualizar perfil do usuário autenticado
  */
-export const patchApiV1ProfilesMe = async (
-  updateAuthenticatedProfileBody?: UpdateAuthenticatedProfileBody,
-  options?: RequestInit,
-): Promise<patchApiV1ProfilesMeResponse> => {
-  const res = await fetch(getPatchApiV1ProfilesMeUrl(), {
+export const patchApiV1ProfilesMe = async (updateAuthenticatedProfileBody?: UpdateAuthenticatedProfileBody, options?: RequestInit): Promise<patchApiV1ProfilesMeResponse> => {
+
+  const res = await fetch(getPatchApiV1ProfilesMeUrl(),
+  {
     ...options,
-    method: "PATCH",
-    headers: { "Content-Type": "application/json", ...options?.headers },
-    body: JSON.stringify(updateAuthenticatedProfileBody),
-  });
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateAuthenticatedProfileBody)
+  }
+)
+
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
-  const data: patchApiV1ProfilesMeResponse["data"] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as patchApiV1ProfilesMeResponse;
-};
+  const data: patchApiV1ProfilesMeResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as patchApiV1ProfilesMeResponse
+}
 
-export const getPatchApiV1ProfilesMeMutationOptions = <
-  TError = ApiErrorResponse,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof patchApiV1ProfilesMe>>,
-    TError,
-    { data?: UpdateAuthenticatedProfileBody },
-    TContext
-  >;
-  fetch?: RequestInit;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof patchApiV1ProfilesMe>>,
-  TError,
-  { data?: UpdateAuthenticatedProfileBody },
-  TContext
-> => {
-  const mutationKey = ["patchApiV1ProfilesMe"];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof patchApiV1ProfilesMe>>,
-    { data?: UpdateAuthenticatedProfileBody }
-  > = (props) => {
-    const { data } = props ?? {};
 
-    return patchApiV1ProfilesMe(data, fetchOptions);
-  };
 
-  return { mutationFn, ...mutationOptions };
-};
+export const getPatchApiV1ProfilesMeMutationOptions = <TError = ApiErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1ProfilesMe>>, TError,{data?: UpdateAuthenticatedProfileBody}, TContext>, fetch?: RequestInit}
+): UseMutationOptions<Awaited<ReturnType<typeof patchApiV1ProfilesMe>>, TError,{data?: UpdateAuthenticatedProfileBody}, TContext> => {
 
-export type PatchApiV1ProfilesMeMutationResult = NonNullable<
-  Awaited<ReturnType<typeof patchApiV1ProfilesMe>>
->;
-export type PatchApiV1ProfilesMeMutationBody =
-  | UpdateAuthenticatedProfileBody
-  | undefined;
-export type PatchApiV1ProfilesMeMutationError = ApiErrorResponse;
+const mutationKey = ['patchApiV1ProfilesMe'];
+const {mutation: mutationOptions, fetch: fetchOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, fetch: undefined};
 
-/**
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof patchApiV1ProfilesMe>>, {data?: UpdateAuthenticatedProfileBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  patchApiV1ProfilesMe(data,fetchOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PatchApiV1ProfilesMeMutationResult = NonNullable<Awaited<ReturnType<typeof patchApiV1ProfilesMe>>>
+    export type PatchApiV1ProfilesMeMutationBody = UpdateAuthenticatedProfileBody | undefined
+    export type PatchApiV1ProfilesMeMutationError = ApiErrorResponse
+
+    /**
  * @summary Atualizar perfil do usuário autenticado
  */
-export const usePatchApiV1ProfilesMe = <
-  TError = ApiErrorResponse,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof patchApiV1ProfilesMe>>,
-      TError,
-      { data?: UpdateAuthenticatedProfileBody },
-      TContext
-    >;
-    fetch?: RequestInit;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof patchApiV1ProfilesMe>>,
-  TError,
-  { data?: UpdateAuthenticatedProfileBody },
-  TContext
-> => {
-  return useMutation(
-    getPatchApiV1ProfilesMeMutationOptions(options),
-    queryClient,
-  );
-};
-export type getApiV1ProfilesUsernameResponse200 = {
-  data: GetProfileByUsernameResponse;
-  status: 200;
-};
+export const usePatchApiV1ProfilesMe = <TError = ApiErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof patchApiV1ProfilesMe>>, TError,{data?: UpdateAuthenticatedProfileBody}, TContext>, fetch?: RequestInit}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof patchApiV1ProfilesMe>>,
+        TError,
+        {data?: UpdateAuthenticatedProfileBody},
+        TContext
+      > => {
+      return useMutation(getPatchApiV1ProfilesMeMutationOptions(options), queryClient);
+    }
+    export type getApiV1ProfilesUsernameResponse200 = {
+  data: GetProfileByUsernameResponse
+  status: 200
+}
 
 export type getApiV1ProfilesUsernameResponse404 = {
-  data: ApiErrorResponse;
-  status: 404;
-};
+  data: ApiErrorResponse
+  status: 404
+}
 
 export type getApiV1ProfilesUsernameResponse429 = {
-  data: ApiErrorResponse;
-  status: 429;
-};
+  data: ApiErrorResponse
+  status: 429
+}
 
 export type getApiV1ProfilesUsernameResponse500 = {
-  data: ApiErrorResponse;
-  status: 500;
-};
+  data: ApiErrorResponse
+  status: 500
+}
 
-export type getApiV1ProfilesUsernameResponseSuccess =
-  getApiV1ProfilesUsernameResponse200 & {
-    headers: Headers;
-  };
-export type getApiV1ProfilesUsernameResponseError = (
-  | getApiV1ProfilesUsernameResponse404
-  | getApiV1ProfilesUsernameResponse429
-  | getApiV1ProfilesUsernameResponse500
-) & {
+export type getApiV1ProfilesUsernameResponseSuccess = (getApiV1ProfilesUsernameResponse200) & {
+  headers: Headers;
+};
+export type getApiV1ProfilesUsernameResponseError = (getApiV1ProfilesUsernameResponse404 | getApiV1ProfilesUsernameResponse429 | getApiV1ProfilesUsernameResponse500) & {
   headers: Headers;
 };
 
-export type getApiV1ProfilesUsernameResponse =
-  | getApiV1ProfilesUsernameResponseSuccess
-  | getApiV1ProfilesUsernameResponseError;
+export type getApiV1ProfilesUsernameResponse = (getApiV1ProfilesUsernameResponseSuccess | getApiV1ProfilesUsernameResponseError)
 
-export const getGetApiV1ProfilesUsernameUrl = (username: string) => {
-  return `/api/v1/profiles/${username}`;
-};
+export const getGetApiV1ProfilesUsernameUrl = (username: string,) => {
+
+
+
+
+  return `/api/v1/profiles/${username}`
+}
 
 /**
  * Retorna os dados públicos de um perfil pelo username.
  * @summary Obter perfil por username
  */
-export const getApiV1ProfilesUsername = async (
-  username: string,
-  options?: RequestInit,
-): Promise<getApiV1ProfilesUsernameResponse> => {
-  const res = await fetch(getGetApiV1ProfilesUsernameUrl(username), {
+export const getApiV1ProfilesUsername = async (username: string, options?: RequestInit): Promise<getApiV1ProfilesUsernameResponse> => {
+
+  const res = await fetch(getGetApiV1ProfilesUsernameUrl(username),
+  {
     ...options,
-    method: "GET",
-  });
+    method: 'GET'
+
+
+  }
+)
+
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
-  const data: getApiV1ProfilesUsernameResponse["data"] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as getApiV1ProfilesUsernameResponse;
-};
+  const data: getApiV1ProfilesUsernameResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getApiV1ProfilesUsernameResponse
+}
 
-export const getGetApiV1ProfilesUsernameQueryKey = (username: string) => {
-  return [`/api/v1/profiles/${username}`] as const;
-};
 
-export const getGetApiV1ProfilesUsernameQueryOptions = <
-  TData = Awaited<ReturnType<typeof getApiV1ProfilesUsername>>,
-  TError = ApiErrorResponse,
->(
-  username: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ProfilesUsername>>,
-        TError,
-        TData
-      >
-    >;
-    fetch?: RequestInit;
-  },
+
+
+
+export const getGetApiV1ProfilesUsernameQueryKey = (username: string,) => {
+    return [
+    `/api/v1/profiles/${username}`
+    ] as const;
+    }
+
+
+export const getGetApiV1ProfilesUsernameQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1ProfilesUsername>>, TError = ApiErrorResponse>(username: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ProfilesUsername>>, TError, TData>>, fetch?: RequestInit}
 ) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getGetApiV1ProfilesUsernameQueryKey(username);
+const {query: queryOptions, fetch: fetchOptions} = options ?? {};
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getApiV1ProfilesUsername>>
-  > = ({ signal }) =>
-    getApiV1ProfilesUsername(username, { signal, ...fetchOptions });
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1ProfilesUsernameQueryKey(username);
 
-  return {
-    queryKey,
-    queryFn,
-    enabled: username !== null && username !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof getApiV1ProfilesUsername>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
 
-export type GetApiV1ProfilesUsernameQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getApiV1ProfilesUsername>>
->;
-export type GetApiV1ProfilesUsernameQueryError = ApiErrorResponse;
 
-export function useGetApiV1ProfilesUsername<
-  TData = Awaited<ReturnType<typeof getApiV1ProfilesUsername>>,
-  TError = ApiErrorResponse,
->(
-  username: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ProfilesUsername>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1ProfilesUsername>>> = ({ signal }) => getApiV1ProfilesUsername(username, { signal, ...fetchOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: username !== null && username !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1ProfilesUsername>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiV1ProfilesUsernameQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1ProfilesUsername>>>
+export type GetApiV1ProfilesUsernameQueryError = ApiErrorResponse
+
+
+export function useGetApiV1ProfilesUsername<TData = Awaited<ReturnType<typeof getApiV1ProfilesUsername>>, TError = ApiErrorResponse>(
+ username: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ProfilesUsername>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiV1ProfilesUsername>>,
           TError,
           Awaited<ReturnType<typeof getApiV1ProfilesUsername>>
-        >,
-        "initialData"
-      >;
-    fetch?: RequestInit;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetApiV1ProfilesUsername<
-  TData = Awaited<ReturnType<typeof getApiV1ProfilesUsername>>,
-  TError = ApiErrorResponse,
->(
-  username: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ProfilesUsername>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, fetch?: RequestInit}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiV1ProfilesUsername<TData = Awaited<ReturnType<typeof getApiV1ProfilesUsername>>, TError = ApiErrorResponse>(
+ username: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ProfilesUsername>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiV1ProfilesUsername>>,
           TError,
           Awaited<ReturnType<typeof getApiV1ProfilesUsername>>
-        >,
-        "initialData"
-      >;
-    fetch?: RequestInit;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetApiV1ProfilesUsername<
-  TData = Awaited<ReturnType<typeof getApiV1ProfilesUsername>>,
-  TError = ApiErrorResponse,
->(
-  username: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ProfilesUsername>>,
-        TError,
-        TData
-      >
-    >;
-    fetch?: RequestInit;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, fetch?: RequestInit}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiV1ProfilesUsername<TData = Awaited<ReturnType<typeof getApiV1ProfilesUsername>>, TError = ApiErrorResponse>(
+ username: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ProfilesUsername>>, TError, TData>>, fetch?: RequestInit}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Obter perfil por username
  */
 
-export function useGetApiV1ProfilesUsername<
-  TData = Awaited<ReturnType<typeof getApiV1ProfilesUsername>>,
-  TError = ApiErrorResponse,
->(
-  username: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ProfilesUsername>>,
-        TError,
-        TData
-      >
-    >;
-    fetch?: RequestInit;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetApiV1ProfilesUsernameQueryOptions(
-    username,
-    options,
-  );
+export function useGetApiV1ProfilesUsername<TData = Awaited<ReturnType<typeof getApiV1ProfilesUsername>>, TError = ApiErrorResponse>(
+ username: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ProfilesUsername>>, TError, TData>>, fetch?: RequestInit}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetApiV1ProfilesUsernameQueryOptions(username,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+
+
+
+
+
+export type putApiV1ProfilesMePictureResponse200 = {
+  data: UpdateProfilePictureResponse
+  status: 200
+}
+
+export type putApiV1ProfilesMePictureResponse400 = {
+  data: ApiErrorResponse
+  status: 400
+}
+
+export type putApiV1ProfilesMePictureResponse401 = {
+  data: ApiErrorResponse
+  status: 401
+}
+
+export type putApiV1ProfilesMePictureResponse403 = {
+  data: ApiErrorResponse
+  status: 403
+}
+
+export type putApiV1ProfilesMePictureResponse404 = {
+  data: ApiErrorResponse
+  status: 404
+}
+
+export type putApiV1ProfilesMePictureResponse413 = {
+  data: ApiErrorResponse
+  status: 413
+}
+
+export type putApiV1ProfilesMePictureResponse429 = {
+  data: ApiErrorResponse
+  status: 429
+}
+
+export type putApiV1ProfilesMePictureResponse500 = {
+  data: ApiErrorResponse
+  status: 500
+}
+
+export type putApiV1ProfilesMePictureResponseSuccess = (putApiV1ProfilesMePictureResponse200) & {
+  headers: Headers;
+};
+export type putApiV1ProfilesMePictureResponseError = (putApiV1ProfilesMePictureResponse400 | putApiV1ProfilesMePictureResponse401 | putApiV1ProfilesMePictureResponse403 | putApiV1ProfilesMePictureResponse404 | putApiV1ProfilesMePictureResponse413 | putApiV1ProfilesMePictureResponse429 | putApiV1ProfilesMePictureResponse500) & {
+  headers: Headers;
+};
+
+export type putApiV1ProfilesMePictureResponse = (putApiV1ProfilesMePictureResponseSuccess | putApiV1ProfilesMePictureResponseError)
+
+export const getPutApiV1ProfilesMePictureUrl = () => {
+
+
+
+
+  return `/api/v1/profiles/@me/picture`
+}
+
+/**
+ * Faz upload de uma nova foto de perfil e atualiza o perfil do usuário. Formatos aceitos: JPEG e PNG. Tamanho máximo: 5MB.
+ * @summary Atualizar foto de perfil
+ */
+export const putApiV1ProfilesMePicture = async (uploadProfilePictureBody: UploadProfilePictureBody, options?: RequestInit): Promise<putApiV1ProfilesMePictureResponse> => {
+    const formData = new FormData();
+if(uploadProfilePictureBody.file !== undefined) {
+ formData.append(`file`, uploadProfilePictureBody.file);
+ }
+
+  const res = await fetch(getPutApiV1ProfilesMePictureUrl(),
+  {
+    ...options,
+    method: 'PUT'
+    ,
+    body: formData
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: putApiV1ProfilesMePictureResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as putApiV1ProfilesMePictureResponse
+}
+
+
+
+
+export const getPutApiV1ProfilesMePictureMutationOptions = <TError = ApiErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiV1ProfilesMePicture>>, TError,{data: UploadProfilePictureBody}, TContext>, fetch?: RequestInit}
+): UseMutationOptions<Awaited<ReturnType<typeof putApiV1ProfilesMePicture>>, TError,{data: UploadProfilePictureBody}, TContext> => {
+
+const mutationKey = ['putApiV1ProfilesMePicture'];
+const {mutation: mutationOptions, fetch: fetchOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, fetch: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiV1ProfilesMePicture>>, {data: UploadProfilePictureBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  putApiV1ProfilesMePicture(data,fetchOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PutApiV1ProfilesMePictureMutationResult = NonNullable<Awaited<ReturnType<typeof putApiV1ProfilesMePicture>>>
+    export type PutApiV1ProfilesMePictureMutationBody = UploadProfilePictureBody
+    export type PutApiV1ProfilesMePictureMutationError = ApiErrorResponse
+
+    /**
+ * @summary Atualizar foto de perfil
+ */
+export const usePutApiV1ProfilesMePicture = <TError = ApiErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiV1ProfilesMePicture>>, TError,{data: UploadProfilePictureBody}, TContext>, fetch?: RequestInit}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof putApiV1ProfilesMePicture>>,
+        TError,
+        {data: UploadProfilePictureBody},
+        TContext
+      > => {
+      return useMutation(getPutApiV1ProfilesMePictureMutationOptions(options), queryClient);
+    }
