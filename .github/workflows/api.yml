@@ -107,6 +107,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-bun-
 
+      - name: Install dependencies
+        run: bun install
+
       - name: Generate build zip
         run: cd apps/api && bun run zip
 
