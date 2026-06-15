@@ -114,6 +114,8 @@ jobs:
         run: cd apps/api && bun run zip
 
       - name: Migrate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: cd apps/api && bun drizzle-kit migrate
 
       - name: Setup Square Cloud
