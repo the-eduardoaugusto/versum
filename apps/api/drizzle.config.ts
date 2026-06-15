@@ -17,11 +17,11 @@ export default defineConfig({
     user: dbUrl.username,
     password: dbUrl.password,
     database: dbUrl.pathname.replace("/", ""),
-    ssl: {
+    ssl: cert ? {
       ca: cert,
       cert,
       key: cert,
       rejectUnauthorized: false,
-    }
+    } : undefined,
   },
 });
