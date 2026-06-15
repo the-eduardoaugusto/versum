@@ -114,15 +114,31 @@ jobs:
         run: mkdir -p apps/api/.certs
 
       - name: Write certificate
-        run: echo "${{ secrets.DATABASE_CERT }}" > apps/api/.certs/postgre-certificate.pem
+        run: |
+          if [ -z "${{ secrets.DATABASE_CERT }}" ]; then
+            echo "Error: DATABASE_CERT secret is empty"
+            exit 1
+          fi
+          echo "${{ secrets.DATABASE_CERT }}" > apps/api/.certs/postgre-certificate.pem
 
       - name: Verify certificate
-        run: test -f apps/api/.certs/postgre-certificate.pem && echo "Certificate created successfully"
+        run: |
+          if [ ! -s apps/api/.certs/postgre-certificate.pem ]; then
+            echo "Error: Certificate file is empty or missing"
+            exit 1
+          fi
+          echo "Certificate created successfully"
+          wc -l apps/api/.certs/postgre-certificate.pem
 
       - name: Migrate
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: cd apps/api && bun drizzle-kit migrate
+        run: |
+          if [ ! -f apps/api/.certs/postgre-certificate.pem ]; then
+            echo "Error: Certificate file not found before migration"
+            exit 1
+          fi
+          cd apps/api && bun drizzle-kit migrate
 
       - name: Generate build zip
         run: cd apps/api && bun run zip
