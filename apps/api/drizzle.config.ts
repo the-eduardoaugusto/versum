@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from "fs";
 import { resolve } from "path";
 
 const certPath = resolve(process.cwd(), ".certs/postgre-certificate.pem");
-const ca = existsSync(certPath) ? readFileSync(certPath, "utf-8") : undefined;
+const cert = existsSync(certPath) ? readFileSync(certPath, "utf-8") : undefined;
 
 const dbUrl = new URL(process.env.DATABASE_URL!);
 
@@ -17,6 +17,11 @@ export default defineConfig({
     user: dbUrl.username,
     password: dbUrl.password,
     database: dbUrl.pathname.replace("/", ""),
-    ssl: ca ? { ca, rejectUnauthorized: false } : false,
+    ssl: {
+      ca: cert,
+      cert,
+      key: cert,
+      rejectUnauthorized: false,
+    }
   },
 });

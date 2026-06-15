@@ -116,6 +116,9 @@ jobs:
       - name: Generate build zip
         run: cd apps/api && bun run zip
 
+      - name: Migrate
+        run: cd apps/api && bun drizzle-kit migrate
+
       - name: Setup Square Cloud
         uses: squarecloudofc/github-action@v2
         with:
