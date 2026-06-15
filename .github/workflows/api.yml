@@ -81,9 +81,6 @@ jobs:
       - name: Create certificate directory
         run: mkdir -p apps/api/.certs
 
-      - name: Create dummy certificate file
-        run: echo "--- dummy cert ---" > apps/api/.certs/postgre-certificate.pem
-
       - name: Generate Drizzle
         run: cd apps/api && bun drizzle-kit generate
 
