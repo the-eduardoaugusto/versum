@@ -15,11 +15,17 @@ export class DiscoveryControllerV1 {
     const chapterId = c.req.query("chapterId");
 
     if (!chapterId) {
-      return c.json(SuccessViewModel.create<VerseWithContext[]>(), 200);
+      return c.json(
+        SuccessViewModel.create<VerseWithContext[]>({ message: "Verses retrieved", code: "VERSES_RETRIEVED" }),
+        200,
+      );
     }
 
     const verses = await this.service.getNextVerses(chapterId);
-    return c.json(SuccessViewModel.create(verses), 200);
+    return c.json(
+      SuccessViewModel.create({ data: verses, message: "Verses retrieved", code: "VERSES_RETRIEVED" }),
+      200,
+    );
   };
 
   markVersesAsRead = async (c: Context) => {
@@ -31,12 +37,18 @@ export class DiscoveryControllerV1 {
       verseIds: body.verseIds,
     });
 
-    return c.json(SuccessViewModel.create({ success: true }), 200);
+    return c.json(
+      SuccessViewModel.create({ message: "Verses marked as read", code: "VERSES_MARKED_AS_READ" }),
+      200,
+    );
   };
 
   getStats = async (c: Context) => {
     const session = c.get("session") as Session;
     const stats = await this.service.getStats(session.userId);
-    return c.json(SuccessViewModel.create(stats), 200);
+    return c.json(
+      SuccessViewModel.create({ data: stats, message: "Stats retrieved", code: "STATS_RETRIEVED" }),
+      200,
+    );
   };
 }

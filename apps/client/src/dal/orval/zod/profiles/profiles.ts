@@ -4,7 +4,8 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import * as zod from "zod";
+import * as zod from 'zod';
+
 
 /**
  * Cria um novo perfil para o usuário autenticado.
@@ -13,38 +14,22 @@ import * as zod from "zod";
 export const postApiV1ProfilesMeBodyUsernameMin = 3;
 export const postApiV1ProfilesMeBodyUsernameMax = 50;
 
-export const postApiV1ProfilesMeBodyUsernameRegExp = /^[a-zA-Z0-9_]+$/;
+
+export const postApiV1ProfilesMeBodyUsernameRegExp = new RegExp('^[a-zA-Z0-9_]+$');
 export const postApiV1ProfilesMeBodyNameMax = 100;
 
 export const postApiV1ProfilesMeBodyBioMax = 500;
 
 export const postApiV1ProfilesMeBodyPictureUrlMax = 500;
 
-export const PostApiV1ProfilesMeBody = zod
-  .object({
-    username: zod
-      .string()
-      .min(postApiV1ProfilesMeBodyUsernameMin)
-      .max(postApiV1ProfilesMeBodyUsernameMax)
-      .regex(postApiV1ProfilesMeBodyUsernameRegExp)
-      .describe("Username único"),
-    name: zod
-      .string()
-      .min(1)
-      .max(postApiV1ProfilesMeBodyNameMax)
-      .describe("Nome de exibição"),
-    bio: zod
-      .string()
-      .max(postApiV1ProfilesMeBodyBioMax)
-      .nullish()
-      .describe("Biografia do usuário"),
-    pictureUrl: zod
-      .url()
-      .max(postApiV1ProfilesMeBodyPictureUrlMax)
-      .nullish()
-      .describe("URL da foto de perfil"),
-  })
-  .describe("Payload para criar o perfil do usuário");
+
+
+export const PostApiV1ProfilesMeBody = zod.object({
+  "username": zod.string().min(postApiV1ProfilesMeBodyUsernameMin).max(postApiV1ProfilesMeBodyUsernameMax).regex(postApiV1ProfilesMeBodyUsernameRegExp).describe('Username único'),
+  "name": zod.string().min(1).max(postApiV1ProfilesMeBodyNameMax).describe('Nome de exibição'),
+  "bio": zod.string().max(postApiV1ProfilesMeBodyBioMax).nullish().describe('Biografia do usuário'),
+  "pictureUrl": zod.url().max(postApiV1ProfilesMeBodyPictureUrlMax).nullish().describe('URL da foto de perfil')
+}).describe('Payload para criar o perfil do usuário')
 
 /**
  * Retorna os dados do perfil do usuário autenticado.
@@ -54,56 +39,31 @@ export const getApiV1ProfilesMeResponseSuccessDefault = true;
 export const getApiV1ProfilesMeResponseDataUsernameMin = 3;
 export const getApiV1ProfilesMeResponseDataUsernameMax = 50;
 
-export const getApiV1ProfilesMeResponseDataUsernameRegExp = /^[a-zA-Z0-9_]+$/;
+
+export const getApiV1ProfilesMeResponseDataUsernameRegExp = new RegExp('^[a-zA-Z0-9_]+$');
 export const getApiV1ProfilesMeResponseDataNameMax = 100;
 
 export const getApiV1ProfilesMeResponseDataBioMax = 500;
 
 export const getApiV1ProfilesMeResponseDataPictureUrlMax = 500;
 
-export const GetApiV1ProfilesMeResponse = zod
-  .object({
-    success: zod
-      .boolean()
-      .default(getApiV1ProfilesMeResponseSuccessDefault)
-      .describe("Indica se a requisição foi bem-sucedida"),
-    message: zod.string().optional().describe("Mensagem opcional de contexto"),
-    data: zod
-      .object({
-        id: zod.uuid().describe("ID único do perfil"),
-        userId: zod.uuid().describe("ID do usuário"),
-        username: zod
-          .string()
-          .min(getApiV1ProfilesMeResponseDataUsernameMin)
-          .max(getApiV1ProfilesMeResponseDataUsernameMax)
-          .regex(getApiV1ProfilesMeResponseDataUsernameRegExp)
-          .describe("Username único"),
-        name: zod
-          .string()
-          .min(1)
-          .max(getApiV1ProfilesMeResponseDataNameMax)
-          .describe("Nome de exibição"),
-        bio: zod
-          .string()
-          .max(getApiV1ProfilesMeResponseDataBioMax)
-          .nullish()
-          .describe("Biografia do usuário"),
-        pictureUrl: zod
-          .url()
-          .max(getApiV1ProfilesMeResponseDataPictureUrlMax)
-          .nullish()
-          .describe("URL da foto de perfil"),
-        createdAt: zod.iso
-          .datetime({ offset: true })
-          .describe("Data de criação"),
-        updatedAt: zod.iso
-          .datetime({ offset: true })
-          .describe("Data de atualização"),
-      })
-      .optional()
-      .describe("Dados da resposta"),
-  })
-  .describe("Resposta de sucesso para GetAuthenticatedProfileResponse");
+
+
+export const GetApiV1ProfilesMeResponse = zod.object({
+  "success": zod.boolean().default(getApiV1ProfilesMeResponseSuccessDefault).describe('Indica se a requisição foi bem-sucedida'),
+  "message": zod.string().describe('Mensagem de contexto da resposta'),
+  "code": zod.string().describe('Código da resposta'),
+  "data": zod.object({
+  "id": zod.uuid().describe('ID único do perfil'),
+  "userId": zod.uuid().describe('ID do usuário'),
+  "username": zod.string().min(getApiV1ProfilesMeResponseDataUsernameMin).max(getApiV1ProfilesMeResponseDataUsernameMax).regex(getApiV1ProfilesMeResponseDataUsernameRegExp).describe('Username único'),
+  "name": zod.string().min(1).max(getApiV1ProfilesMeResponseDataNameMax).describe('Nome de exibição'),
+  "bio": zod.string().max(getApiV1ProfilesMeResponseDataBioMax).nullish().describe('Biografia do usuário'),
+  "pictureUrl": zod.url().max(getApiV1ProfilesMeResponseDataPictureUrlMax).nullish().describe('URL da foto de perfil'),
+  "createdAt": zod.iso.datetime({"offset":true}).describe('Data de criação'),
+  "updatedAt": zod.iso.datetime({"offset":true}).describe('Data de atualização')
+}).optional().describe('Dados da resposta')
+}).describe('Resposta de sucesso para GetAuthenticatedProfileResponse')
 
 /**
  * Atualiza os dados do perfil do usuário autenticado.
@@ -112,95 +72,52 @@ export const GetApiV1ProfilesMeResponse = zod
 export const patchApiV1ProfilesMeBodyUsernameMin = 3;
 export const patchApiV1ProfilesMeBodyUsernameMax = 50;
 
-export const patchApiV1ProfilesMeBodyUsernameRegExp = /^[a-zA-Z0-9_]+$/;
+
+export const patchApiV1ProfilesMeBodyUsernameRegExp = new RegExp('^[a-zA-Z0-9_]+$');
 export const patchApiV1ProfilesMeBodyNameMax = 100;
 
 export const patchApiV1ProfilesMeBodyBioMax = 500;
 
 export const patchApiV1ProfilesMeBodyPictureUrlMax = 500;
 
-export const PatchApiV1ProfilesMeBody = zod
-  .object({
-    username: zod
-      .string()
-      .min(patchApiV1ProfilesMeBodyUsernameMin)
-      .max(patchApiV1ProfilesMeBodyUsernameMax)
-      .regex(patchApiV1ProfilesMeBodyUsernameRegExp)
-      .optional()
-      .describe("Username único"),
-    name: zod
-      .string()
-      .min(1)
-      .max(patchApiV1ProfilesMeBodyNameMax)
-      .optional()
-      .describe("Nome de exibição"),
-    bio: zod
-      .string()
-      .max(patchApiV1ProfilesMeBodyBioMax)
-      .nullish()
-      .describe("Biografia do usuário"),
-    pictureUrl: zod
-      .url()
-      .max(patchApiV1ProfilesMeBodyPictureUrlMax)
-      .nullish()
-      .describe("URL da foto de perfil"),
-  })
-  .describe("Payload para atualizar o perfil do usuário autenticado");
+
+
+export const PatchApiV1ProfilesMeBody = zod.object({
+  "username": zod.string().min(patchApiV1ProfilesMeBodyUsernameMin).max(patchApiV1ProfilesMeBodyUsernameMax).regex(patchApiV1ProfilesMeBodyUsernameRegExp).optional().describe('Username único'),
+  "name": zod.string().min(1).max(patchApiV1ProfilesMeBodyNameMax).optional().describe('Nome de exibição'),
+  "bio": zod.string().max(patchApiV1ProfilesMeBodyBioMax).nullish().describe('Biografia do usuário'),
+  "pictureUrl": zod.url().max(patchApiV1ProfilesMeBodyPictureUrlMax).nullish().describe('URL da foto de perfil')
+}).describe('Payload para atualizar o perfil do usuário autenticado')
 
 export const patchApiV1ProfilesMeResponseSuccessDefault = true;
 export const patchApiV1ProfilesMeResponseDataUsernameMin = 3;
 export const patchApiV1ProfilesMeResponseDataUsernameMax = 50;
 
-export const patchApiV1ProfilesMeResponseDataUsernameRegExp = /^[a-zA-Z0-9_]+$/;
+
+export const patchApiV1ProfilesMeResponseDataUsernameRegExp = new RegExp('^[a-zA-Z0-9_]+$');
 export const patchApiV1ProfilesMeResponseDataNameMax = 100;
 
 export const patchApiV1ProfilesMeResponseDataBioMax = 500;
 
 export const patchApiV1ProfilesMeResponseDataPictureUrlMax = 500;
 
-export const PatchApiV1ProfilesMeResponse = zod
-  .object({
-    success: zod
-      .boolean()
-      .default(patchApiV1ProfilesMeResponseSuccessDefault)
-      .describe("Indica se a requisição foi bem-sucedida"),
-    message: zod.string().optional().describe("Mensagem opcional de contexto"),
-    data: zod
-      .object({
-        id: zod.uuid().describe("ID único do perfil"),
-        userId: zod.uuid().describe("ID do usuário"),
-        username: zod
-          .string()
-          .min(patchApiV1ProfilesMeResponseDataUsernameMin)
-          .max(patchApiV1ProfilesMeResponseDataUsernameMax)
-          .regex(patchApiV1ProfilesMeResponseDataUsernameRegExp)
-          .describe("Username único"),
-        name: zod
-          .string()
-          .min(1)
-          .max(patchApiV1ProfilesMeResponseDataNameMax)
-          .describe("Nome de exibição"),
-        bio: zod
-          .string()
-          .max(patchApiV1ProfilesMeResponseDataBioMax)
-          .nullish()
-          .describe("Biografia do usuário"),
-        pictureUrl: zod
-          .url()
-          .max(patchApiV1ProfilesMeResponseDataPictureUrlMax)
-          .nullish()
-          .describe("URL da foto de perfil"),
-        createdAt: zod.iso
-          .datetime({ offset: true })
-          .describe("Data de criação"),
-        updatedAt: zod.iso
-          .datetime({ offset: true })
-          .describe("Data de atualização"),
-      })
-      .optional()
-      .describe("Dados da resposta"),
-  })
-  .describe("Resposta de sucesso para UpdateAuthenticatedProfileResponse");
+
+
+export const PatchApiV1ProfilesMeResponse = zod.object({
+  "success": zod.boolean().default(patchApiV1ProfilesMeResponseSuccessDefault).describe('Indica se a requisição foi bem-sucedida'),
+  "message": zod.string().describe('Mensagem de contexto da resposta'),
+  "code": zod.string().describe('Código da resposta'),
+  "data": zod.object({
+  "id": zod.uuid().describe('ID único do perfil'),
+  "userId": zod.uuid().describe('ID do usuário'),
+  "username": zod.string().min(patchApiV1ProfilesMeResponseDataUsernameMin).max(patchApiV1ProfilesMeResponseDataUsernameMax).regex(patchApiV1ProfilesMeResponseDataUsernameRegExp).describe('Username único'),
+  "name": zod.string().min(1).max(patchApiV1ProfilesMeResponseDataNameMax).describe('Nome de exibição'),
+  "bio": zod.string().max(patchApiV1ProfilesMeResponseDataBioMax).nullish().describe('Biografia do usuário'),
+  "pictureUrl": zod.url().max(patchApiV1ProfilesMeResponseDataPictureUrlMax).nullish().describe('URL da foto de perfil'),
+  "createdAt": zod.iso.datetime({"offset":true}).describe('Data de criação'),
+  "updatedAt": zod.iso.datetime({"offset":true}).describe('Data de atualização')
+}).optional().describe('Dados da resposta')
+}).describe('Resposta de sucesso para UpdateAuthenticatedProfileResponse')
 
 /**
  * Retorna os dados públicos de um perfil pelo username.
@@ -208,69 +125,79 @@ export const PatchApiV1ProfilesMeResponse = zod
  */
 export const getApiV1ProfilesUsernamePathUsernameMax = 50;
 
-export const getApiV1ProfilesUsernamePathUsernameRegExp = /^[a-zA-Z0-9_]+$/;
+
+export const getApiV1ProfilesUsernamePathUsernameRegExp = new RegExp('^[a-zA-Z0-9_]+$');
+
 
 export const GetApiV1ProfilesUsernameParams = zod.object({
-  username: zod
-    .string()
-    .min(1)
-    .max(getApiV1ProfilesUsernamePathUsernameMax)
-    .regex(getApiV1ProfilesUsernamePathUsernameRegExp)
-    .describe("Username"),
-});
+  "username": zod.string().min(1).max(getApiV1ProfilesUsernamePathUsernameMax).regex(getApiV1ProfilesUsernamePathUsernameRegExp).describe('Username')
+})
 
 export const getApiV1ProfilesUsernameResponseSuccessDefault = true;
 export const getApiV1ProfilesUsernameResponseDataUsernameMin = 3;
 export const getApiV1ProfilesUsernameResponseDataUsernameMax = 50;
 
-export const getApiV1ProfilesUsernameResponseDataUsernameRegExp =
-  /^[a-zA-Z0-9_]+$/;
+
+export const getApiV1ProfilesUsernameResponseDataUsernameRegExp = new RegExp('^[a-zA-Z0-9_]+$');
 export const getApiV1ProfilesUsernameResponseDataNameMax = 100;
 
 export const getApiV1ProfilesUsernameResponseDataBioMax = 500;
 
 export const getApiV1ProfilesUsernameResponseDataPictureUrlMax = 500;
 
-export const GetApiV1ProfilesUsernameResponse = zod
-  .object({
-    success: zod
-      .boolean()
-      .default(getApiV1ProfilesUsernameResponseSuccessDefault)
-      .describe("Indica se a requisição foi bem-sucedida"),
-    message: zod.string().optional().describe("Mensagem opcional de contexto"),
-    data: zod
-      .object({
-        id: zod.uuid().describe("ID único do perfil"),
-        userId: zod.uuid().describe("ID do usuário"),
-        username: zod
-          .string()
-          .min(getApiV1ProfilesUsernameResponseDataUsernameMin)
-          .max(getApiV1ProfilesUsernameResponseDataUsernameMax)
-          .regex(getApiV1ProfilesUsernameResponseDataUsernameRegExp)
-          .describe("Username único"),
-        name: zod
-          .string()
-          .min(1)
-          .max(getApiV1ProfilesUsernameResponseDataNameMax)
-          .describe("Nome de exibição"),
-        bio: zod
-          .string()
-          .max(getApiV1ProfilesUsernameResponseDataBioMax)
-          .nullish()
-          .describe("Biografia do usuário"),
-        pictureUrl: zod
-          .url()
-          .max(getApiV1ProfilesUsernameResponseDataPictureUrlMax)
-          .nullish()
-          .describe("URL da foto de perfil"),
-        createdAt: zod.iso
-          .datetime({ offset: true })
-          .describe("Data de criação"),
-        updatedAt: zod.iso
-          .datetime({ offset: true })
-          .describe("Data de atualização"),
-      })
-      .optional()
-      .describe("Dados da resposta"),
-  })
-  .describe("Resposta de sucesso para GetProfileByUsernameResponse");
+
+
+export const GetApiV1ProfilesUsernameResponse = zod.object({
+  "success": zod.boolean().default(getApiV1ProfilesUsernameResponseSuccessDefault).describe('Indica se a requisição foi bem-sucedida'),
+  "message": zod.string().describe('Mensagem de contexto da resposta'),
+  "code": zod.string().describe('Código da resposta'),
+  "data": zod.object({
+  "id": zod.uuid().describe('ID único do perfil'),
+  "userId": zod.uuid().describe('ID do usuário'),
+  "username": zod.string().min(getApiV1ProfilesUsernameResponseDataUsernameMin).max(getApiV1ProfilesUsernameResponseDataUsernameMax).regex(getApiV1ProfilesUsernameResponseDataUsernameRegExp).describe('Username único'),
+  "name": zod.string().min(1).max(getApiV1ProfilesUsernameResponseDataNameMax).describe('Nome de exibição'),
+  "bio": zod.string().max(getApiV1ProfilesUsernameResponseDataBioMax).nullish().describe('Biografia do usuário'),
+  "pictureUrl": zod.url().max(getApiV1ProfilesUsernameResponseDataPictureUrlMax).nullish().describe('URL da foto de perfil'),
+  "createdAt": zod.iso.datetime({"offset":true}).describe('Data de criação'),
+  "updatedAt": zod.iso.datetime({"offset":true}).describe('Data de atualização')
+}).optional().describe('Dados da resposta')
+}).describe('Resposta de sucesso para GetProfileByUsernameResponse')
+
+/**
+ * Faz upload de uma nova foto de perfil e atualiza o perfil do usuário. Formatos aceitos: JPEG e PNG. Tamanho máximo: 5MB.
+ * @summary Atualizar foto de perfil
+ */
+export const PutApiV1ProfilesMePictureBody = zod.object({
+  "file": zod.instanceof(File).optional()
+}).describe('Multipart form data with profile picture file')
+
+export const putApiV1ProfilesMePictureResponseSuccessDefault = true;
+export const putApiV1ProfilesMePictureResponseDataUsernameMin = 3;
+export const putApiV1ProfilesMePictureResponseDataUsernameMax = 50;
+
+
+export const putApiV1ProfilesMePictureResponseDataUsernameRegExp = new RegExp('^[a-zA-Z0-9_]+$');
+export const putApiV1ProfilesMePictureResponseDataNameMax = 100;
+
+export const putApiV1ProfilesMePictureResponseDataBioMax = 500;
+
+export const putApiV1ProfilesMePictureResponseDataPictureUrlMax = 500;
+
+
+
+export const PutApiV1ProfilesMePictureResponse = zod.object({
+  "success": zod.boolean().default(putApiV1ProfilesMePictureResponseSuccessDefault).describe('Indica se a requisição foi bem-sucedida'),
+  "message": zod.string().describe('Mensagem de contexto da resposta'),
+  "code": zod.string().describe('Código da resposta'),
+  "data": zod.object({
+  "id": zod.uuid().describe('ID único do perfil'),
+  "userId": zod.uuid().describe('ID do usuário'),
+  "username": zod.string().min(putApiV1ProfilesMePictureResponseDataUsernameMin).max(putApiV1ProfilesMePictureResponseDataUsernameMax).regex(putApiV1ProfilesMePictureResponseDataUsernameRegExp).describe('Username único'),
+  "name": zod.string().min(1).max(putApiV1ProfilesMePictureResponseDataNameMax).describe('Nome de exibição'),
+  "bio": zod.string().max(putApiV1ProfilesMePictureResponseDataBioMax).nullish().describe('Biografia do usuário'),
+  "pictureUrl": zod.url().max(putApiV1ProfilesMePictureResponseDataPictureUrlMax).nullish().describe('URL da foto de perfil'),
+  "createdAt": zod.iso.datetime({"offset":true}).describe('Data de criação'),
+  "updatedAt": zod.iso.datetime({"offset":true}).describe('Data de atualização')
+}).optional().describe('Dados da resposta')
+}).describe('Resposta de sucesso para UpdateProfilePictureResponse')
+

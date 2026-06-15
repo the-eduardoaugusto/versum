@@ -3,8 +3,8 @@ import { z } from "@hono/zod-openapi";
 export const apiErrorResponseSchema = z
   .object({
     success: z.literal(false).describe("Indica que ocorreu um erro"),
-    error: z.string().describe("Mensagem de erro"),
-    code: z.string().optional().describe("Código do erro"),
+    message: z.string().describe("Mensagem de erro"),
+    code: z.string().describe("Código do erro"),
   })
   .openapi("ApiErrorResponse", {
     description: "Resposta padrão de erro da API",

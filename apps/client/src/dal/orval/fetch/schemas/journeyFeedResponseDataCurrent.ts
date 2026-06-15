@@ -11,41 +11,41 @@
  */
 export type JourneyFeedResponseDataCurrent = {
   chapter: {
-    /** ID do capítulo */
-    id: string;
-    /**
+  /** ID do capítulo */
+  id: string;
+  /**
      * Número do capítulo
      * @exclusiveMinimum 0
      */
-    number: number;
-    /**
+  number: number;
+  /**
      * Total de versículos
      * @exclusiveMinimum 0
      */
-    totalVerses: number;
-  };
+  totalVerses: number;
+};
   book: {
-    /** ID do livro */
-    id: string;
-    /**
+  /** ID do livro */
+  id: string;
+  /**
      * Ordem canônica do livro (1-73)
      * @exclusiveMinimum 0
      */
-    order: number;
-    /** Nome do livro */
-    name: string;
-    /** Slug do livro */
-    slug: string;
-  };
+  order: number;
+  /** Nome do livro */
+  name: string;
+  /** Slug do livro */
+  slug: string;
+};
   verses: {
-    /** ID do versículo */
-    id: string;
-    /**
+  /** ID do versículo */
+  id: string;
+  /**
      * Número do versículo
      * @exclusiveMinimum 0
      */
-    number: number;
-    /** Texto do versículo */
-    text: string;
-  }[];
+  number: number;
+  /** Texto do versículo */
+  text: string;
+}[];
 } | null;

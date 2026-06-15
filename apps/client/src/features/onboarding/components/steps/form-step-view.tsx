@@ -119,30 +119,24 @@ export function FormStepView({
           ...patch,
         });
 
-        try {
-          const res = await createProfile({
-            data: {
-              name: allValues.name,
-              username: allValues.username,
-              bio: allValues.bio,
-            },
-          });
+        const res = await createProfile({
+          data: {
+            name: allValues.name,
+            username: allValues.username,
+            bio: allValues.bio,
+          },
+        });
 
-          if (res.status !== 201) {
-            throw new Error("Não foi possível completar o cadastro.");
-          }
-
-          const profile = res.data?.data;
-          if (profile) {
-            toast.success(`Bem-vindo, ${profile.name}!`);
-          }
-        } catch (e) {
-          const message =
-            e instanceof Error
-              ? e.message
-              : "Não foi possível completar o cadastro.";
-          setApiError(message);
+        if (res.status !== 201) {
+          setApiError(
+            res.data.message ?? "Não foi possível completar o cadastro.",
+          );
           return;
+        }
+
+        const profile = res.data?.data;
+        if (profile) {
+          toast.success(`Bem-vindo, ${profile.name}!`);
         }
       }
 

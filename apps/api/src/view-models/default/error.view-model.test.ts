@@ -3,61 +3,55 @@ import { ApiErrorViewModel } from "./error.view-model";
 
 describe("ApiErrorViewModel", () => {
   describe("constructor", () => {
-    it("should create instance with error message only", () => {
-      const vm = new ApiErrorViewModel("Something went wrong");
+    it("should create instance with message and code", () => {
+      const vm = new ApiErrorViewModel("Something went wrong", "INTERNAL_ERROR");
 
       expect(vm.success).toBe(false);
-      expect(vm.error).toBe("Something went wrong");
-      expect(vm.code).toBeUndefined();
+      expect(vm.message).toBe("Something went wrong");
+      expect(vm.code).toBe("INTERNAL_ERROR");
     });
 
-    it("should create instance with error message and code", () => {
+    it("should create instance with not found error", () => {
       const vm = new ApiErrorViewModel("Not found", "NOT_FOUND");
 
       expect(vm.success).toBe(false);
-      expect(vm.error).toBe("Not found");
+      expect(vm.message).toBe("Not found");
       expect(vm.code).toBe("NOT_FOUND");
     });
 
-    it("should create instance with empty string error", () => {
-      const vm = new ApiErrorViewModel("");
+    it("should create instance with empty string message", () => {
+      const vm = new ApiErrorViewModel("", "UNKNOWN_ERROR");
 
       expect(vm.success).toBe(false);
-      expect(vm.error).toBe("");
-      expect(vm.code).toBeUndefined();
+      expect(vm.message).toBe("");
+      expect(vm.code).toBe("UNKNOWN_ERROR");
     });
   });
 
   describe("toJSON", () => {
-    it("should return correct JSON with message only", () => {
-      const vm = new ApiErrorViewModel("Something went wrong");
+    it("should return correct JSON with message and code", () => {
+      const vm = new ApiErrorViewModel("Something went wrong", "INTERNAL_ERROR");
       const json = vm.toJSON();
 
       expect(json).toEqual({
         success: false,
-        error: "Something went wrong",
+        message: "Something went wrong",
+        code: "INTERNAL_ERROR",
       });
     });
 
-    it("should return correct JSON with message and code", () => {
+    it("should return correct JSON with not found error", () => {
       const vm = new ApiErrorViewModel("Resource not found", "NOT_FOUND");
       const json = vm.toJSON();
 
       expect(json).toEqual({
         success: false,
-        error: "Resource not found",
+        message: "Resource not found",
         code: "NOT_FOUND",
       });
     });
 
-    it("should not include code in JSON when undefined", () => {
-      const vm = new ApiErrorViewModel("Error");
-      const json = vm.toJSON();
-
-      expect(json).not.toHaveProperty("code");
-    });
-
-    it("should include code in JSON when provided", () => {
+    it("should always include code in JSON", () => {
       const vm = new ApiErrorViewModel("Error", "ERROR_CODE");
       const json = vm.toJSON();
 
@@ -65,31 +59,33 @@ describe("ApiErrorViewModel", () => {
     });
 
     it("should handle empty error message", () => {
-      const vm = new ApiErrorViewModel("");
+      const vm = new ApiErrorViewModel("", "UNKNOWN_ERROR");
       const json = vm.toJSON();
 
       expect(json).toEqual({
         success: false,
-        error: "",
+        message: "",
+        code: "UNKNOWN_ERROR",
       });
     });
 
     it("should handle special characters in error message", () => {
-      const vm = new ApiErrorViewModel("Error with special chars: <>&\"'");
+      const vm = new ApiErrorViewModel("Error with special chars: <>&\"'", "SPECIAL_ERROR");
       const json = vm.toJSON();
 
       expect(json).toEqual({
         success: false,
-        error: "Error with special chars: <>&\"'",
+        message: "Error with special chars: <>&\"'",
+        code: "SPECIAL_ERROR",
       });
     });
 
     it("should handle long error message", () => {
       const longMessage = "A".repeat(1000);
-      const vm = new ApiErrorViewModel(longMessage);
+      const vm = new ApiErrorViewModel(longMessage, "LONG_ERROR");
       const json = vm.toJSON();
 
-      expect(json.error).toBe(longMessage);
+      expect(json.message).toBe(longMessage);
     });
 
     it("should handle various error codes", () => {
