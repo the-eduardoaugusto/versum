@@ -113,6 +113,12 @@ jobs:
       - name: Generate build zip
         run: cd apps/api && bun run zip
 
+      - name: Create certificate directory
+        run: mkdir -p apps/api/.certs
+
+      - name: Write certificate
+        run: echo "${{ secrets.DATABASE_CERT }}" > apps/api/.certs/postgre-certificate.pem
+
       - name: Migrate
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
