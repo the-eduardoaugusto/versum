@@ -4,7 +4,7 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import type { BookTestament } from "./bookTestament";
+import type { BookTestament } from './bookTestament';
 
 /**
  * Livro da Bíblia
@@ -13,30 +13,30 @@ export interface Book {
   /** ID único do livro */
   id: string;
   /**
-   * Ordem canônica do livro (1-73)
-   * @exclusiveMinimum 0
-   */
+     * Ordem canônica do livro (1-73)
+     * @exclusiveMinimum 0
+     */
   order: number;
   /**
-   * Nome do livro
-   * @maxLength 100
-   */
+     * Nome do livro
+     * @maxLength 100
+     */
   name: string;
   /**
-   * Slug do livro
-   * @maxLength 10
-   */
+     * Slug do livro
+     * @maxLength 10
+     */
   slug: string;
   /**
-   * Nome amigável do livro
-   * @maxLength 100
-   */
+     * Nome amigável do livro
+     * @maxLength 100
+     */
   niceName: string;
   /** Testamento ao qual o livro pertence */
   testament: BookTestament;
   /**
-   * Número total de capítulos
-   * @exclusiveMinimum 0
-   */
+     * Número total de capítulos
+     * @exclusiveMinimum 0
+     */
   totalChapters: number;
 }

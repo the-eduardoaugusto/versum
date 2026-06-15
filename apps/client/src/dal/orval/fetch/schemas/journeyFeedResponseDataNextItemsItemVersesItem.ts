@@ -9,9 +9,9 @@ export type JourneyFeedResponseDataNextItemsItemVersesItem = {
   /** ID do versículo */
   id: string;
   /**
-   * Número do versículo
-   * @exclusiveMinimum 0
-   */
+     * Número do versículo
+     * @exclusiveMinimum 0
+     */
   number: number;
   /** Texto do versículo */
   text: string;

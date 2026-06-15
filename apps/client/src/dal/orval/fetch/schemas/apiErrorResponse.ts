@@ -12,7 +12,7 @@ export interface ApiErrorResponse {
   /** Indica que ocorreu um erro */
   success: false;
   /** Mensagem de erro */
-  error: string;
+  message: string;
   /** Código do erro */
-  code?: string;
+  code: string;
 }

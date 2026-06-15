@@ -4,7 +4,10 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-
+import {
+  useMutation,
+  useQuery
+} from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -17,570 +20,390 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult,
-} from "@tanstack/react-query";
-import { useMutation, useQuery } from "@tanstack/react-query";
+  UseQueryResult
+} from '@tanstack/react-query';
 
 import type {
   ApiErrorResponse,
   GetApiV1ReadingsJourneyFeedParams,
   JourneyFeedResponse,
   JourneyNextProgressResponse,
-  JourneyStatusResponse,
-} from "../schemas";
+  JourneyStatusResponse
+} from '../schemas';
+
+
+
+
 
 export type getApiV1ReadingsJourneyFeedResponse200 = {
-  data: JourneyFeedResponse;
-  status: 200;
-};
+  data: JourneyFeedResponse
+  status: 200
+}
 
 export type getApiV1ReadingsJourneyFeedResponse401 = {
-  data: ApiErrorResponse;
-  status: 401;
-};
+  data: ApiErrorResponse
+  status: 401
+}
 
 export type getApiV1ReadingsJourneyFeedResponse500 = {
-  data: ApiErrorResponse;
-  status: 500;
-};
+  data: ApiErrorResponse
+  status: 500
+}
 
-export type getApiV1ReadingsJourneyFeedResponseSuccess =
-  getApiV1ReadingsJourneyFeedResponse200 & {
-    headers: Headers;
-  };
-export type getApiV1ReadingsJourneyFeedResponseError = (
-  | getApiV1ReadingsJourneyFeedResponse401
-  | getApiV1ReadingsJourneyFeedResponse500
-) & {
+export type getApiV1ReadingsJourneyFeedResponseSuccess = (getApiV1ReadingsJourneyFeedResponse200) & {
+  headers: Headers;
+};
+export type getApiV1ReadingsJourneyFeedResponseError = (getApiV1ReadingsJourneyFeedResponse401 | getApiV1ReadingsJourneyFeedResponse500) & {
   headers: Headers;
 };
 
-export type getApiV1ReadingsJourneyFeedResponse =
-  | getApiV1ReadingsJourneyFeedResponseSuccess
-  | getApiV1ReadingsJourneyFeedResponseError;
+export type getApiV1ReadingsJourneyFeedResponse = (getApiV1ReadingsJourneyFeedResponseSuccess | getApiV1ReadingsJourneyFeedResponseError)
 
-export const getGetApiV1ReadingsJourneyFeedUrl = (
-  params?: GetApiV1ReadingsJourneyFeedParams,
-) => {
+export const getGetApiV1ReadingsJourneyFeedUrl = (params?: GetApiV1ReadingsJourneyFeedParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
+
     if (value !== undefined) {
-      normalizedParams.append(key, value === null ? "null" : value.toString());
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
     }
   });
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0
-    ? `/api/v1/readings/journey/feed?${stringifiedParams}`
-    : `/api/v1/readings/journey/feed`;
-};
+  return stringifiedParams.length > 0 ? `/api/v1/readings/journey/feed?${stringifiedParams}` : `/api/v1/readings/journey/feed`
+}
 
 /**
  * Retorna o capítulo atual e os próximos itens para pre-fetch.
  * @summary Feed de leitura
  */
-export const getApiV1ReadingsJourneyFeed = async (
-  params?: GetApiV1ReadingsJourneyFeedParams,
-  options?: RequestInit,
-): Promise<getApiV1ReadingsJourneyFeedResponse> => {
-  const res = await fetch(getGetApiV1ReadingsJourneyFeedUrl(params), {
+export const getApiV1ReadingsJourneyFeed = async (params?: GetApiV1ReadingsJourneyFeedParams, options?: RequestInit): Promise<getApiV1ReadingsJourneyFeedResponse> => {
+
+  const res = await fetch(getGetApiV1ReadingsJourneyFeedUrl(params),
+  {
     ...options,
-    method: "GET",
-  });
+    method: 'GET'
+
+
+  }
+)
+
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
-  const data: getApiV1ReadingsJourneyFeedResponse["data"] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as getApiV1ReadingsJourneyFeedResponse;
-};
+  const data: getApiV1ReadingsJourneyFeedResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getApiV1ReadingsJourneyFeedResponse
+}
 
-export const getGetApiV1ReadingsJourneyFeedQueryKey = (
-  params?: GetApiV1ReadingsJourneyFeedParams,
+
+
+
+
+export const getGetApiV1ReadingsJourneyFeedQueryKey = (params?: GetApiV1ReadingsJourneyFeedParams,) => {
+    return [
+    `/api/v1/readings/journey/feed`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetApiV1ReadingsJourneyFeedQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>, TError = ApiErrorResponse>(params?: GetApiV1ReadingsJourneyFeedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>, TError, TData>>, fetch?: RequestInit}
 ) => {
-  return [
-    `/api/v1/readings/journey/feed`,
-    ...(params ? [params] : []),
-  ] as const;
-};
 
-export const getGetApiV1ReadingsJourneyFeedQueryOptions = <
-  TData = Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>,
-  TError = ApiErrorResponse,
->(
-  params?: GetApiV1ReadingsJourneyFeedParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>,
-        TError,
-        TData
-      >
-    >;
-    fetch?: RequestInit;
-  },
-) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+const {query: queryOptions, fetch: fetchOptions} = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getGetApiV1ReadingsJourneyFeedQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1ReadingsJourneyFeedQueryKey(params);
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>
-  > = ({ signal }) =>
-    getApiV1ReadingsJourneyFeed(params, { signal, ...fetchOptions });
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
 
-export type GetApiV1ReadingsJourneyFeedQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>
->;
-export type GetApiV1ReadingsJourneyFeedQueryError = ApiErrorResponse;
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>> = ({ signal }) => getApiV1ReadingsJourneyFeed(params, { signal, ...fetchOptions });
 
-export function useGetApiV1ReadingsJourneyFeed<
-  TData = Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>,
-  TError = ApiErrorResponse,
->(
-  params: undefined | GetApiV1ReadingsJourneyFeedParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiV1ReadingsJourneyFeedQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>>
+export type GetApiV1ReadingsJourneyFeedQueryError = ApiErrorResponse
+
+
+export function useGetApiV1ReadingsJourneyFeed<TData = Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>, TError = ApiErrorResponse>(
+ params: undefined |  GetApiV1ReadingsJourneyFeedParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>,
           TError,
           Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>
-        >,
-        "initialData"
-      >;
-    fetch?: RequestInit;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetApiV1ReadingsJourneyFeed<
-  TData = Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>,
-  TError = ApiErrorResponse,
->(
-  params?: GetApiV1ReadingsJourneyFeedParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, fetch?: RequestInit}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiV1ReadingsJourneyFeed<TData = Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>, TError = ApiErrorResponse>(
+ params?: GetApiV1ReadingsJourneyFeedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>,
           TError,
           Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>
-        >,
-        "initialData"
-      >;
-    fetch?: RequestInit;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetApiV1ReadingsJourneyFeed<
-  TData = Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>,
-  TError = ApiErrorResponse,
->(
-  params?: GetApiV1ReadingsJourneyFeedParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>,
-        TError,
-        TData
-      >
-    >;
-    fetch?: RequestInit;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, fetch?: RequestInit}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiV1ReadingsJourneyFeed<TData = Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>, TError = ApiErrorResponse>(
+ params?: GetApiV1ReadingsJourneyFeedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>, TError, TData>>, fetch?: RequestInit}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Feed de leitura
  */
 
-export function useGetApiV1ReadingsJourneyFeed<
-  TData = Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>,
-  TError = ApiErrorResponse,
->(
-  params?: GetApiV1ReadingsJourneyFeedParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>,
-        TError,
-        TData
-      >
-    >;
-    fetch?: RequestInit;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetApiV1ReadingsJourneyFeedQueryOptions(
-    params,
-    options,
-  );
+export function useGetApiV1ReadingsJourneyFeed<TData = Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>, TError = ApiErrorResponse>(
+ params?: GetApiV1ReadingsJourneyFeedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ReadingsJourneyFeed>>, TError, TData>>, fetch?: RequestInit}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetApiV1ReadingsJourneyFeedQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
 
+
+
+
+
+
 export type postApiV1ReadingsJourneyNextResponse200 = {
-  data: JourneyNextProgressResponse;
-  status: 200;
-};
+  data: JourneyNextProgressResponse
+  status: 200
+}
 
 export type postApiV1ReadingsJourneyNextResponse401 = {
-  data: ApiErrorResponse;
-  status: 401;
-};
+  data: ApiErrorResponse
+  status: 401
+}
 
 export type postApiV1ReadingsJourneyNextResponse500 = {
-  data: ApiErrorResponse;
-  status: 500;
-};
+  data: ApiErrorResponse
+  status: 500
+}
 
-export type postApiV1ReadingsJourneyNextResponseSuccess =
-  postApiV1ReadingsJourneyNextResponse200 & {
-    headers: Headers;
-  };
-export type postApiV1ReadingsJourneyNextResponseError = (
-  | postApiV1ReadingsJourneyNextResponse401
-  | postApiV1ReadingsJourneyNextResponse500
-) & {
+export type postApiV1ReadingsJourneyNextResponseSuccess = (postApiV1ReadingsJourneyNextResponse200) & {
+  headers: Headers;
+};
+export type postApiV1ReadingsJourneyNextResponseError = (postApiV1ReadingsJourneyNextResponse401 | postApiV1ReadingsJourneyNextResponse500) & {
   headers: Headers;
 };
 
-export type postApiV1ReadingsJourneyNextResponse =
-  | postApiV1ReadingsJourneyNextResponseSuccess
-  | postApiV1ReadingsJourneyNextResponseError;
+export type postApiV1ReadingsJourneyNextResponse = (postApiV1ReadingsJourneyNextResponseSuccess | postApiV1ReadingsJourneyNextResponseError)
 
 export const getPostApiV1ReadingsJourneyNextUrl = () => {
-  return `/api/v1/readings/journey/next`;
-};
+
+
+
+
+  return `/api/v1/readings/journey/next`
+}
 
 /**
  * Salva o capítulo atual como lido e avança para o próximo.
  * @summary Avançar progresso
  */
-export const postApiV1ReadingsJourneyNext = async (
-  options?: RequestInit,
-): Promise<postApiV1ReadingsJourneyNextResponse> => {
-  const res = await fetch(getPostApiV1ReadingsJourneyNextUrl(), {
+export const postApiV1ReadingsJourneyNext = async ( options?: RequestInit): Promise<postApiV1ReadingsJourneyNextResponse> => {
+
+  const res = await fetch(getPostApiV1ReadingsJourneyNextUrl(),
+  {
     ...options,
-    method: "POST",
-  });
+    method: 'POST'
+
+
+  }
+)
+
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
-  const data: postApiV1ReadingsJourneyNextResponse["data"] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as postApiV1ReadingsJourneyNextResponse;
-};
+  const data: postApiV1ReadingsJourneyNextResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as postApiV1ReadingsJourneyNextResponse
+}
 
-export const getPostApiV1ReadingsJourneyNextMutationOptions = <
-  TError = ApiErrorResponse,
-  TContext = unknown,
->(options?: {
-  mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof postApiV1ReadingsJourneyNext>>,
-    TError,
-    void,
-    TContext
-  >;
-  fetch?: RequestInit;
-}): UseMutationOptions<
-  Awaited<ReturnType<typeof postApiV1ReadingsJourneyNext>>,
-  TError,
-  void,
-  TContext
-> => {
-  const mutationKey = ["postApiV1ReadingsJourneyNext"];
-  const { mutation: mutationOptions, fetch: fetchOptions } = options
-    ? options.mutation &&
-      "mutationKey" in options.mutation &&
-      options.mutation.mutationKey
-      ? options
-      : { ...options, mutation: { ...options.mutation, mutationKey } }
-    : { mutation: { mutationKey }, fetch: undefined };
 
-  const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof postApiV1ReadingsJourneyNext>>,
-    void
-  > = () => {
-    return postApiV1ReadingsJourneyNext(fetchOptions);
-  };
 
-  return { mutationFn, ...mutationOptions };
-};
 
-export type PostApiV1ReadingsJourneyNextMutationResult = NonNullable<
-  Awaited<ReturnType<typeof postApiV1ReadingsJourneyNext>>
->;
+export const getPostApiV1ReadingsJourneyNextMutationOptions = <TError = ApiErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1ReadingsJourneyNext>>, TError,void, TContext>, fetch?: RequestInit}
+): UseMutationOptions<Awaited<ReturnType<typeof postApiV1ReadingsJourneyNext>>, TError,void, TContext> => {
 
-export type PostApiV1ReadingsJourneyNextMutationError = ApiErrorResponse;
+const mutationKey = ['postApiV1ReadingsJourneyNext'];
+const {mutation: mutationOptions, fetch: fetchOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, fetch: undefined};
 
-/**
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1ReadingsJourneyNext>>, void> = () => {
+
+
+          return  postApiV1ReadingsJourneyNext(fetchOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiV1ReadingsJourneyNextMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1ReadingsJourneyNext>>>
+
+    export type PostApiV1ReadingsJourneyNextMutationError = ApiErrorResponse
+
+    /**
  * @summary Avançar progresso
  */
-export const usePostApiV1ReadingsJourneyNext = <
-  TError = ApiErrorResponse,
-  TContext = unknown,
->(
-  options?: {
-    mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof postApiV1ReadingsJourneyNext>>,
-      TError,
-      void,
-      TContext
-    >;
-    fetch?: RequestInit;
-  },
-  queryClient?: QueryClient,
-): UseMutationResult<
-  Awaited<ReturnType<typeof postApiV1ReadingsJourneyNext>>,
-  TError,
-  void,
-  TContext
-> => {
-  return useMutation(
-    getPostApiV1ReadingsJourneyNextMutationOptions(options),
-    queryClient,
-  );
-};
-export type getApiV1ReadingsJourneyStatusResponse200 = {
-  data: JourneyStatusResponse;
-  status: 200;
-};
+export const usePostApiV1ReadingsJourneyNext = <TError = ApiErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1ReadingsJourneyNext>>, TError,void, TContext>, fetch?: RequestInit}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiV1ReadingsJourneyNext>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getPostApiV1ReadingsJourneyNextMutationOptions(options), queryClient);
+    }
+    export type getApiV1ReadingsJourneyStatusResponse200 = {
+  data: JourneyStatusResponse
+  status: 200
+}
 
 export type getApiV1ReadingsJourneyStatusResponse401 = {
-  data: ApiErrorResponse;
-  status: 401;
-};
+  data: ApiErrorResponse
+  status: 401
+}
 
 export type getApiV1ReadingsJourneyStatusResponse500 = {
-  data: ApiErrorResponse;
-  status: 500;
-};
+  data: ApiErrorResponse
+  status: 500
+}
 
-export type getApiV1ReadingsJourneyStatusResponseSuccess =
-  getApiV1ReadingsJourneyStatusResponse200 & {
-    headers: Headers;
-  };
-export type getApiV1ReadingsJourneyStatusResponseError = (
-  | getApiV1ReadingsJourneyStatusResponse401
-  | getApiV1ReadingsJourneyStatusResponse500
-) & {
+export type getApiV1ReadingsJourneyStatusResponseSuccess = (getApiV1ReadingsJourneyStatusResponse200) & {
+  headers: Headers;
+};
+export type getApiV1ReadingsJourneyStatusResponseError = (getApiV1ReadingsJourneyStatusResponse401 | getApiV1ReadingsJourneyStatusResponse500) & {
   headers: Headers;
 };
 
-export type getApiV1ReadingsJourneyStatusResponse =
-  | getApiV1ReadingsJourneyStatusResponseSuccess
-  | getApiV1ReadingsJourneyStatusResponseError;
+export type getApiV1ReadingsJourneyStatusResponse = (getApiV1ReadingsJourneyStatusResponseSuccess | getApiV1ReadingsJourneyStatusResponseError)
 
 export const getGetApiV1ReadingsJourneyStatusUrl = () => {
-  return `/api/v1/readings/journey/status`;
-};
+
+
+
+
+  return `/api/v1/readings/journey/status`
+}
 
 /**
  * Retorna o status atual do progresso de leitura.
  * @summary Status da jornada
  */
-export const getApiV1ReadingsJourneyStatus = async (
-  options?: RequestInit,
-): Promise<getApiV1ReadingsJourneyStatusResponse> => {
-  const res = await fetch(getGetApiV1ReadingsJourneyStatusUrl(), {
+export const getApiV1ReadingsJourneyStatus = async ( options?: RequestInit): Promise<getApiV1ReadingsJourneyStatusResponse> => {
+
+  const res = await fetch(getGetApiV1ReadingsJourneyStatusUrl(),
+  {
     ...options,
-    method: "GET",
-  });
+    method: 'GET'
+
+
+  }
+)
+
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
-  const data: getApiV1ReadingsJourneyStatusResponse["data"] = body
-    ? JSON.parse(body)
-    : {};
-  return {
-    data,
-    status: res.status,
-    headers: res.headers,
-  } as getApiV1ReadingsJourneyStatusResponse;
-};
+  const data: getApiV1ReadingsJourneyStatusResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as getApiV1ReadingsJourneyStatusResponse
+}
+
+
+
+
 
 export const getGetApiV1ReadingsJourneyStatusQueryKey = () => {
-  return [`/api/v1/readings/journey/status`] as const;
-};
+    return [
+    `/api/v1/readings/journey/status`
+    ] as const;
+    }
 
-export const getGetApiV1ReadingsJourneyStatusQueryOptions = <
-  TData = Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>,
-  TError = ApiErrorResponse,
->(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>,
-      TError,
-      TData
-    >
-  >;
-  fetch?: RequestInit;
-}) => {
-  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
 
-  const queryKey =
-    queryOptions?.queryKey ?? getGetApiV1ReadingsJourneyStatusQueryKey();
+export const getGetApiV1ReadingsJourneyStatusQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>, TError = ApiErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>, TError, TData>>, fetch?: RequestInit}
+) => {
 
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>
-  > = ({ signal }) =>
-    getApiV1ReadingsJourneyStatus({ signal, ...fetchOptions });
+const {query: queryOptions, fetch: fetchOptions} = options ?? {};
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>,
-    TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-};
+  const queryKey =  queryOptions?.queryKey ?? getGetApiV1ReadingsJourneyStatusQueryKey();
 
-export type GetApiV1ReadingsJourneyStatusQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>
->;
-export type GetApiV1ReadingsJourneyStatusQueryError = ApiErrorResponse;
 
-export function useGetApiV1ReadingsJourneyStatus<
-  TData = Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>,
-  TError = ApiErrorResponse,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>> = ({ signal }) => getApiV1ReadingsJourneyStatus({ signal, ...fetchOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiV1ReadingsJourneyStatusQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>>
+export type GetApiV1ReadingsJourneyStatusQueryError = ApiErrorResponse
+
+
+export function useGetApiV1ReadingsJourneyStatus<TData = Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>, TError = ApiErrorResponse>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>,
           TError,
           Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>
-        >,
-        "initialData"
-      >;
-    fetch?: RequestInit;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetApiV1ReadingsJourneyStatus<
-  TData = Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>,
-  TError = ApiErrorResponse,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
+        > , 'initialData'
+      >, fetch?: RequestInit}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiV1ReadingsJourneyStatus<TData = Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>, TError = ApiErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>,
           TError,
           Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>
-        >,
-        "initialData"
-      >;
-    fetch?: RequestInit;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGetApiV1ReadingsJourneyStatus<
-  TData = Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>,
-  TError = ApiErrorResponse,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>,
-        TError,
-        TData
-      >
-    >;
-    fetch?: RequestInit;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+        > , 'initialData'
+      >, fetch?: RequestInit}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiV1ReadingsJourneyStatus<TData = Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>, TError = ApiErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>, TError, TData>>, fetch?: RequestInit}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Status da jornada
  */
 
-export function useGetApiV1ReadingsJourneyStatus<
-  TData = Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>,
-  TError = ApiErrorResponse,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>,
-        TError,
-        TData
-      >
-    >;
-    fetch?: RequestInit;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGetApiV1ReadingsJourneyStatusQueryOptions(options);
+export function useGetApiV1ReadingsJourneyStatus<TData = Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>, TError = ApiErrorResponse>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1ReadingsJourneyStatus>>, TError, TData>>, fetch?: RequestInit}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+  const queryOptions = getGetApiV1ReadingsJourneyStatusQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+
+
+
+
+

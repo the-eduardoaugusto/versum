@@ -1,22 +1,19 @@
 export class ApiErrorViewModel {
   success: boolean;
-  error: string;
-  code?: string;
+  message: string;
+  code: string;
 
-  constructor(error: string, code?: string) {
+  constructor(message: string, code: string) {
     this.success = false;
-    this.error = error;
+    this.message = message;
     this.code = code;
   }
 
   toJSON() {
-    const response: { success: boolean; error: string; code?: string } = {
+    return {
       success: this.success,
-      error: this.error,
+      message: this.message,
+      code: this.code,
     };
-
-    if (this.code) response.code = this.code;
-
-    return response;
   }
 }

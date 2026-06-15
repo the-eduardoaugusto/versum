@@ -14,9 +14,9 @@ export interface Verse {
   /** ID do capítulo ao qual o versículo pertence */
   chapterId: string;
   /**
-   * Número do versículo
-   * @exclusiveMinimum 0
-   */
+     * Número do versículo
+     * @exclusiveMinimum 0
+     */
   number: number;
   /** Texto do versículo */
   text: string;

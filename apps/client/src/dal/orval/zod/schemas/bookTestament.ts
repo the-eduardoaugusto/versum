@@ -8,9 +8,10 @@
 /**
  * Testamento ao qual o livro pertence
  */
-export type BookTestament = (typeof BookTestament)[keyof typeof BookTestament];
+export type BookTestament = typeof BookTestament[keyof typeof BookTestament];
+
 
 export const BookTestament = {
-  OLD: "OLD",
-  NEW: "NEW",
+  OLD: 'OLD',
+  NEW: 'NEW',
 } as const;
