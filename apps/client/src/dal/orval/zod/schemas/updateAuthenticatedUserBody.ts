@@ -10,8 +10,8 @@
  */
 export interface UpdateAuthenticatedUserBody {
   /**
-   * E-mail do usuário
-   * @maxLength 255
-   */
+     * E-mail do usuário
+     * @maxLength 255
+     */
   email: string;
 }

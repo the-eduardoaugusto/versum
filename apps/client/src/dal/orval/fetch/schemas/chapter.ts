@@ -14,13 +14,13 @@ export interface Chapter {
   /** ID do livro ao qual o capítulo pertence */
   bookId: string;
   /**
-   * Número do capítulo
-   * @exclusiveMinimum 0
-   */
+     * Número do capítulo
+     * @exclusiveMinimum 0
+     */
   number: number;
   /**
-   * Número total de versículos
-   * @exclusiveMinimum 0
-   */
+     * Número total de versículos
+     * @exclusiveMinimum 0
+     */
   totalVerses: number;
 }

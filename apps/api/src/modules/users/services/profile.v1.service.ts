@@ -210,6 +210,33 @@ export class ProfileServiceV1 {
     return profile;
   }
 
+  async updateProfilePicture({
+    userId,
+    pictureUrl,
+  }: {
+    userId: string;
+    pictureUrl: string;
+  }): Promise<Profile> {
+    const hasConsent = await this.consentLogsRepository.hasConsent({
+      userId,
+      purpose: "profile_content",
+    });
+
+    if (!hasConsent) {
+      throw new ForbiddenError(
+        "Consentimento para armazenar conteúdo do perfil não foi concedido",
+      );
+    }
+
+    const profile = await this.repository.findByUserId({ userId });
+
+    if (!profile) {
+      throw new NotFoundError("Profile not found");
+    }
+
+    return await this.repository.update({ id: profile.id, pictureUrl });
+  }
+
   async updateProfile(
     params: UpdateProfileParams & { userId: string },
   ): Promise<Profile> {

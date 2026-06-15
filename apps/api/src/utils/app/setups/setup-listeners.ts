@@ -25,6 +25,7 @@ export class SetupListeners {
           level: "error",
         },
         `Server error: ${error.message}`,
+        error.cause ? `Caused by: ${error.cause}` : "",
       );
 
       return new ErrorHandler({ ctx }).handle(error);

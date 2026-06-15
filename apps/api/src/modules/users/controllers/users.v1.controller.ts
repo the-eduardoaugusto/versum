@@ -33,10 +33,14 @@ export class UsersControllerV1 {
 
     return c.json(
       SuccessViewModel.create({
-        user: {
-          email: user.email,
+        data: {
+          user: {
+            email: user.email,
+          },
+          onboardingIsCompleted,
         },
-        onboardingIsCompleted,
+        message: "User retrieved",
+        code: "USER_RETRIEVED",
       }),
       200,
     );
@@ -60,9 +64,13 @@ export class UsersControllerV1 {
 
       return c.json(
         SuccessViewModel.create({
-          user: {
-            email: user.email,
+          data: {
+            user: {
+              email: user.email,
+            },
           },
+          message: "User updated",
+          code: "USER_UPDATED",
         }),
         200,
       );
@@ -79,7 +87,10 @@ export class UsersControllerV1 {
 
     const data = await this.service.exportUserData({ id: session.userId });
 
-    return c.json(SuccessViewModel.create(data), 200);
+    return c.json(
+      SuccessViewModel.create({ data, message: "User data exported", code: "USER_DATA_EXPORTED" }),
+      200,
+    );
   };
 
   deleteAuthenticatedUser = async (c: Context) => {

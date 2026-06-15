@@ -21,14 +21,16 @@ export class BibleControllerV1 {
     });
 
     return c.json(
-      SuccessViewModel.create(
-        result.data,
-        PaginationViewModel.create({
+      SuccessViewModel.create({
+        data: result.data,
+        pagination: PaginationViewModel.create({
           page,
           limit,
           totalItems: result.total,
         }),
-      ),
+        message: "Books retrieved",
+        code: "BOOKS_RETRIEVED",
+      }),
       200,
     );
   };
@@ -45,14 +47,16 @@ export class BibleControllerV1 {
     });
 
     return c.json(
-      SuccessViewModel.create(
-        book,
-        PaginationViewModel.create({
+      SuccessViewModel.create({
+        data: book,
+        pagination: PaginationViewModel.create({
           page: 1,
           limit: 1,
           totalItems: 1,
         }),
-      ),
+        message: "Book retrieved",
+        code: "BOOK_RETRIEVED",
+      }),
       200,
     );
   };
@@ -72,14 +76,16 @@ export class BibleControllerV1 {
     });
 
     return c.json(
-      SuccessViewModel.create(
-        result.data,
-        PaginationViewModel.create({
+      SuccessViewModel.create({
+        data: result.data,
+        pagination: PaginationViewModel.create({
           page,
           limit,
           totalItems: result.total,
         }),
-      ),
+        message: "Chapters retrieved",
+        code: "CHAPTERS_RETRIEVED",
+      }),
       200,
     );
   };
@@ -100,7 +106,10 @@ export class BibleControllerV1 {
       chapterNumber,
     });
 
-    return c.json(SuccessViewModel.create(chapter), 200);
+    return c.json(
+      SuccessViewModel.create({ data: chapter, message: "Chapter retrieved", code: "CHAPTER_RETRIEVED" }),
+      200,
+    );
   };
 
   getVerses = async (c: Context) => {
@@ -123,14 +132,16 @@ export class BibleControllerV1 {
     });
 
     return c.json(
-      SuccessViewModel.create(
-        result.data,
-        PaginationViewModel.create({
+      SuccessViewModel.create({
+        data: result.data,
+        pagination: PaginationViewModel.create({
           page,
           limit,
           totalItems: result.total,
         }),
-      ),
+        message: "Verses retrieved",
+        code: "VERSES_RETRIEVED",
+      }),
       200,
     );
   };
@@ -156,7 +167,10 @@ export class BibleControllerV1 {
       verseNumber,
     });
 
-    return c.json(SuccessViewModel.create(verse), 200);
+    return c.json(
+      SuccessViewModel.create({ data: verse, message: "Verse retrieved", code: "VERSE_RETRIEVED" }),
+      200,
+    );
   };
 
   private parsePositiveInt(value: string, field: string): number {
