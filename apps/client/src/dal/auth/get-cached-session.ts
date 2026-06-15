@@ -8,7 +8,7 @@ export const getCachedUserAuth = cache(async () => {
 
   try {
     return await getApiV1UsersMe({
-      headers: reqHeaders,
+      headers: new Headers(reqHeaders),
     });
   } catch (err) {
     console.error("Failed to fetch user session", err);

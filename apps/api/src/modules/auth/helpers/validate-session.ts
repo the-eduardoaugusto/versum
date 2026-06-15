@@ -20,10 +20,6 @@ export class ValidateSession {
     if (session.revokedAt)
       throw new UnauthorizedError("Session revoked");
 
-    if (session.ip && requestIp && session.ip !== hashMetadata(requestIp)) {
-      throw new UnauthorizedError("Session IP does not match");
-    }
-
     if (session.userAgent && requestUA && session.userAgent !== hashMetadata(requestUA)) {
       throw new UnauthorizedError("Session user-agent does not match");
     }

@@ -113,44 +113,24 @@ export class AuthRepository implements iAuthRepository {
     return magicLink ?? null;
   }
 
-  async updateMagicLink({
+  async invalidateMagicLink({
     publicId,
-    invalidatedAt,
-    usedAt,
   }: {
     publicId: string;
-    invalidatedAt?: Date;
-    usedAt?: Date;
-  }): Promise<MagicLink | null> {
-    const magicLink = await this.db.query.magicLinks.findFirst({
-      where: (magicLinks, { eq }) =>
+  }): Promise<boolean> {
+    const [updated] = await this.db
+      .update(magicLinks)
+      .set({ invalidatedAt: new Date() })
+      .where(
         and(
           eq(magicLinks.publicId, publicId),
           isNull(magicLinks.usedAt),
           isNull(magicLinks.invalidatedAt),
         ),
-    });
-    if (!magicLink) return null;
+      )
+      .returning({ id: magicLinks.id });
 
-    await this.db
-      .update(magicLinks)
-      .set({
-        invalidatedAt,
-        usedAt,
-      })
-      .where(
-        and(
-          eq(magicLinks.publicId, magicLink.publicId),
-          isNull(magicLinks.usedAt),
-          isNull(magicLinks.invalidatedAt),
-        ),
-      );
-
-    const updatedMagicLink = await this.db.query.magicLinks.findFirst({
-      where: (magicLinks, { eq }) => eq(magicLinks.publicId, publicId),
-    });
-
-    return updatedMagicLink ?? null;
+    return updated !== undefined;
   }
 
   async rotateSession({
@@ -192,12 +172,18 @@ export class AuthRepository implements iAuthRepository {
       .where(and(eq(sessions.publicId, publicId), isNull(sessions.revokedAt)));
   }
 
-  async deleteSessionsByUserId({ userId }: { userId: string }, tx?: typeof this.db): Promise<void> {
+  async deleteSessionsByUserId(
+    { userId }: { userId: string },
+    tx?: typeof this.db,
+  ): Promise<void> {
     const client = tx ?? this.db;
     await client.delete(sessions).where(eq(sessions.userId, userId));
   }
 
-  async deleteMagicLinksByEmail({ email }: { email: string }, tx?: typeof this.db): Promise<void> {
+  async deleteMagicLinksByEmail(
+    { email }: { email: string },
+    tx?: typeof this.db,
+  ): Promise<void> {
     const client = tx ?? this.db;
     await client.delete(magicLinks).where(eq(magicLinks.email, email));
   }
@@ -227,7 +213,19 @@ export class AuthRepository implements iAuthRepository {
       )
       .returning({ id: magicLinks.id });
 
-    return usedResult.length + abandonedResult.length;
+    const invalidatedResult = await this.db
+      .delete(magicLinks)
+      .where(
+        and(
+          isNotNull(magicLinks.invalidatedAt),
+          lt(magicLinks.expiresAt, sevenDaysAgo),
+        ),
+      )
+      .returning({ id: magicLinks.id });
+
+    return (
+      usedResult.length + abandonedResult.length + invalidatedResult.length
+    );
   }
 
   async deleteExpiredSessions(): Promise<number> {
@@ -246,10 +244,7 @@ export class AuthRepository implements iAuthRepository {
     const expiredResult = await this.db
       .delete(sessions)
       .where(
-        and(
-          isNull(sessions.revokedAt),
-          lt(sessions.expiresAt, ninetyDaysAgo),
-        ),
+        and(isNull(sessions.revokedAt), lt(sessions.expiresAt, ninetyDaysAgo)),
       )
       .returning({ id: sessions.id });
 
