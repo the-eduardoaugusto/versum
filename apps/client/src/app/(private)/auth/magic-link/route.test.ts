@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { GET } from "./route";
 
 const ORIGINAL_API_URL = process.env.NEXT_PUBLIC_API_URL;
+const ORIGINAL_COOKIE_SECURE = process.env.COOKIE_SECURE;
 
 beforeEach(() => {
   vi.stubGlobal("fetch", vi.fn());
@@ -10,6 +11,7 @@ beforeEach(() => {
 
 afterEach(() => {
   process.env.NEXT_PUBLIC_API_URL = ORIGINAL_API_URL;
+  process.env.COOKIE_SECURE = ORIGINAL_COOKIE_SECURE;
   vi.restoreAllMocks();
 });
 
@@ -64,6 +66,7 @@ describe("GET /auth/magic-link — already authenticated", () => {
 
   it("redirects to / when __Host-session cookie is already present (HTTPS)", async () => {
     process.env.NEXT_PUBLIC_API_URL = "https://api.versum.work";
+    process.env.COOKIE_SECURE = "true";
     const res = await GET(
       makeReq("?token=abc", { cookieHeader: "__Host-session=valid" }),
     );
