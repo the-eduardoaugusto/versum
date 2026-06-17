@@ -9,7 +9,8 @@
     "lint": "biome lint",
     "format": "biome format --write",
     "typecheck": "tsc --noEmit",
-    "test": "vitest",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "cli": "bun run src/cli/index.ts",
     "zip": "bun run src/cli/scripts/zip.ts",
     "generate:bible:json": "bun run generate-bible-json-from-parresia.ts"
