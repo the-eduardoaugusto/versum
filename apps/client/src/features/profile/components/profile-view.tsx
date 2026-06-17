@@ -3,9 +3,11 @@
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import type { FullProfile } from "@/dal/orval/fetch/schemas/fullProfile";
 import type { JourneyStatusResponseData } from "@/dal/orval/fetch/schemas/journeyStatusResponseData";
 import { JourneyProgressSection } from "./journey-progress-section";
+import { ProfileEditForm } from "./profile-edit-form";
 import { ProfileHeader } from "./profile-header";
 
 interface ProfileViewProps {
@@ -21,6 +23,8 @@ export function ProfileView({ profile, journey }: ProfileViewProps) {
       ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
       : false,
   );
+
+  const [isEditing, setIsEditing] = useState(false);
 
   useGSAP(
     () => {
@@ -72,9 +76,29 @@ export function ProfileView({ profile, journey }: ProfileViewProps) {
     },
   );
 
+  if (isEditing) {
+    return (
+      <div ref={containerRef} className="flex flex-col min-h-full">
+        <ProfileEditForm profile={profile} onDone={() => setIsEditing(false)} />
+      </div>
+    );
+  }
+
   return (
     <div ref={containerRef} className="flex flex-col min-h-full">
-      <ProfileHeader profile={profile} />
+      <div className="flex items-start justify-between">
+        <ProfileHeader profile={profile} />
+        <div className="px-6 py-8">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setIsEditing(true)}
+          >
+            Editar
+          </Button>
+        </div>
+      </div>
 
       {journey ? (
         <JourneyProgressSection journey={journey} />
