@@ -4,9 +4,9 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import type { JourneyFeedResponseDataNextItemsItemBook } from "./journeyFeedResponseDataNextItemsItemBook";
-import type { JourneyFeedResponseDataNextItemsItemChapter } from "./journeyFeedResponseDataNextItemsItemChapter";
-import type { JourneyFeedResponseDataNextItemsItemVersesItem } from "./journeyFeedResponseDataNextItemsItemVersesItem";
+import type { JourneyFeedResponseDataNextItemsItemBook } from './journeyFeedResponseDataNextItemsItemBook';
+import type { JourneyFeedResponseDataNextItemsItemChapter } from './journeyFeedResponseDataNextItemsItemChapter';
+import type { JourneyFeedResponseDataNextItemsItemVersesItem } from './journeyFeedResponseDataNextItemsItemVersesItem';
 
 export type JourneyFeedResponseDataNextItemsItem = {
   chapter: JourneyFeedResponseDataNextItemsItemChapter;

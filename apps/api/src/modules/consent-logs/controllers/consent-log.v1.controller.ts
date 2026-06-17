@@ -31,7 +31,10 @@ export class ConsentLogControllerV1 {
       ip,
     });
 
-    return c.json(SuccessViewModel.create({ consents: logs }), 201);
+    return c.json(
+      SuccessViewModel.create({ data: { consents: logs }, message: "Consent recorded", code: "CONSENT_RECORDED" }),
+      201,
+    );
   };
 
   getConsentHistory = async (c: Context) => {
@@ -39,6 +42,9 @@ export class ConsentLogControllerV1 {
 
     const logs = await this.service.getUserConsents({ userId: session.userId });
 
-    return c.json(SuccessViewModel.create({ consents: logs }), 200);
+    return c.json(
+      SuccessViewModel.create({ data: { consents: logs }, message: "Consent history retrieved", code: "CONSENT_HISTORY_RETRIEVED" }),
+      200,
+    );
   };
 }
