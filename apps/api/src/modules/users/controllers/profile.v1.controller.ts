@@ -105,6 +105,8 @@ export class ProfileControllerV1 {
 
     assertValidAvatar({ mimeType: file.type, size: file.size, bytes });
 
+    await this.service.assertProfileEditable({ userId: session.userId });
+
     const secureUrl = await this.cloudinary.uploadAvatar({
       userId: session.userId,
       bytes: Buffer.from(arrayBuffer),
@@ -121,12 +123,12 @@ export class ProfileControllerV1 {
   deleteAvatar = async (c: Context) => {
     const session = c.get("session") as Session;
 
-    await this.cloudinary.destroyAvatar({ userId: session.userId });
-
     const profile = await this.service.updateProfile({
       userId: session.userId,
       pictureUrl: null,
     });
+
+    await this.cloudinary.destroyAvatar({ userId: session.userId });
 
     return c.json(SuccessViewModel.create(profile), 200);
   };
