@@ -1,4 +1,5 @@
 import { logger } from "@versum/logger";
+import argon2 from "argon2";
 import type { Context, Next } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import { ValidateSession } from "../modules/auth/helpers/validate-session.ts";
@@ -34,15 +35,20 @@ export class AuthMiddleware {
       !!sessionCookie,
     );
     if (!sessionCookie) throw new UnauthorizedError("Session cookie not found");
-    const [sessionCookiePublicId] = sessionCookie.split(".");
+    const [sessionCookiePublicId, sessionSecret] = sessionCookie.split(".");
 
-    if (!sessionCookiePublicId)
+    if (!sessionCookiePublicId || !sessionSecret)
       throw new UnauthorizedError("Invalid session cookie");
 
     const session = await this.repo.getSessionByPublicId({
       publicId: sessionCookiePublicId,
     });
     logger("debug", "[Auth] session from publicId:", session?.id);
+
+    // Verify the secret half of the cookie against the stored hash. Without
+    // this the publicId (a non-secret lookup id) would be the only credential.
+    if (!session || !(await argon2.verify(session.tokenHash, sessionSecret)))
+      throw new UnauthorizedError("Invalid session");
 
     const requestIp =
       ctx.req.header("x-forwarded-for")?.split(",")[0]?.trim() ??
