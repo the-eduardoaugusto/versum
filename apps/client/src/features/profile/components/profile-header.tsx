@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
 import type { FullProfile } from "@/dal/orval/fetch/schemas/fullProfile";
+import { cn } from "@/lib/utils";
 
 function getInitials(name: string): string {
   return name
@@ -36,6 +36,7 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
           />
         ) : (
           <div
+            role="img"
             className="w-full h-full flex items-center justify-center"
             aria-label={profile.name}
           >
@@ -47,8 +48,12 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
       </div>
 
       <div className="flex flex-col gap-0.5 min-w-0">
-        <h1 className="text-xl font-semibold leading-tight truncate">{profile.name}</h1>
-        <p className="text-sm text-muted-foreground truncate">@{profile.username}</p>
+        <h1 className="text-xl font-semibold leading-tight truncate">
+          {profile.name}
+        </h1>
+        <p className="text-sm text-muted-foreground truncate">
+          @{profile.username}
+        </p>
       </div>
     </div>
   );

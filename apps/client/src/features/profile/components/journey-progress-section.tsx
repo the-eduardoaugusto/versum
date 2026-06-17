@@ -6,7 +6,9 @@ interface JourneyProgressSectionProps {
   journey: JourneyStatusResponseData;
 }
 
-export function JourneyProgressSection({ journey }: JourneyProgressSectionProps) {
+export function JourneyProgressSection({
+  journey,
+}: JourneyProgressSectionProps) {
   const stats = [
     { value: journey.chaptersRead, label: "Lidos" },
     { value: journey.chaptersRemaining, label: "Restantes" },
@@ -29,7 +31,6 @@ export function JourneyProgressSection({ journey }: JourneyProgressSectionProps)
               <div
                 key={label}
                 className="journey-stat flex flex-col items-center gap-1.5 text-center"
-                aria-label={`${label}: ${value}`}
               >
                 <span className="text-2xl font-semibold tabular-nums leading-none">
                   {value}
