@@ -22,31 +22,20 @@ export function useLoginForm({ onSuccess }: UseLoginFormOptions = {}) {
     async onSubmit({ value }) {
       const toastId = toast.loading("Enviando magic link...");
 
-      try {
-        const res = await sendMagicLink({ data: { email: value.email } });
+      const res = await sendMagicLink({ data: { email: value.email } });
 
-        if (res.status !== 200) {
-          throw new Error("Ocorreu um erro desconhecido.");
-        }
-
-        toast.success(res.data.message, { id: toastId });
-        form.reset();
-        onSuccess?.();
-      } catch (error) {
-        let message = "Ocorreu um erro desconhecido.";
-
-        if (error && typeof error === "object" && "response" in error) {
-          const err = error as { response?: { status?: number } };
-          if (err.response?.status === 429) {
-            message =
-              "Muitas tentativas. Por favor, aguarde 1 minuto antes de tentar novamente.";
-          }
-        } else if (error instanceof Error) {
-          message = error.message;
-        }
-
-        toast.error(message, { id: toastId });
+      if (res.status !== 200) {
+        const fallback =
+          res.status === 429
+            ? "Muitas tentativas. Por favor, aguarde 1 minuto antes de tentar novamente."
+            : "Ocorreu um erro desconhecido.";
+        toast.error(res.data.message ?? fallback, { id: toastId });
+        return;
       }
+
+      toast.success(res.data.message, { id: toastId });
+      form.reset();
+      onSuccess?.();
     },
   });
 

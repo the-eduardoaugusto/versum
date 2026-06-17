@@ -15,7 +15,8 @@ async function markChapterAsRead() {
     credentials: "include",
   });
   if (!res.ok) {
-    throw new Error(`HTTP ${res.status}`);
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.message ?? `HTTP ${res.status}`);
   }
   return res.json();
 }

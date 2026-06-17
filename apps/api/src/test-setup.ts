@@ -14,8 +14,8 @@ const env = {
   RESEND_API_KEY: "test",
   WEB_CLIENT_APP_URL: "http://localhost:3000",
   CLOUDINARY_CLOUD_NAME: "test-cloud",
-  CLOUDINARY_API_KEY: "test-api-key",
-  CLOUDINARY_API_SECRET: "test-api-secret",
+  CLOUDINARY_API_KEY: "test-key",
+  CLOUDINARY_API_SECRET: "test-secret",
 };
 
 Object.defineProperty(globalThis, "Bun", {

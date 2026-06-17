@@ -30,7 +30,10 @@ export class JourneyControllerV1 {
 
     const feed = await this.service.getFeed(session.userId, bufferSize);
 
-    return c.json(SuccessViewModel.create(feed), 200);
+    return c.json(
+      SuccessViewModel.create({ data: feed, message: "Feed retrieved", code: "FEED_RETRIEVED" }),
+      200,
+    );
   };
 
   markCurrentAsRead = async (c: Context) => {
@@ -38,7 +41,10 @@ export class JourneyControllerV1 {
 
     const result = await this.service.markCurrentAsRead(session.userId);
 
-    return c.json(SuccessViewModel.create(result), 200);
+    return c.json(
+      SuccessViewModel.create({ data: result, message: "Marked as read", code: "MARKED_AS_READ" }),
+      200,
+    );
   };
 
   getStatus = async (c: Context) => {
@@ -46,6 +52,9 @@ export class JourneyControllerV1 {
 
     const status = await this.service.getStatus(session.userId);
 
-    return c.json(SuccessViewModel.create(status), 200);
+    return c.json(
+      SuccessViewModel.create({ data: status, message: "Status retrieved", code: "STATUS_RETRIEVED" }),
+      200,
+    );
   };
 }

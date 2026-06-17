@@ -121,6 +121,24 @@ export class ProfilesCommonSchemasV1 {
       this.fullProfileSchema,
     );
 
+  static readonly updateProfilePictureResponseSchema =
+    createSuccessResponseSchema(
+      "UpdateProfilePictureResponse",
+      this.fullProfileSchema,
+    );
+
+  static readonly uploadProfilePictureBodySchema = z
+    .object({
+      file: z.any().openapi({
+        type: "string",
+        format: "binary",
+        description: "Profile picture file (JPEG or PNG, max 5MB)",
+      }),
+    })
+    .openapi("UploadProfilePictureBody", {
+      description: "Multipart form data with profile picture file",
+    });
+
   static readonly usernameParamSchema = z.object({
     username: z
       .string()
@@ -156,6 +174,10 @@ export const updateAuthenticatedProfileResponseSchema =
 export const usernameParamSchema = ProfilesCommonSchemasV1.usernameParamSchema;
 export const getProfileByUsernameResponseSchema =
   ProfilesCommonSchemasV1.getProfileByUsernameResponseSchema;
+export const updateProfilePictureResponseSchema =
+  ProfilesCommonSchemasV1.updateProfilePictureResponseSchema;
+export const uploadProfilePictureBodySchema =
+  ProfilesCommonSchemasV1.uploadProfilePictureBodySchema;
 
 export type ProfileSchema = z.infer<
   typeof ProfilesCommonSchemasV1.profileSchema

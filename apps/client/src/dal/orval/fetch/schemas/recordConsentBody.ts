@@ -4,15 +4,15 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import type { ConsentItem } from "./consentItem";
+import type { ConsentItem } from './consentItem';
 
 /**
  * Payload para registrar consentimentos
  */
 export interface RecordConsentBody {
   /**
-   * Lista de consentimentos
-   * @minItems 1
-   */
+     * Lista de consentimentos
+     * @minItems 1
+     */
   consents: ConsentItem[];
 }

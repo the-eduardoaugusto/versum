@@ -4,8 +4,7 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import type { DiscoveryMarkVersesResponseData } from "./discoveryMarkVersesResponseData";
-import type { PaginationViewModel } from "./paginationViewModel";
+import type { PaginationViewModel } from './paginationViewModel';
 
 /**
  * Resposta de sucesso para DiscoveryMarkVersesResponse
@@ -15,7 +14,5 @@ export interface DiscoveryMarkVersesResponse {
   success?: boolean;
   /** Mensagem opcional de contexto */
   message?: string;
-  /** Dados da resposta */
-  data?: DiscoveryMarkVersesResponseData;
   pagination?: PaginationViewModel;
 }

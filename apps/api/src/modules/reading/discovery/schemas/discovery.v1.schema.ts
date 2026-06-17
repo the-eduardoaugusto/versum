@@ -58,7 +58,6 @@ export const discoveryStatsResponseSchema = createSuccessResponseSchema(
 
 export const markVersesResponseSchema = createSuccessResponseSchema(
   "DiscoveryMarkVersesResponse",
-  z.object({ success: z.boolean() }),
 );
 
 export type MarkVersesRequest = z.infer<typeof markVersesRequestSchema>;

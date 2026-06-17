@@ -27,7 +27,10 @@ export class ProfileControllerV1 {
       userId: session.userId,
     });
 
-    return c.json(SuccessViewModel.create(profile), 201);
+    return c.json(
+      SuccessViewModel.create({ data: profile, message: "Profile created", code: "PROFILE_CREATED" }),
+      201,
+    );
   };
 
   getAuthenticatedProfile = async (c: Context) => {
@@ -41,7 +44,10 @@ export class ProfileControllerV1 {
       throw new NotFoundError("Profile not found");
     }
 
-    return c.json(SuccessViewModel.create(profile), 200);
+    return c.json(
+      SuccessViewModel.create({ data: profile, message: "Profile retrieved", code: "PROFILE_RETRIEVED" }),
+      200,
+    );
   };
 
   updateAuthenticatedProfile = async (c: Context) => {
@@ -53,7 +59,10 @@ export class ProfileControllerV1 {
       userId: session.userId,
     });
 
-    return c.json(SuccessViewModel.create(profile), 200);
+    return c.json(
+      SuccessViewModel.create({ data: profile, message: "Profile updated", code: "PROFILE_UPDATED" }),
+      200,
+    );
   };
 
   getProfileByUsername = async (c: Context) => {
@@ -71,7 +80,10 @@ export class ProfileControllerV1 {
       throw new NotFoundError("Profile not found");
     }
 
-    return c.json(SuccessViewModel.create(profile), 200);
+    return c.json(
+      SuccessViewModel.create({ data: profile, message: "Profile retrieved", code: "PROFILE_RETRIEVED" }),
+      200,
+    );
   };
 
   checkUsername = async (c: Context) => {
@@ -87,7 +99,14 @@ export class ProfileControllerV1 {
       currentUserId: session.userId,
     });
 
-    return c.json(SuccessViewModel.create({ available }), 200);
+    return c.json(
+      SuccessViewModel.create({
+        data: { available },
+        message: "Username availability checked",
+        code: "USERNAME_AVAILABILITY_CHECKED",
+      }),
+      200,
+    );
   };
 
   uploadAvatar = async (c: Context) => {
@@ -117,7 +136,14 @@ export class ProfileControllerV1 {
       pictureUrl: secureUrl,
     });
 
-    return c.json(SuccessViewModel.create(profile), 200);
+    return c.json(
+      SuccessViewModel.create({
+        data: profile,
+        message: "Avatar updated",
+        code: "AVATAR_UPDATED",
+      }),
+      200,
+    );
   };
 
   deleteAvatar = async (c: Context) => {
@@ -130,6 +156,13 @@ export class ProfileControllerV1 {
 
     await this.cloudinary.destroyAvatar({ userId: session.userId });
 
-    return c.json(SuccessViewModel.create(profile), 200);
+    return c.json(
+      SuccessViewModel.create({
+        data: profile,
+        message: "Avatar removed",
+        code: "AVATAR_REMOVED",
+      }),
+      200,
+    );
   };
 }
