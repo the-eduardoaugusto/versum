@@ -403,6 +403,48 @@ describe("ProfileServiceV1", () => {
     });
   });
 
+  describe("assertProfileEditable", () => {
+    it("should throw error when consent not granted", async () => {
+      const mockRepository = createMockRepository();
+      const mockConsentLogsRepository = createMockConsentLogsRepository();
+      mockConsentLogsRepository.hasConsent.mockResolvedValue(false);
+      service = createService({ mockRepository, mockConsentLogsRepository });
+
+      await expect(
+        service.assertProfileEditable({ userId: mockProfile.userId }),
+      ).rejects.toThrow("Consentimento para armazenar conteúdo do perfil não foi concedido");
+
+      expect(mockConsentLogsRepository.hasConsent).toHaveBeenCalledWith({
+        userId: mockProfile.userId,
+        purpose: "profile_content",
+      });
+    });
+
+    it("should throw error when profile not found", async () => {
+      const mockRepository = createMockRepository();
+      const mockConsentLogsRepository = createMockConsentLogsRepository();
+      mockConsentLogsRepository.hasConsent.mockResolvedValue(true);
+      mockRepository.findByUserId.mockResolvedValue(null);
+      service = createService({ mockRepository, mockConsentLogsRepository });
+
+      await expect(
+        service.assertProfileEditable({ userId: "nonexistent" }),
+      ).rejects.toThrow("Profile not found");
+    });
+
+    it("should resolve to the profile when consent granted and profile exists", async () => {
+      const mockRepository = createMockRepository();
+      const mockConsentLogsRepository = createMockConsentLogsRepository();
+      mockConsentLogsRepository.hasConsent.mockResolvedValue(true);
+      mockRepository.findByUserId.mockResolvedValue(mockProfile);
+      service = createService({ mockRepository, mockConsentLogsRepository });
+
+      await expect(
+        service.assertProfileEditable({ userId: mockProfile.userId }),
+      ).resolves.toEqual(mockProfile);
+    });
+  });
+
   describe("validation", () => {
     it("should normalize username to lowercase", async () => {
       const mockRepository = createMockRepository();

@@ -210,11 +210,13 @@ export class ProfileServiceV1 {
     return profile;
   }
 
-  async updateProfile(
-    params: UpdateProfileParams & { userId: string },
-  ): Promise<Profile> {
+  async assertProfileEditable({
+    userId,
+  }: {
+    userId: string;
+  }): Promise<Profile> {
     const hasConsent = await this.consentLogsRepository.hasConsent({
-      userId: params.userId,
+      userId,
       purpose: "profile_content",
     });
 
@@ -224,13 +226,19 @@ export class ProfileServiceV1 {
       );
     }
 
-    const profile = await this.repository.findByUserId({
-      userId: params.userId,
-    });
+    const profile = await this.repository.findByUserId({ userId });
 
     if (!profile) {
       throw new NotFoundError("Profile not found");
     }
+
+    return profile;
+  }
+
+  async updateProfile(
+    params: UpdateProfileParams & { userId: string },
+  ): Promise<Profile> {
+    const profile = await this.assertProfileEditable({ userId: params.userId });
 
     const sanitized = this.sanitizeAndValidate(params);
 
