@@ -13,6 +13,9 @@ const env = {
   METADATA_HASH_SECRET: "test-metadata-hash-secret-32chars!",
   RESEND_API_KEY: "test",
   WEB_CLIENT_APP_URL: "http://localhost:3000",
+  CLOUDINARY_CLOUD_NAME: "test-cloud",
+  CLOUDINARY_API_KEY: "test-api-key",
+  CLOUDINARY_API_SECRET: "test-api-secret",
 };
 
 Object.defineProperty(globalThis, "Bun", {
