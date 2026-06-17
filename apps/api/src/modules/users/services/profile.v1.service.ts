@@ -250,4 +250,23 @@ export class ProfileServiceV1 {
     });
   }
 
+  async isUsernameAvailable({
+    username,
+    currentUserId,
+  }: {
+    username: string;
+    currentUserId: string;
+  }): Promise<boolean> {
+    this.validateUsername(username);
+    const normalized = username.trim().toLowerCase();
+
+    const result = await this.repository.existsByUsername({ username: normalized });
+    if (!result.exists) {
+      return true;
+    }
+
+    const ownProfile = await this.repository.findByUserId({ userId: currentUserId });
+    return ownProfile?.id === result.profileId;
+  }
+
 }

@@ -448,4 +448,70 @@ describe("ProfileServiceV1", () => {
       );
     });
   });
+
+  describe("isUsernameAvailable", () => {
+    it("returns true when the username is free", async () => {
+      const mockRepository = createMockRepository();
+      const mockConsentLogsRepository = createMockConsentLogsRepository();
+      mockRepository.existsByUsername.mockResolvedValue({ exists: false });
+      mockRepository.findByUserId.mockResolvedValue(mockProfile);
+      service = createService({ mockRepository, mockConsentLogsRepository });
+
+      await expect(
+        service.isUsernameAvailable({
+          username: "freeone",
+          currentUserId: mockProfile.userId,
+        }),
+      ).resolves.toBe(true);
+    });
+
+    it("returns true when the username belongs to the caller", async () => {
+      const mockRepository = createMockRepository();
+      const mockConsentLogsRepository = createMockConsentLogsRepository();
+      mockRepository.existsByUsername.mockResolvedValue({
+        exists: true,
+        profileId: mockProfile.id,
+      });
+      mockRepository.findByUserId.mockResolvedValue(mockProfile);
+      service = createService({ mockRepository, mockConsentLogsRepository });
+
+      await expect(
+        service.isUsernameAvailable({
+          username: "mine",
+          currentUserId: mockProfile.userId,
+        }),
+      ).resolves.toBe(true);
+    });
+
+    it("returns false when another profile owns the username", async () => {
+      const mockRepository = createMockRepository();
+      const mockConsentLogsRepository = createMockConsentLogsRepository();
+      mockRepository.existsByUsername.mockResolvedValue({
+        exists: true,
+        profileId: "other-profile-id",
+      });
+      mockRepository.findByUserId.mockResolvedValue(mockProfile);
+      service = createService({ mockRepository, mockConsentLogsRepository });
+
+      await expect(
+        service.isUsernameAvailable({
+          username: "taken",
+          currentUserId: mockProfile.userId,
+        }),
+      ).resolves.toBe(false);
+    });
+
+    it("throws on invalid username format", async () => {
+      const mockRepository = createMockRepository();
+      const mockConsentLogsRepository = createMockConsentLogsRepository();
+      service = createService({ mockRepository, mockConsentLogsRepository });
+
+      await expect(
+        service.isUsernameAvailable({
+          username: "a b",
+          currentUserId: mockProfile.userId,
+        }),
+      ).rejects.toThrow();
+    });
+  });
 });
