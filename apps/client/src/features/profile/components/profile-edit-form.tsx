@@ -202,6 +202,7 @@ export function ProfileEditForm({ profile, onDone }: ProfileEditFormProps) {
             <p
               id={`${usernameId}-status`}
               className="text-xs text-muted-foreground"
+              aria-live="polite"
             >
               {usernameState === "checking" && "Verificando disponibilidade..."}
               {usernameState === "available" && "Disponível ✓"}
