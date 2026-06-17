@@ -1,8 +1,8 @@
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { getApiV1ProfilesMe } from "@/dal/orval/fetch/profiles/profiles";
 import { getApiV1ReadingsJourneyStatus } from "@/dal/orval/fetch/journey/journey";
+import { getApiV1ProfilesMe } from "@/dal/orval/fetch/profiles/profiles";
 import { ProfileSkeleton, ProfileView } from "@/features/profile";
 
 async function ProfileContent() {
@@ -15,9 +15,13 @@ async function ProfileContent() {
   ]);
 
   const profile =
-    profileResult.status === "fulfilled" ? profileResult.value?.data : undefined;
+    profileResult.status === "fulfilled"
+      ? profileResult.value?.data
+      : undefined;
   const journey =
-    journeyResult.status === "fulfilled" ? journeyResult.value?.data : undefined;
+    journeyResult.status === "fulfilled"
+      ? journeyResult.value?.data
+      : undefined;
 
   if (!profile) {
     notFound();
