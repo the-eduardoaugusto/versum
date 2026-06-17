@@ -10,8 +10,8 @@
  */
 export type DiscoveryStatsResponseData = {
   /**
-     * Total de versículos lidos
-     * @minimum 0
-     */
+   * Total de versículos lidos
+   * @minimum 0
+   */
   versesRead: number;
 };

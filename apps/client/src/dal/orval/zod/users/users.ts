@@ -4,8 +4,7 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import * as zod from 'zod';
-
+import * as zod from "zod";
 
 /**
  * Retorna os dados do usuário autenticado.
@@ -14,19 +13,30 @@ import * as zod from 'zod';
 export const getApiV1UsersMeResponseSuccessDefault = true;
 export const getApiV1UsersMeResponseDataUserEmailMax = 255;
 
-
-
-export const GetApiV1UsersMeResponse = zod.object({
-  "success": zod.boolean().default(getApiV1UsersMeResponseSuccessDefault).describe('Indica se a requisição foi bem-sucedida'),
-  "message": zod.string().describe('Mensagem de contexto da resposta'),
-  "code": zod.string().describe('Código da resposta'),
-  "data": zod.object({
-  "user": zod.object({
-  "email": zod.email().max(getApiV1UsersMeResponseDataUserEmailMax).describe('E-mail do usuário')
-}).describe('Dados privados do usuário'),
-  "onboardingIsCompleted": zod.boolean()
-}).optional().describe('Dados da resposta')
-}).describe('Resposta de sucesso para GetAuthenticatedUserResponse')
+export const GetApiV1UsersMeResponse = zod
+  .object({
+    success: zod
+      .boolean()
+      .default(getApiV1UsersMeResponseSuccessDefault)
+      .describe("Indica se a requisição foi bem-sucedida"),
+    message: zod.string().describe("Mensagem de contexto da resposta"),
+    code: zod.string().describe("Código da resposta"),
+    data: zod
+      .object({
+        user: zod
+          .object({
+            email: zod
+              .email()
+              .max(getApiV1UsersMeResponseDataUserEmailMax)
+              .describe("E-mail do usuário"),
+          })
+          .describe("Dados privados do usuário"),
+        onboardingIsCompleted: zod.boolean(),
+      })
+      .optional()
+      .describe("Dados da resposta"),
+  })
+  .describe("Resposta de sucesso para GetAuthenticatedUserResponse");
 
 /**
  * Atualiza os dados do usuário autenticado.
@@ -34,27 +44,41 @@ export const GetApiV1UsersMeResponse = zod.object({
  */
 export const patchApiV1UsersMeBodyEmailMax = 255;
 
-
-
-export const PatchApiV1UsersMeBody = zod.object({
-  "email": zod.email().max(patchApiV1UsersMeBodyEmailMax).describe('E-mail do usuário')
-}).describe('Payload para atualizar os dados do usuário autenticado')
+export const PatchApiV1UsersMeBody = zod
+  .object({
+    email: zod
+      .email()
+      .max(patchApiV1UsersMeBodyEmailMax)
+      .describe("E-mail do usuário"),
+  })
+  .describe("Payload para atualizar os dados do usuário autenticado");
 
 export const patchApiV1UsersMeResponseSuccessDefault = true;
 export const patchApiV1UsersMeResponseDataUserEmailMax = 255;
 
-
-
-export const PatchApiV1UsersMeResponse = zod.object({
-  "success": zod.boolean().default(patchApiV1UsersMeResponseSuccessDefault).describe('Indica se a requisição foi bem-sucedida'),
-  "message": zod.string().describe('Mensagem de contexto da resposta'),
-  "code": zod.string().describe('Código da resposta'),
-  "data": zod.object({
-  "user": zod.object({
-  "email": zod.email().max(patchApiV1UsersMeResponseDataUserEmailMax).describe('E-mail do usuário')
-}).describe('Dados privados do usuário')
-}).optional().describe('Dados da resposta')
-}).describe('Resposta de sucesso para UpdateAuthenticatedUserResponse')
+export const PatchApiV1UsersMeResponse = zod
+  .object({
+    success: zod
+      .boolean()
+      .default(patchApiV1UsersMeResponseSuccessDefault)
+      .describe("Indica se a requisição foi bem-sucedida"),
+    message: zod.string().describe("Mensagem de contexto da resposta"),
+    code: zod.string().describe("Código da resposta"),
+    data: zod
+      .object({
+        user: zod
+          .object({
+            email: zod
+              .email()
+              .max(patchApiV1UsersMeResponseDataUserEmailMax)
+              .describe("E-mail do usuário"),
+          })
+          .describe("Dados privados do usuário"),
+      })
+      .optional()
+      .describe("Dados da resposta"),
+  })
+  .describe("Resposta de sucesso para UpdateAuthenticatedUserResponse");
 
 /**
  * Exporta todos os dados pessoais do usuário (direito de portabilidade LGPD Art. 18, II e V).
@@ -62,54 +86,96 @@ export const PatchApiV1UsersMeResponse = zod.object({
  */
 export const getApiV1UsersMeExportResponseSuccessDefault = true;
 
-export const GetApiV1UsersMeExportResponse = zod.object({
-  "success": zod.boolean().default(getApiV1UsersMeExportResponseSuccessDefault).describe('Indica se a requisição foi bem-sucedida'),
-  "message": zod.string().describe('Mensagem de contexto da resposta'),
-  "code": zod.string().describe('Código da resposta'),
-  "data": zod.object({
-  "exportedAt": zod.iso.datetime({"offset":true}).describe('Data e hora da exportação'),
-  "user": zod.object({
-  "email": zod.email(),
-  "createdAt": zod.iso.datetime({"offset":true})
-}).describe('Dados do usuário'),
-  "profile": zod.object({
-  "username": zod.string(),
-  "name": zod.string(),
-  "bio": zod.string().nullable(),
-  "pictureUrl": zod.string().nullable()
-}).nullable().describe('Perfil do usuário'),
-  "sessions": zod.array(zod.object({
-  "createdAt": zod.iso.datetime({"offset":true}),
-  "expiresAt": zod.iso.datetime({"offset":true})
-})).describe('Sessões do usuário'),
-  "readingHistory": zod.object({
-  "journey": zod.array(zod.object({
-  "chapterId": zod.string(),
-  "readAt": zod.iso.datetime({"offset":true})
-})),
-  "discovery": zod.array(zod.object({
-  "verseId": zod.string(),
-  "readAt": zod.iso.datetime({"offset":true})
-}))
-}).describe('Histórico de leitura'),
-  "annotations": zod.array(zod.object({
-  "verseId": zod.string(),
-  "selectedVerseId": zod.string(),
-  "annotation": zod.string().nullable(),
-  "isPublic": zod.boolean(),
-  "createdAt": zod.iso.datetime({"offset":true})
-})).describe('Anotações do usuário'),
-  "likes": zod.array(zod.object({
-  "verseId": zod.string(),
-  "createdAt": zod.iso.datetime({"offset":true})
-})).describe('Favoritos do usuário'),
-  "consentLogs": zod.array(zod.object({
-  "id": zod.string().describe('ID do registro de consentimento'),
-  "userId": zod.string().describe('ID do usuário'),
-  "purpose": zod.string().describe('Finalidade do consentimento'),
-  "granted": zod.boolean().describe('Se o consentimento foi concedido'),
-  "createdAt": zod.iso.datetime({"offset":true}).describe('Data do registro')
-}).describe('Registro de consentimento')).describe('Histórico de consentimento')
-}).optional().describe('Dados da resposta')
-}).describe('Resposta de sucesso para ExportUserDataResponse')
-
+export const GetApiV1UsersMeExportResponse = zod
+  .object({
+    success: zod
+      .boolean()
+      .default(getApiV1UsersMeExportResponseSuccessDefault)
+      .describe("Indica se a requisição foi bem-sucedida"),
+    message: zod.string().describe("Mensagem de contexto da resposta"),
+    code: zod.string().describe("Código da resposta"),
+    data: zod
+      .object({
+        exportedAt: zod.iso
+          .datetime({ offset: true })
+          .describe("Data e hora da exportação"),
+        user: zod
+          .object({
+            email: zod.email(),
+            createdAt: zod.iso.datetime({ offset: true }),
+          })
+          .describe("Dados do usuário"),
+        profile: zod
+          .object({
+            username: zod.string(),
+            name: zod.string(),
+            bio: zod.string().nullable(),
+            pictureUrl: zod.string().nullable(),
+          })
+          .nullable()
+          .describe("Perfil do usuário"),
+        sessions: zod
+          .array(
+            zod.object({
+              createdAt: zod.iso.datetime({ offset: true }),
+              expiresAt: zod.iso.datetime({ offset: true }),
+            }),
+          )
+          .describe("Sessões do usuário"),
+        readingHistory: zod
+          .object({
+            journey: zod.array(
+              zod.object({
+                chapterId: zod.string(),
+                readAt: zod.iso.datetime({ offset: true }),
+              }),
+            ),
+            discovery: zod.array(
+              zod.object({
+                verseId: zod.string(),
+                readAt: zod.iso.datetime({ offset: true }),
+              }),
+            ),
+          })
+          .describe("Histórico de leitura"),
+        annotations: zod
+          .array(
+            zod.object({
+              verseId: zod.string(),
+              selectedVerseId: zod.string(),
+              annotation: zod.string().nullable(),
+              isPublic: zod.boolean(),
+              createdAt: zod.iso.datetime({ offset: true }),
+            }),
+          )
+          .describe("Anotações do usuário"),
+        likes: zod
+          .array(
+            zod.object({
+              verseId: zod.string(),
+              createdAt: zod.iso.datetime({ offset: true }),
+            }),
+          )
+          .describe("Favoritos do usuário"),
+        consentLogs: zod
+          .array(
+            zod
+              .object({
+                id: zod.string().describe("ID do registro de consentimento"),
+                userId: zod.string().describe("ID do usuário"),
+                purpose: zod.string().describe("Finalidade do consentimento"),
+                granted: zod
+                  .boolean()
+                  .describe("Se o consentimento foi concedido"),
+                createdAt: zod.iso
+                  .datetime({ offset: true })
+                  .describe("Data do registro"),
+              })
+              .describe("Registro de consentimento"),
+          )
+          .describe("Histórico de consentimento"),
+      })
+      .optional()
+      .describe("Dados da resposta"),
+  })
+  .describe("Resposta de sucesso para ExportUserDataResponse");

@@ -9,9 +9,9 @@ export type JourneyFeedResponseDataNextItemsItemBook = {
   /** ID do livro */
   id: string;
   /**
-     * Ordem canônica do livro (1-73)
-     * @exclusiveMinimum 0
-     */
+   * Ordem canônica do livro (1-73)
+   * @exclusiveMinimum 0
+   */
   order: number;
   /** Nome do livro */
   name: string;

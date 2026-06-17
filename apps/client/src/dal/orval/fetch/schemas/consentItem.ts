@@ -4,7 +4,7 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import type { ConsentItemPurpose } from './consentItemPurpose';
+import type { ConsentItemPurpose } from "./consentItemPurpose";
 
 /**
  * Item de consentimento

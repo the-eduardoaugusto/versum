@@ -4,111 +4,94 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
+
+import getApiV1UsersMeMutator from "../../../../lib/api-fetcher";
+import patchApiV1UsersMeMutator from "../../../../lib/api-fetcher";
+import deleteApiV1UsersMeMutator from "../../../../lib/api-fetcher";
+import getApiV1UsersMeExportMutator from "../../../../lib/api-fetcher";
 import type {
   ExportUserDataResponse,
   GetAuthenticatedUserResponse,
   UpdateAuthenticatedUserBody,
-  UpdateAuthenticatedUserResponse
-} from '../schemas';
-
-import getApiV1UsersMeMutator from '../../../../lib/api-fetcher';
-import patchApiV1UsersMeMutator from '../../../../lib/api-fetcher';
-import deleteApiV1UsersMeMutator from '../../../../lib/api-fetcher';
-import getApiV1UsersMeExportMutator from '../../../../lib/api-fetcher';
+  UpdateAuthenticatedUserResponse,
+} from "../schemas";
 
 export const getGetApiV1UsersMeUrl = () => {
-
-
-
-
-  return `/api/v1/users/@me`
-}
+  return `/api/v1/users/@me`;
+};
 
 /**
  * Retorna os dados do usuário autenticado.
  * @summary Obter usuário autenticado
  */
-export const getApiV1UsersMe = async ( options?: RequestInit): Promise<GetAuthenticatedUserResponse> => {
-
-  return getApiV1UsersMeMutator<GetAuthenticatedUserResponse>(getGetApiV1UsersMeUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
+export const getApiV1UsersMe = async (
+  options?: RequestInit,
+): Promise<GetAuthenticatedUserResponse> => {
+  return getApiV1UsersMeMutator<GetAuthenticatedUserResponse>(
+    getGetApiV1UsersMeUrl(),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
 
 export const getPatchApiV1UsersMeUrl = () => {
-
-
-
-
-  return `/api/v1/users/@me`
-}
+  return `/api/v1/users/@me`;
+};
 
 /**
  * Atualiza os dados do usuário autenticado.
  * @summary Atualizar usuário autenticado
  */
-export const patchApiV1UsersMe = async (updateAuthenticatedUserBody?: UpdateAuthenticatedUserBody, options?: RequestInit): Promise<UpdateAuthenticatedUserResponse> => {
-
-  return patchApiV1UsersMeMutator<UpdateAuthenticatedUserResponse>(getPatchApiV1UsersMeUrl(),
-  {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(updateAuthenticatedUserBody)
-  }
-);}
-
+export const patchApiV1UsersMe = async (
+  updateAuthenticatedUserBody?: UpdateAuthenticatedUserBody,
+  options?: RequestInit,
+): Promise<UpdateAuthenticatedUserResponse> => {
+  return patchApiV1UsersMeMutator<UpdateAuthenticatedUserResponse>(
+    getPatchApiV1UsersMeUrl(),
+    {
+      ...options,
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(updateAuthenticatedUserBody),
+    },
+  );
+};
 
 export const getDeleteApiV1UsersMeUrl = () => {
-
-
-
-
-  return `/api/v1/users/@me`
-}
+  return `/api/v1/users/@me`;
+};
 
 /**
  * Remove a conta do usuário e todos os dados associados (direito de eliminação LGPD Art. 18, VI).
  * @summary Deletar usuário autenticado
  */
-export const deleteApiV1UsersMe = async ( options?: RequestInit): Promise<void> => {
-
-  return deleteApiV1UsersMeMutator<void>(getDeleteApiV1UsersMeUrl(),
-  {
+export const deleteApiV1UsersMe = async (
+  options?: RequestInit,
+): Promise<void> => {
+  return deleteApiV1UsersMeMutator<void>(getDeleteApiV1UsersMeUrl(), {
     ...options,
-    method: 'DELETE'
-
-
-  }
-);}
-
+    method: "DELETE",
+  });
+};
 
 export const getGetApiV1UsersMeExportUrl = () => {
-
-
-
-
-  return `/api/v1/users/@me/export`
-}
+  return `/api/v1/users/@me/export`;
+};
 
 /**
  * Exporta todos os dados pessoais do usuário (direito de portabilidade LGPD Art. 18, II e V).
  * @summary Exportar dados do usuário autenticado
  */
-export const getApiV1UsersMeExport = async ( options?: RequestInit): Promise<ExportUserDataResponse> => {
-
-  return getApiV1UsersMeExportMutator<ExportUserDataResponse>(getGetApiV1UsersMeExportUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
+export const getApiV1UsersMeExport = async (
+  options?: RequestInit,
+): Promise<ExportUserDataResponse> => {
+  return getApiV1UsersMeExportMutator<ExportUserDataResponse>(
+    getGetApiV1UsersMeExportUrl(),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};

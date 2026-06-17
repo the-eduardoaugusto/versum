@@ -4,94 +4,92 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
+
+import getApiV1ReadingsDiscoveryNextMutator from "../../../../lib/api-fetcher";
+import postApiV1ReadingsDiscoveryMutator from "../../../../lib/api-fetcher";
+import getApiV1ReadingsDiscoveryStatsMutator from "../../../../lib/api-fetcher";
 import type {
   DiscoveryMarkVersesResponse,
   DiscoveryNextVersesResponse,
   DiscoveryStatsResponse,
   GetApiV1ReadingsDiscoveryNextParams,
-  PostApiV1ReadingsDiscoveryBody
-} from '../schemas';
+  PostApiV1ReadingsDiscoveryBody,
+} from "../schemas";
 
-import getApiV1ReadingsDiscoveryNextMutator from '../../../../lib/api-fetcher';
-import postApiV1ReadingsDiscoveryMutator from '../../../../lib/api-fetcher';
-import getApiV1ReadingsDiscoveryStatsMutator from '../../../../lib/api-fetcher';
-
-export const getGetApiV1ReadingsDiscoveryNextUrl = (params?: GetApiV1ReadingsDiscoveryNextParams,) => {
+export const getGetApiV1ReadingsDiscoveryNextUrl = (
+  params?: GetApiV1ReadingsDiscoveryNextParams,
+) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
-
     if (value !== undefined) {
-      normalizedParams.append(key, value === null ? 'null' : value.toString())
+      normalizedParams.append(key, value === null ? "null" : value.toString());
     }
   });
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/v1/readings/discovery/next?${stringifiedParams}` : `/api/v1/readings/discovery/next`
-}
+  return stringifiedParams.length > 0
+    ? `/api/v1/readings/discovery/next?${stringifiedParams}`
+    : `/api/v1/readings/discovery/next`;
+};
 
 /**
  * Retorna todos os versículos de um capítulo para leitura no modo Discovery.
  * @summary Versículos do capítulo
  */
-export const getApiV1ReadingsDiscoveryNext = async (params?: GetApiV1ReadingsDiscoveryNextParams, options?: RequestInit): Promise<DiscoveryNextVersesResponse> => {
-
-  return getApiV1ReadingsDiscoveryNextMutator<DiscoveryNextVersesResponse>(getGetApiV1ReadingsDiscoveryNextUrl(params),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
+export const getApiV1ReadingsDiscoveryNext = async (
+  params?: GetApiV1ReadingsDiscoveryNextParams,
+  options?: RequestInit,
+): Promise<DiscoveryNextVersesResponse> => {
+  return getApiV1ReadingsDiscoveryNextMutator<DiscoveryNextVersesResponse>(
+    getGetApiV1ReadingsDiscoveryNextUrl(params),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
 
 export const getPostApiV1ReadingsDiscoveryUrl = () => {
-
-
-
-
-  return `/api/v1/readings/discovery`
-}
+  return `/api/v1/readings/discovery`;
+};
 
 /**
  * Registra que o usuário leu versículos específicos.
  * @summary Marcar versículos como lidos
  */
-export const postApiV1ReadingsDiscovery = async (postApiV1ReadingsDiscoveryBody?: PostApiV1ReadingsDiscoveryBody, options?: RequestInit): Promise<DiscoveryMarkVersesResponse> => {
-
-  return postApiV1ReadingsDiscoveryMutator<DiscoveryMarkVersesResponse>(getPostApiV1ReadingsDiscoveryUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(postApiV1ReadingsDiscoveryBody)
-  }
-);}
-
+export const postApiV1ReadingsDiscovery = async (
+  postApiV1ReadingsDiscoveryBody?: PostApiV1ReadingsDiscoveryBody,
+  options?: RequestInit,
+): Promise<DiscoveryMarkVersesResponse> => {
+  return postApiV1ReadingsDiscoveryMutator<DiscoveryMarkVersesResponse>(
+    getPostApiV1ReadingsDiscoveryUrl(),
+    {
+      ...options,
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(postApiV1ReadingsDiscoveryBody),
+    },
+  );
+};
 
 export const getGetApiV1ReadingsDiscoveryStatsUrl = () => {
-
-
-
-
-  return `/api/v1/readings/discovery/stats`
-}
+  return `/api/v1/readings/discovery/stats`;
+};
 
 /**
  * Retorna estatísticas de leitura no modo Discovery.
  * @summary Estatísticas do Discovery
  */
-export const getApiV1ReadingsDiscoveryStats = async ( options?: RequestInit): Promise<DiscoveryStatsResponse> => {
-
-  return getApiV1ReadingsDiscoveryStatsMutator<DiscoveryStatsResponse>(getGetApiV1ReadingsDiscoveryStatsUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
+export const getApiV1ReadingsDiscoveryStats = async (
+  options?: RequestInit,
+): Promise<DiscoveryStatsResponse> => {
+  return getApiV1ReadingsDiscoveryStatsMutator<DiscoveryStatsResponse>(
+    getGetApiV1ReadingsDiscoveryStatsUrl(),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
