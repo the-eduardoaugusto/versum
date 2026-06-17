@@ -13,7 +13,8 @@
     "i-deps": "bun install --frozen-lockfile",
     "lint": "bun --filter '*' lint",
     "format": "bun --filter '*' format",
-    "typecheck": "bun --filter '*' typecheck"
+    "typecheck": "bun --filter '*' typecheck",
+    "test": "bun --filter '*' test"
   },
   "workspaces": [
     "packages/*",
