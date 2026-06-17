@@ -14,4 +14,7 @@ export const envSchema = z.object({
   DISCORD_WEBHOOK_URL: z.string(),
   CRON_ENABLED: z.string().default("true"),
   METADATA_HASH_SECRET: z.string().min(32),
+  CLOUDINARY_CLOUD_NAME: z.string(),
+  CLOUDINARY_API_KEY: z.string(),
+  CLOUDINARY_API_SECRET: z.string(),
 });
