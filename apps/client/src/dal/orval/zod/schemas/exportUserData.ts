@@ -4,13 +4,13 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import type { ExportConsentLog } from './exportConsentLog';
-import type { ExportProfile } from './exportProfile';
-import type { ExportReadingHistory } from './exportReadingHistory';
-import type { ExportUser } from './exportUser';
-import type { ExportUserDataAnnotationsItem } from './exportUserDataAnnotationsItem';
-import type { ExportUserDataLikesItem } from './exportUserDataLikesItem';
-import type { ExportUserDataSessionsItem } from './exportUserDataSessionsItem';
+import type { ExportConsentLog } from "./exportConsentLog";
+import type { ExportProfile } from "./exportProfile";
+import type { ExportReadingHistory } from "./exportReadingHistory";
+import type { ExportUser } from "./exportUser";
+import type { ExportUserDataAnnotationsItem } from "./exportUserDataAnnotationsItem";
+import type { ExportUserDataLikesItem } from "./exportUserDataLikesItem";
+import type { ExportUserDataSessionsItem } from "./exportUserDataSessionsItem";
 
 /**
  * Dados da resposta

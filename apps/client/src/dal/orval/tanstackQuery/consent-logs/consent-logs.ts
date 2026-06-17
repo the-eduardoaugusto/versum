@@ -4,10 +4,7 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import {
-  useMutation,
-  useQuery
-} from '@tanstack/react-query';
+
 import type {
   DataTag,
   DefinedInitialDataOptions,
@@ -20,264 +17,347 @@ import type {
   UseMutationOptions,
   UseMutationResult,
   UseQueryOptions,
-  UseQueryResult
-} from '@tanstack/react-query';
+  UseQueryResult,
+} from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import type {
   ApiErrorResponse,
   ConsentHistoryResponse,
-  RecordConsentBody
-} from '../schemas';
-
-
-
-
+  RecordConsentBody,
+} from "../schemas";
 
 export type postApiV1ConsentResponse201 = {
-  data: ConsentHistoryResponse
-  status: 201
-}
+  data: ConsentHistoryResponse;
+  status: 201;
+};
 
 export type postApiV1ConsentResponse400 = {
-  data: ApiErrorResponse
-  status: 400
-}
+  data: ApiErrorResponse;
+  status: 400;
+};
 
 export type postApiV1ConsentResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
+  data: ApiErrorResponse;
+  status: 401;
+};
 
 export type postApiV1ConsentResponse429 = {
-  data: ApiErrorResponse
-  status: 429
-}
+  data: ApiErrorResponse;
+  status: 429;
+};
 
 export type postApiV1ConsentResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-
-export type postApiV1ConsentResponseSuccess = (postApiV1ConsentResponse201) & {
-  headers: Headers;
-};
-export type postApiV1ConsentResponseError = (postApiV1ConsentResponse400 | postApiV1ConsentResponse401 | postApiV1ConsentResponse429 | postApiV1ConsentResponse500) & {
-  headers: Headers;
+  data: ApiErrorResponse;
+  status: 500;
 };
 
-export type postApiV1ConsentResponse = (postApiV1ConsentResponseSuccess | postApiV1ConsentResponseError)
+export type postApiV1ConsentResponseSuccess = postApiV1ConsentResponse201 & {
+  headers: Headers;
+};
+export type postApiV1ConsentResponseError = (
+  | postApiV1ConsentResponse400
+  | postApiV1ConsentResponse401
+  | postApiV1ConsentResponse429
+  | postApiV1ConsentResponse500
+) & {
+  headers: Headers;
+};
+
+export type postApiV1ConsentResponse =
+  | postApiV1ConsentResponseSuccess
+  | postApiV1ConsentResponseError;
 
 export const getPostApiV1ConsentUrl = () => {
-
-
-
-
-  return `/api/v1/consent`
-}
+  return `/api/v1/consent`;
+};
 
 /**
  * Registra um ou mais consentimentos do usuário autenticado.
  * @summary Registrar consentimentos
  */
-export const postApiV1Consent = async (recordConsentBody?: RecordConsentBody, options?: RequestInit): Promise<postApiV1ConsentResponse> => {
-
-  const res = await fetch(getPostApiV1ConsentUrl(),
-  {
+export const postApiV1Consent = async (
+  recordConsentBody?: RecordConsentBody,
+  options?: RequestInit,
+): Promise<postApiV1ConsentResponse> => {
+  const res = await fetch(getPostApiV1ConsentUrl(), {
     ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(recordConsentBody)
-  }
-)
-
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(recordConsentBody),
+  });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
-  const data: postApiV1ConsentResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as postApiV1ConsentResponse
-}
+  const data: postApiV1ConsentResponse["data"] = body ? JSON.parse(body) : {};
+  return {
+    data,
+    status: res.status,
+    headers: res.headers,
+  } as postApiV1ConsentResponse;
+};
 
+export const getPostApiV1ConsentMutationOptions = <
+  TError = ApiErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiV1Consent>>,
+    TError,
+    { data?: RecordConsentBody },
+    TContext
+  >;
+  fetch?: RequestInit;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiV1Consent>>,
+  TError,
+  { data?: RecordConsentBody },
+  TContext
+> => {
+  const mutationKey = ["postApiV1Consent"];
+  const { mutation: mutationOptions, fetch: fetchOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, fetch: undefined };
 
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiV1Consent>>,
+    { data?: RecordConsentBody }
+  > = (props) => {
+    const { data } = props ?? {};
 
+    return postApiV1Consent(data, fetchOptions);
+  };
 
-export const getPostApiV1ConsentMutationOptions = <TError = ApiErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1Consent>>, TError,{data?: RecordConsentBody}, TContext>, fetch?: RequestInit}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1Consent>>, TError,{data?: RecordConsentBody}, TContext> => {
+  return { mutationFn, ...mutationOptions };
+};
 
-const mutationKey = ['postApiV1Consent'];
-const {mutation: mutationOptions, fetch: fetchOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, fetch: undefined};
+export type PostApiV1ConsentMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiV1Consent>>
+>;
+export type PostApiV1ConsentMutationBody = RecordConsentBody | undefined;
+export type PostApiV1ConsentMutationError = ApiErrorResponse;
 
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1Consent>>, {data?: RecordConsentBody}> = (props) => {
-          const {data} = props ?? {};
-
-          return  postApiV1Consent(data,fetchOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostApiV1ConsentMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1Consent>>>
-    export type PostApiV1ConsentMutationBody = RecordConsentBody | undefined
-    export type PostApiV1ConsentMutationError = ApiErrorResponse
-
-    /**
+/**
  * @summary Registrar consentimentos
  */
-export const usePostApiV1Consent = <TError = ApiErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1Consent>>, TError,{data?: RecordConsentBody}, TContext>, fetch?: RequestInit}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1Consent>>,
-        TError,
-        {data?: RecordConsentBody},
-        TContext
-      > => {
-      return useMutation(getPostApiV1ConsentMutationOptions(options), queryClient);
-    }
-    export type getApiV1ConsentResponse200 = {
-  data: ConsentHistoryResponse
-  status: 200
-}
+export const usePostApiV1Consent = <
+  TError = ApiErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postApiV1Consent>>,
+      TError,
+      { data?: RecordConsentBody },
+      TContext
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postApiV1Consent>>,
+  TError,
+  { data?: RecordConsentBody },
+  TContext
+> => {
+  return useMutation(getPostApiV1ConsentMutationOptions(options), queryClient);
+};
+export type getApiV1ConsentResponse200 = {
+  data: ConsentHistoryResponse;
+  status: 200;
+};
 
 export type getApiV1ConsentResponse401 = {
-  data: ApiErrorResponse
-  status: 401
-}
+  data: ApiErrorResponse;
+  status: 401;
+};
 
 export type getApiV1ConsentResponse429 = {
-  data: ApiErrorResponse
-  status: 429
-}
+  data: ApiErrorResponse;
+  status: 429;
+};
 
 export type getApiV1ConsentResponse500 = {
-  data: ApiErrorResponse
-  status: 500
-}
-
-export type getApiV1ConsentResponseSuccess = (getApiV1ConsentResponse200) & {
-  headers: Headers;
-};
-export type getApiV1ConsentResponseError = (getApiV1ConsentResponse401 | getApiV1ConsentResponse429 | getApiV1ConsentResponse500) & {
-  headers: Headers;
+  data: ApiErrorResponse;
+  status: 500;
 };
 
-export type getApiV1ConsentResponse = (getApiV1ConsentResponseSuccess | getApiV1ConsentResponseError)
+export type getApiV1ConsentResponseSuccess = getApiV1ConsentResponse200 & {
+  headers: Headers;
+};
+export type getApiV1ConsentResponseError = (
+  | getApiV1ConsentResponse401
+  | getApiV1ConsentResponse429
+  | getApiV1ConsentResponse500
+) & {
+  headers: Headers;
+};
+
+export type getApiV1ConsentResponse =
+  | getApiV1ConsentResponseSuccess
+  | getApiV1ConsentResponseError;
 
 export const getGetApiV1ConsentUrl = () => {
-
-
-
-
-  return `/api/v1/consent`
-}
+  return `/api/v1/consent`;
+};
 
 /**
  * Retorna todos os registros de consentimento do usuário autenticado.
  * @summary Obter histórico de consentimentos
  */
-export const getApiV1Consent = async ( options?: RequestInit): Promise<getApiV1ConsentResponse> => {
-
-  const res = await fetch(getGetApiV1ConsentUrl(),
-  {
+export const getApiV1Consent = async (
+  options?: RequestInit,
+): Promise<getApiV1ConsentResponse> => {
+  const res = await fetch(getGetApiV1ConsentUrl(), {
     ...options,
-    method: 'GET'
-
-
-  }
-)
-
+    method: "GET",
+  });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
-  const data: getApiV1ConsentResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as getApiV1ConsentResponse
-}
-
-
-
-
+  const data: getApiV1ConsentResponse["data"] = body ? JSON.parse(body) : {};
+  return {
+    data,
+    status: res.status,
+    headers: res.headers,
+  } as getApiV1ConsentResponse;
+};
 
 export const getGetApiV1ConsentQueryKey = () => {
-    return [
-    `/api/v1/consent`
-    ] as const;
-    }
+  return [`/api/v1/consent`] as const;
+};
 
+export const getGetApiV1ConsentQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiV1Consent>>,
+  TError = ApiErrorResponse,
+>(options?: {
+  query?: Partial<
+    UseQueryOptions<Awaited<ReturnType<typeof getApiV1Consent>>, TError, TData>
+  >;
+  fetch?: RequestInit;
+}) => {
+  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
 
-export const getGetApiV1ConsentQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1Consent>>, TError = ApiErrorResponse>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Consent>>, TError, TData>>, fetch?: RequestInit}
-) => {
+  const queryKey = queryOptions?.queryKey ?? getGetApiV1ConsentQueryKey();
 
-const {query: queryOptions, fetch: fetchOptions} = options ?? {};
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1Consent>>> = ({
+    signal,
+  }) => getApiV1Consent({ signal, ...fetchOptions });
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1ConsentQueryKey();
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiV1Consent>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
 
+export type GetApiV1ConsentQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiV1Consent>>
+>;
+export type GetApiV1ConsentQueryError = ApiErrorResponse;
 
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1Consent>>> = ({ signal }) => getApiV1Consent({ signal, ...fetchOptions });
-
-
-
-
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1Consent>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type GetApiV1ConsentQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1Consent>>>
-export type GetApiV1ConsentQueryError = ApiErrorResponse
-
-
-export function useGetApiV1Consent<TData = Awaited<ReturnType<typeof getApiV1Consent>>, TError = ApiErrorResponse>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Consent>>, TError, TData>> & Pick<
+export function useGetApiV1Consent<
+  TData = Awaited<ReturnType<typeof getApiV1Consent>>,
+  TError = ApiErrorResponse,
+>(
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiV1Consent>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiV1Consent>>,
           TError,
           Awaited<ReturnType<typeof getApiV1Consent>>
-        > , 'initialData'
-      >, fetch?: RequestInit}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1Consent<TData = Awaited<ReturnType<typeof getApiV1Consent>>, TError = ApiErrorResponse>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Consent>>, TError, TData>> & Pick<
+        >,
+        "initialData"
+      >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetApiV1Consent<
+  TData = Awaited<ReturnType<typeof getApiV1Consent>>,
+  TError = ApiErrorResponse,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiV1Consent>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getApiV1Consent>>,
           TError,
           Awaited<ReturnType<typeof getApiV1Consent>>
-        > , 'initialData'
-      >, fetch?: RequestInit}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1Consent<TData = Awaited<ReturnType<typeof getApiV1Consent>>, TError = ApiErrorResponse>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Consent>>, TError, TData>>, fetch?: RequestInit}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+        >,
+        "initialData"
+      >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetApiV1Consent<
+  TData = Awaited<ReturnType<typeof getApiV1Consent>>,
+  TError = ApiErrorResponse,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiV1Consent>>,
+        TError,
+        TData
+      >
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
 /**
  * @summary Obter histórico de consentimentos
  */
 
-export function useGetApiV1Consent<TData = Awaited<ReturnType<typeof getApiV1Consent>>, TError = ApiErrorResponse>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Consent>>, TError, TData>>, fetch?: RequestInit}
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+export function useGetApiV1Consent<
+  TData = Awaited<ReturnType<typeof getApiV1Consent>>,
+  TError = ApiErrorResponse,
+>(
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiV1Consent>>,
+        TError,
+        TData
+      >
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetApiV1ConsentQueryOptions(options);
 
-  const queryOptions = getGetApiV1ConsentQueryOptions(options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
-
-
-
-
-
-

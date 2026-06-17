@@ -4,7 +4,7 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import type { ConsentLog } from './consentLog';
+import type { ConsentLog } from "./consentLog";
 
 /**
  * Dados da resposta
