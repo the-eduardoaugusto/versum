@@ -64,7 +64,11 @@ export function ProfileView({ profile, journey }: ProfileViewProps) {
     },
     {
       scope: containerRef,
-      dependencies: [prefersReducedMotion, journey?.percentComplete, journey?.isAtEnd],
+      dependencies: [
+        prefersReducedMotion,
+        journey?.percentComplete,
+        journey?.isAtEnd,
+      ],
     },
   );
 
