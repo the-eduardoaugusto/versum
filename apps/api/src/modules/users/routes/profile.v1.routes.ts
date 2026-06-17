@@ -1,6 +1,9 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
+import { bodyLimit } from "hono/body-limit";
 import { AuthMiddleware } from "@/middlewares/auth.middleware.ts";
+import { AvatarUploadRateLimiter } from "@/middlewares/rate-limiter/middleware.ts";
 import { createErrorResponses } from "../../../utils/app/errors/openapi.ts";
+import { MAX_AVATAR_BYTES } from "../utils/avatar-validation.ts";
 import { validationErrorHook } from "../../../utils/app/errors/validation.hook.ts";
 import type { ProfileControllerV1 } from "../controllers/profile.v1.controller.ts";
 import {
@@ -19,6 +22,7 @@ export const createProfileRoutesV1 = (controller: ProfileControllerV1) => {
   });
 
   const authMiddleware = new AuthMiddleware();
+  const avatarRateLimiter = new AvatarUploadRateLimiter();
 
   const createProfileRoute = createRoute({
     method: "post",
@@ -122,6 +126,16 @@ export const createProfileRoutesV1 = (controller: ProfileControllerV1) => {
   });
 
   router.use("/*", authMiddleware.validateSession);
+
+  router.use(
+    "/@me/avatar",
+    avatarRateLimiter.middleware,
+    bodyLimit({ maxSize: MAX_AVATAR_BYTES }),
+  );
+
+  router.post("/@me/avatar", controller.uploadAvatar);
+  router.delete("/@me/avatar", controller.deleteAvatar);
+  router.get("/check-username/:username", controller.checkUsername);
 
   router.openapi(createProfileRoute, controller.createProfile);
   router.openapi(getMeRoute, controller.getAuthenticatedProfile);

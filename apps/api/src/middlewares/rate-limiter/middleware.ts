@@ -143,3 +143,17 @@ export class MagicLinkConsumeRateLimiter extends RateLimiterMiddleware {
 
 /** @deprecated Use MagicLinkSendRateLimiter / MagicLinkConsumeRateLimiter */
 export class MagicLinkRateLimiter extends MagicLinkSendRateLimiter {}
+
+export class AvatarUploadRateLimiter extends RateLimiterMiddleware {
+  constructor() {
+    super({
+      windowMs: 60_000,
+      limit: 10,
+      keyGenerator: (c) => {
+        const session = c.get("session") as { userId?: string } | undefined;
+        if (session?.userId) return `user:${session.userId}`;
+        return `ip:${getClientIp(c)}`;
+      },
+    });
+  }
+}
