@@ -3,9 +3,11 @@ import { afterEach, describe, expect, it } from "vitest";
 import { GET } from "./route";
 
 const ORIGINAL_API_URL = process.env.NEXT_PUBLIC_API_URL;
+const ORIGINAL_COOKIE_SECURE = process.env.COOKIE_SECURE;
 
 afterEach(() => {
   process.env.NEXT_PUBLIC_API_URL = ORIGINAL_API_URL;
+  process.env.COOKIE_SECURE = ORIGINAL_COOKIE_SECURE;
 });
 
 describe("GET /auth/clear-session", () => {
@@ -31,6 +33,7 @@ describe("GET /auth/clear-session", () => {
 
   it("includes Set-Cookie header that expires the __Host-session cookie (HTTPS)", async () => {
     process.env.NEXT_PUBLIC_API_URL = "https://api.versum.work";
+    process.env.COOKIE_SECURE = "true";
     const req = new NextRequest("http://localhost:3000/auth/clear-session", {
       headers: { cookie: "__Host-session=some-stale-token" },
     });
