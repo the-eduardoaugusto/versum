@@ -4,10 +4,6 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-
-import postApiV1AuthMagicLinkMutator from "../../../../lib/api-fetcher";
-import getApiV1AuthMagicLinkMutator from "../../../../lib/api-fetcher";
-import postApiV1AuthLogoutMutator from "../../../../lib/api-fetcher";
 import type {
   AuthenticateWithMagicLinkResponse,
   GetApiV1AuthMagicLinkParams,
@@ -15,6 +11,10 @@ import type {
   SendMagicLinkBody,
   SendMagicLinkResponse,
 } from "../schemas";
+
+import postApiV1AuthMagicLinkMutator from "../../../../lib/api-fetcher";
+import getApiV1AuthMagicLinkMutator from "../../../../lib/api-fetcher";
+import postApiV1AuthLogoutMutator from "../../../../lib/api-fetcher";
 
 export const getPostApiV1AuthMagicLinkUrl = () => {
   return `/api/v1/auth/magic-link`;

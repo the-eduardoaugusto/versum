@@ -86,11 +86,10 @@ export class ProfilesCommonSchemasV1 {
       description: "Payload para criar o perfil do usuário",
     });
 
-  static readonly createProfileResponseSchema =
-    createSuccessResponseSchema(
-      "CreateProfileResponse",
-      this.fullProfileSchema,
-    );
+  static readonly createProfileResponseSchema = createSuccessResponseSchema(
+    "CreateProfileResponse",
+    this.fullProfileSchema,
+  );
 
   static readonly getAuthenticatedProfileResponseSchema =
     createSuccessResponseSchema(
@@ -139,6 +138,22 @@ export class ProfilesCommonSchemasV1 {
       description: "Multipart form data with profile picture file",
     });
 
+  static readonly checkUsernameAvailabilityResponseSchema =
+    createSuccessResponseSchema(
+      "CheckUsernameAvailabilityResponse",
+      z.object({
+        available: z.boolean().openapi({
+          description: "Whether the username is available",
+          example: true,
+        }),
+      }),
+    );
+
+  static readonly deleteAvatarResponseSchema = createSuccessResponseSchema(
+    "DeleteAvatarResponse",
+    this.fullProfileSchema,
+  );
+
   static readonly usernameParamSchema = z.object({
     username: z
       .string()
@@ -178,6 +193,10 @@ export const updateProfilePictureResponseSchema =
   ProfilesCommonSchemasV1.updateProfilePictureResponseSchema;
 export const uploadProfilePictureBodySchema =
   ProfilesCommonSchemasV1.uploadProfilePictureBodySchema;
+export const checkUsernameAvailabilityResponseSchema =
+  ProfilesCommonSchemasV1.checkUsernameAvailabilityResponseSchema;
+export const deleteAvatarResponseSchema =
+  ProfilesCommonSchemasV1.deleteAvatarResponseSchema;
 
 export type ProfileSchema = z.infer<
   typeof ProfilesCommonSchemasV1.profileSchema
