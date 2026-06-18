@@ -4,10 +4,10 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
+import type { ConsentHistoryResponse, RecordConsentBody } from "../schemas";
 
 import postApiV1ConsentMutator from "../../../../lib/api-fetcher";
 import getApiV1ConsentMutator from "../../../../lib/api-fetcher";
-import type { ConsentHistoryResponse, RecordConsentBody } from "../schemas";
 
 export const getPostApiV1ConsentUrl = () => {
   return `/api/v1/consent`;

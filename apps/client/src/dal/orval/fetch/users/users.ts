@@ -4,17 +4,17 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-
-import getApiV1UsersMeMutator from "../../../../lib/api-fetcher";
-import patchApiV1UsersMeMutator from "../../../../lib/api-fetcher";
-import deleteApiV1UsersMeMutator from "../../../../lib/api-fetcher";
-import getApiV1UsersMeExportMutator from "../../../../lib/api-fetcher";
 import type {
   ExportUserDataResponse,
   GetAuthenticatedUserResponse,
   UpdateAuthenticatedUserBody,
   UpdateAuthenticatedUserResponse,
 } from "../schemas";
+
+import getApiV1UsersMeMutator from "../../../../lib/api-fetcher";
+import patchApiV1UsersMeMutator from "../../../../lib/api-fetcher";
+import deleteApiV1UsersMeMutator from "../../../../lib/api-fetcher";
+import getApiV1UsersMeExportMutator from "../../../../lib/api-fetcher";
 
 export const getGetApiV1UsersMeUrl = () => {
   return `/api/v1/users/@me`;

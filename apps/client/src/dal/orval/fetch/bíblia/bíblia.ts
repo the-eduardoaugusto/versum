@@ -4,13 +4,6 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-
-import getApiV1PublicBibleBooksMutator from "../../../../lib/api-fetcher";
-import getApiV1PublicBibleBooksDynamicIdMutator from "../../../../lib/api-fetcher";
-import getApiV1PublicBibleBooksDynamicIdChaptersMutator from "../../../../lib/api-fetcher";
-import getApiV1PublicBibleBooksDynamicIdChaptersNumberMutator from "../../../../lib/api-fetcher";
-import getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesMutator from "../../../../lib/api-fetcher";
-import getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseMutator from "../../../../lib/api-fetcher";
 import type {
   GetApiV1PublicBibleBooksDynamicIdChaptersNumberVersesParams,
   GetApiV1PublicBibleBooksDynamicIdChaptersParams,
@@ -22,6 +15,13 @@ import type {
   GetVerseResponse,
   GetVersesResponse,
 } from "../schemas";
+
+import getApiV1PublicBibleBooksMutator from "../../../../lib/api-fetcher";
+import getApiV1PublicBibleBooksDynamicIdMutator from "../../../../lib/api-fetcher";
+import getApiV1PublicBibleBooksDynamicIdChaptersMutator from "../../../../lib/api-fetcher";
+import getApiV1PublicBibleBooksDynamicIdChaptersNumberMutator from "../../../../lib/api-fetcher";
+import getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesMutator from "../../../../lib/api-fetcher";
+import getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseMutator from "../../../../lib/api-fetcher";
 
 export const getGetApiV1PublicBibleBooksUrl = (
   params?: GetApiV1PublicBibleBooksParams,

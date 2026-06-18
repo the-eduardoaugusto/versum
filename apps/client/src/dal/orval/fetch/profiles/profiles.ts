@@ -4,15 +4,11 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-
-import postApiV1ProfilesMeMutator from "../../../../lib/api-fetcher";
-import getApiV1ProfilesMeMutator from "../../../../lib/api-fetcher";
-import patchApiV1ProfilesMeMutator from "../../../../lib/api-fetcher";
-import getApiV1ProfilesUsernameMutator from "../../../../lib/api-fetcher";
-import putApiV1ProfilesMePictureMutator from "../../../../lib/api-fetcher";
 import type {
+  CheckUsernameAvailabilityResponse,
   CreateProfileBody,
   CreateProfileResponse,
+  DeleteAvatarResponse,
   GetAuthenticatedProfileResponse,
   GetProfileByUsernameResponse,
   UpdateAuthenticatedProfileBody,
@@ -20,6 +16,14 @@ import type {
   UpdateProfilePictureResponse,
   UploadProfilePictureBody,
 } from "../schemas";
+
+import postApiV1ProfilesMeMutator from "../../../../lib/api-fetcher";
+import getApiV1ProfilesMeMutator from "../../../../lib/api-fetcher";
+import patchApiV1ProfilesMeMutator from "../../../../lib/api-fetcher";
+import getApiV1ProfilesUsernameMutator from "../../../../lib/api-fetcher";
+import getApiV1ProfilesCheckUsernameUsernameMutator from "../../../../lib/api-fetcher";
+import postApiV1ProfilesMeAvatarMutator from "../../../../lib/api-fetcher";
+import deleteApiV1ProfilesMeAvatarMutator from "../../../../lib/api-fetcher";
 
 export const getPostApiV1ProfilesMeUrl = () => {
   return `/api/v1/profiles/@me`;
@@ -108,29 +112,72 @@ export const getApiV1ProfilesUsername = async (
   );
 };
 
-export const getPutApiV1ProfilesMePictureUrl = () => {
-  return `/api/v1/profiles/@me/picture`;
+export const getGetApiV1ProfilesCheckUsernameUsernameUrl = (
+  username: string,
+) => {
+  return `/api/v1/profiles/check-username/${username}`;
 };
 
 /**
- * Faz upload de uma nova foto de perfil e atualiza o perfil do usuário. Formatos aceitos: JPEG e PNG. Tamanho máximo: 5MB.
- * @summary Atualizar foto de perfil
+ * Verifica se um username está disponível para usar.
+ * @summary Verificar disponibilidade de username
  */
-export const putApiV1ProfilesMePicture = async (
-  uploadProfilePictureBody: UploadProfilePictureBody,
+export const getApiV1ProfilesCheckUsernameUsername = async (
+  username: string,
+  options?: RequestInit,
+): Promise<CheckUsernameAvailabilityResponse> => {
+  return getApiV1ProfilesCheckUsernameUsernameMutator<CheckUsernameAvailabilityResponse>(
+    getGetApiV1ProfilesCheckUsernameUsernameUrl(username),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
+
+export const getPostApiV1ProfilesMeAvatarUrl = () => {
+  return `/api/v1/profiles/@me/avatar`;
+};
+
+/**
+ * Faz upload de uma nova foto de perfil. Formatos: JPEG, PNG, WEBP. Tamanho máximo: 5MB.
+ * @summary Upload de foto de perfil
+ */
+export const postApiV1ProfilesMeAvatar = async (
+  uploadProfilePictureBody?: UploadProfilePictureBody,
   options?: RequestInit,
 ): Promise<UpdateProfilePictureResponse> => {
   const formData = new FormData();
-  if (uploadProfilePictureBody.file !== undefined) {
+  if (uploadProfilePictureBody?.file !== undefined) {
     formData.append(`file`, uploadProfilePictureBody.file);
   }
 
-  return putApiV1ProfilesMePictureMutator<UpdateProfilePictureResponse>(
-    getPutApiV1ProfilesMePictureUrl(),
+  return postApiV1ProfilesMeAvatarMutator<UpdateProfilePictureResponse>(
+    getPostApiV1ProfilesMeAvatarUrl(),
     {
       ...options,
-      method: "PUT",
+      method: "POST",
       body: formData,
+    },
+  );
+};
+
+export const getDeleteApiV1ProfilesMeAvatarUrl = () => {
+  return `/api/v1/profiles/@me/avatar`;
+};
+
+/**
+ * Remove a foto de perfil do usuário autenticado.
+ * @summary Deletar foto de perfil
+ */
+export const deleteApiV1ProfilesMeAvatar = async (
+  options?: RequestInit,
+): Promise<DeleteAvatarResponse> => {
+  return deleteApiV1ProfilesMeAvatarMutator<DeleteAvatarResponse>(
+    getDeleteApiV1ProfilesMeAvatarUrl(),
+    {
+      ...options,
+      method: "DELETE",
     },
   );
 };
