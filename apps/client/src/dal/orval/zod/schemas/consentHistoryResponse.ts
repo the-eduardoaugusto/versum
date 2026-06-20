@@ -4,7 +4,7 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import type { ConsentHistoryData } from './consentHistoryData';
+import type { ConsentHistoryData } from "./consentHistoryData";
 
 /**
  * Resposta de sucesso para ConsentHistoryResponse

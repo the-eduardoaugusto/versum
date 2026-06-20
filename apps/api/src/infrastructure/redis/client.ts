@@ -1,11 +1,11 @@
-import { RedisClient } from "bun";
 import { logger } from "@versum/logger";
+import { RedisClient } from "bun";
 import { env } from "../../utils/env/index.ts";
 
 const cert = await Bun.file(".certs/redis-certificate.pem").text();
 
 function buildTlsOptions() {
-  if (!env.REDIS_DATABASE_CERT_PATH || !cert) return undefined;
+  if (!cert) return undefined;
   return {
     tls: {
       key: cert,

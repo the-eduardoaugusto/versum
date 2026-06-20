@@ -39,15 +39,19 @@ class Response {
       "Strict-Transport-Security",
       "max-age=31536000; includeSubDomains; preload",
     );
+
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const apiOrigin = apiUrl ? new URL(apiUrl).origin : "";
+
     res.headers.set(
       "Content-Security-Policy",
       [
         "default-src 'self'",
         "script-src 'self' 'unsafe-inline'",
         "style-src 'self' 'unsafe-inline'",
-        "img-src 'self' data: blob:",
+        "img-src 'self' data: blob: https://res.cloudinary.com",
         "font-src 'self'",
-        "connect-src 'self'",
+        `connect-src 'self' ${apiOrigin}`.trim(),
         "frame-ancestors 'none'",
         "base-uri 'self'",
         "form-action 'self'",

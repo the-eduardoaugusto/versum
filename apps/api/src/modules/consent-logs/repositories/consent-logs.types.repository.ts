@@ -9,7 +9,6 @@ export interface ConsentLogsRepo {
 
 export type ConsentLog = typeof consentLogs.$inferSelect;
 
-
 export interface CreateConsentLogParams {
   userId: string;
   purpose: string;

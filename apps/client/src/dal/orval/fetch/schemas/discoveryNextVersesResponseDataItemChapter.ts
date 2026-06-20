@@ -9,8 +9,8 @@ export type DiscoveryNextVersesResponseDataItemChapter = {
   /** ID do capítulo */
   id: string;
   /**
-     * Número do capítulo
-     * @exclusiveMinimum 0
-     */
+   * Número do capítulo
+   * @exclusiveMinimum 0
+   */
   number: number;
 };

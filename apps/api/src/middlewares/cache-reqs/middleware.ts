@@ -1,6 +1,6 @@
+import { logger } from "@versum/logger";
 import type { Context, Next } from "hono";
 import { redis } from "../../infrastructure/redis";
-import { logger } from "@versum/logger";
 
 export class CacheMiddleware {
   private readonly config: {

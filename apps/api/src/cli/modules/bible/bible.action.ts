@@ -1,5 +1,5 @@
-import prompts from "prompts";
 import { logger } from "@versum/logger";
+import prompts from "prompts";
 import { initCli } from "../../index";
 import { type SeedBibleOptions, seedBibleFromJson } from "./seed/seed.action";
 import {

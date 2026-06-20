@@ -56,7 +56,10 @@ describe("ConsentLogServiceV1", () => {
       expect(result).toHaveLength(2);
       expect(mockRepository.createConsentLogs).toHaveBeenCalledWith(
         expect.arrayContaining([
-          expect.objectContaining({ purpose: "profile_content", granted: true }),
+          expect.objectContaining({
+            purpose: "profile_content",
+            granted: true,
+          }),
           expect.objectContaining({ purpose: "annotations", granted: true }),
         ]),
       );
@@ -82,7 +85,9 @@ describe("ConsentLogServiceV1", () => {
           mockRepository as unknown as import("../repositories/consent-logs.repository").ConsentLogsRepository,
       });
 
-      const result = await service.getUserConsents({ userId: mockConsentLog.userId });
+      const result = await service.getUserConsents({
+        userId: mockConsentLog.userId,
+      });
 
       expect(result).toEqual(logs);
       expect(mockRepository.getConsentLogsByUserId).toHaveBeenCalledWith({
@@ -98,7 +103,9 @@ describe("ConsentLogServiceV1", () => {
           mockRepository as unknown as import("../repositories/consent-logs.repository").ConsentLogsRepository,
       });
 
-      const result = await service.getUserConsents({ userId: "nonexistent-id" });
+      const result = await service.getUserConsents({
+        userId: "nonexistent-id",
+      });
 
       expect(result).toEqual([]);
     });

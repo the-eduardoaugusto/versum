@@ -88,7 +88,11 @@ export class UsersControllerV1 {
     const data = await this.service.exportUserData({ id: session.userId });
 
     return c.json(
-      SuccessViewModel.create({ data, message: "User data exported", code: "USER_DATA_EXPORTED" }),
+      SuccessViewModel.create({
+        data,
+        message: "User data exported",
+        code: "USER_DATA_EXPORTED",
+      }),
       200,
     );
   };

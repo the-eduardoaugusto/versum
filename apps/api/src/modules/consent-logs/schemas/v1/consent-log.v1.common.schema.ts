@@ -11,12 +11,10 @@ export const CONSENT_PURPOSES = [
 export type ConsentPurpose = (typeof CONSENT_PURPOSES)[number];
 
 export class ConsentLogCommonSchemasV1 {
-  static readonly consentPurposeSchema = z
-    .enum(CONSENT_PURPOSES)
-    .openapi({
-      description: "Finalidade do consentimento",
-      example: "profile_content",
-    });
+  static readonly consentPurposeSchema = z.enum(CONSENT_PURPOSES).openapi({
+    description: "Finalidade do consentimento",
+    example: "profile_content",
+  });
 
   static readonly consentItemSchema = z
     .object({
@@ -63,19 +61,26 @@ export class ConsentLogCommonSchemasV1 {
       description: "Dados do histórico de consentimentos",
     });
 
-  static readonly consentHistoryResponseSchema =
-    createSuccessResponseSchema(
-      "ConsentHistoryResponse",
-      this.consentHistoryDataSchema,
-    );
+  static readonly consentHistoryResponseSchema = createSuccessResponseSchema(
+    "ConsentHistoryResponse",
+    this.consentHistoryDataSchema,
+  );
 }
 
-export const consentPurposeSchema = ConsentLogCommonSchemasV1.consentPurposeSchema;
+export const consentPurposeSchema =
+  ConsentLogCommonSchemasV1.consentPurposeSchema;
 export const consentItemSchema = ConsentLogCommonSchemasV1.consentItemSchema;
-export const recordConsentBodySchema = ConsentLogCommonSchemasV1.recordConsentBodySchema;
+export const recordConsentBodySchema =
+  ConsentLogCommonSchemasV1.recordConsentBodySchema;
 export const consentLogSchema = ConsentLogCommonSchemasV1.consentLogSchema;
-export const consentHistoryDataSchema = ConsentLogCommonSchemasV1.consentHistoryDataSchema;
-export const consentHistoryResponseSchema = ConsentLogCommonSchemasV1.consentHistoryResponseSchema;
+export const consentHistoryDataSchema =
+  ConsentLogCommonSchemasV1.consentHistoryDataSchema;
+export const consentHistoryResponseSchema =
+  ConsentLogCommonSchemasV1.consentHistoryResponseSchema;
 
-export type ConsentItem = z.infer<typeof ConsentLogCommonSchemasV1.consentItemSchema>;
-export type RecordConsentBody = z.infer<typeof ConsentLogCommonSchemasV1.recordConsentBodySchema>;
+export type ConsentItem = z.infer<
+  typeof ConsentLogCommonSchemasV1.consentItemSchema
+>;
+export type RecordConsentBody = z.infer<
+  typeof ConsentLogCommonSchemasV1.recordConsentBodySchema
+>;

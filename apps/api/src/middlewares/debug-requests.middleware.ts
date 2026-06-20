@@ -1,5 +1,5 @@
-import type { Context, Next } from "hono";
 import { logger } from "@versum/logger";
+import type { Context, Next } from "hono";
 
 class DebugRequestsMiddleware {
   async middleware(ctx: Context, next: Next) {

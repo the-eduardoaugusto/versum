@@ -1,13 +1,15 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { bodyLimit } from "hono/body-limit";
 import { AuthMiddleware } from "@/middlewares/auth.middleware.ts";
-import { createErrorResponse, createErrorResponses } from "../../../utils/app/errors/openapi.ts";
+import { AvatarUploadRateLimiter } from "@/middlewares/rate-limiter/middleware.ts";
+import { createErrorResponses } from "../../../utils/app/errors/openapi.ts";
 import { validationErrorHook } from "../../../utils/app/errors/validation.hook.ts";
-import { ApiErrorViewModel } from "../../../view-models/default/error.view-model.ts";
 import type { ProfileControllerV1 } from "../controllers/profile.v1.controller.ts";
 import {
+  checkUsernameAvailabilityResponseSchema,
   createProfileBodySchema,
   createProfileResponseSchema,
+  deleteAvatarResponseSchema,
   getAuthenticatedProfileResponseSchema,
   getProfileByUsernameResponseSchema,
   updateAuthenticatedProfileBodySchema,
@@ -16,8 +18,7 @@ import {
   uploadProfilePictureBodySchema,
   usernameParamSchema,
 } from "../schemas/v1/profiles.v1.common.schema.ts";
-
-const PROFILE_PICTURE_MAX_SIZE_BYTES = 5 * 1024 * 1024;
+import { MAX_AVATAR_BYTES } from "../utils/avatar-validation.ts";
 
 export const createProfileRoutesV1 = (controller: ProfileControllerV1) => {
   const router = new OpenAPIHono({
@@ -25,13 +26,14 @@ export const createProfileRoutesV1 = (controller: ProfileControllerV1) => {
   });
 
   const authMiddleware = new AuthMiddleware();
+  const avatarRateLimiter = new AvatarUploadRateLimiter();
 
   const createProfileRoute = createRoute({
     method: "post",
     path: "/@me",
     tags: ["Profiles"],
     summary: "Criar perfil do usuário autenticado",
-    security: [{cookieAuth: []}],
+    security: [{ cookieAuth: [] }],
     description: "Cria um novo perfil para o usuário autenticado.",
     request: {
       body: {
@@ -60,8 +62,8 @@ export const createProfileRoutesV1 = (controller: ProfileControllerV1) => {
     path: "/@me",
     tags: ["Profiles"],
     summary: "Obter perfil do usuário autenticado",
-          description: "Retorna os dados do perfil do usuário autenticado.",
-      security: [{ cookieAuth: [] }],
+    description: "Retorna os dados do perfil do usuário autenticado.",
+    security: [{ cookieAuth: [] }],
     responses: {
       200: {
         content: {
@@ -80,8 +82,8 @@ export const createProfileRoutesV1 = (controller: ProfileControllerV1) => {
     path: "/@me",
     tags: ["Profiles"],
     summary: "Atualizar perfil do usuário autenticado",
-          description: "Atualiza os dados do perfil do usuário autenticado.",
-      security: [{ cookieAuth: [] }],
+    description: "Atualiza os dados do perfil do usuário autenticado.",
+    security: [{ cookieAuth: [] }],
     request: {
       body: {
         content: {
@@ -109,8 +111,8 @@ export const createProfileRoutesV1 = (controller: ProfileControllerV1) => {
     path: "/{username}",
     tags: ["Profiles"],
     summary: "Obter perfil por username",
-      description: "Retorna os dados públicos de um perfil pelo username.",
-      security: [{ cookieAuth: [] }],
+    description: "Retorna os dados públicos de um perfil pelo username.",
+    security: [{ cookieAuth: [] }],
     request: {
       params: usernameParamSchema,
     },
@@ -127,13 +129,36 @@ export const createProfileRoutesV1 = (controller: ProfileControllerV1) => {
     },
   });
 
-  const uploadPictureRoute = createRoute({
-    method: "put",
-    path: "/@me/picture",
+  const checkUsernameRoute = createRoute({
+    method: "get",
+    path: "/check-username/{username}",
     tags: ["Profiles"],
-    summary: "Atualizar foto de perfil",
+    summary: "Verificar disponibilidade de username",
+    description: "Verifica se um username está disponível para usar.",
+    security: [{ cookieAuth: [] }],
+    request: {
+      params: usernameParamSchema,
+    },
+    responses: {
+      200: {
+        content: {
+          "application/json": {
+            schema: checkUsernameAvailabilityResponseSchema,
+          },
+        },
+        description: "Disponibilidade do username verificada",
+      },
+      ...createErrorResponses([400, 401, 429, 500]),
+    },
+  });
+
+  const uploadAvatarRoute = createRoute({
+    method: "post",
+    path: "/@me/avatar",
+    tags: ["Profiles"],
+    summary: "Upload de foto de perfil",
     description:
-      "Faz upload de uma nova foto de perfil e atualiza o perfil do usuário. Formatos aceitos: JPEG e PNG. Tamanho máximo: 5MB.",
+      "Faz upload de uma nova foto de perfil. Formatos: JPEG, PNG, WEBP. Tamanho máximo: 5MB.",
     security: [{ cookieAuth: [] }],
     request: {
       body: {
@@ -142,7 +167,6 @@ export const createProfileRoutesV1 = (controller: ProfileControllerV1) => {
             schema: uploadProfilePictureBodySchema,
           },
         },
-        required: true,
       },
     },
     responses: {
@@ -154,33 +178,45 @@ export const createProfileRoutesV1 = (controller: ProfileControllerV1) => {
         },
         description: "Foto de perfil atualizada com sucesso",
       },
-      413: createErrorResponse("Arquivo muito grande. Tamanho máximo: 5MB"),
-      ...createErrorResponses([400, 401, 403, 404, 429, 500]),
+      ...createErrorResponses([400, 401, 413, 429, 500]),
+    },
+  });
+
+  const deleteAvatarRoute = createRoute({
+    method: "delete",
+    path: "/@me/avatar",
+    tags: ["Profiles"],
+    summary: "Deletar foto de perfil",
+    description: "Remove a foto de perfil do usuário autenticado.",
+    security: [{ cookieAuth: [] }],
+    responses: {
+      200: {
+        content: {
+          "application/json": {
+            schema: deleteAvatarResponseSchema,
+          },
+        },
+        description: "Foto de perfil removida com sucesso",
+      },
+      ...createErrorResponses([401, 404, 429, 500]),
     },
   });
 
   router.use("/*", authMiddleware.validateSession);
 
   router.use(
-    "/@me/picture",
-    bodyLimit({
-      maxSize: PROFILE_PICTURE_MAX_SIZE_BYTES,
-      onError: (c) =>
-        c.json(
-          new ApiErrorViewModel(
-            "File too large. Maximum size is 5MB",
-            "PAYLOAD_TOO_LARGE",
-          ),
-          413,
-        ),
-    }),
+    "/@me/avatar",
+    avatarRateLimiter.middleware,
+    bodyLimit({ maxSize: MAX_AVATAR_BYTES }),
   );
 
   router.openapi(createProfileRoute, controller.createProfile);
   router.openapi(getMeRoute, controller.getAuthenticatedProfile);
   router.openapi(updateMeRoute, controller.updateAuthenticatedProfile);
   router.openapi(getByUsernameRoute, controller.getProfileByUsername);
-  router.openapi(uploadPictureRoute, controller.updateProfilePicture);
+  router.openapi(checkUsernameRoute, controller.checkUsername);
+  router.openapi(uploadAvatarRoute, controller.uploadAvatar);
+  router.openapi(deleteAvatarRoute, controller.deleteAvatar);
 
   return router;
 };

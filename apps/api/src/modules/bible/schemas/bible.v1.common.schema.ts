@@ -85,7 +85,7 @@ export class BibleCommonSchemasV1 {
   static createSuccessResponseSchema<T extends z.ZodType>(
     name: string,
     dataSchema?: T,
-    includePagination = false,
+    _includePagination = false,
   ) {
     const fields: Record<string, z.ZodType> = {
       success: z

@@ -2,9 +2,7 @@ import { z } from "zod";
 
 export const envSchema = z.object({
   DATABASE_URL: z.string("Database URL is required"),
-  DATABASE_CERT_PATH: z.string("Database cert path is required"),
   REDIS_DATABASE_URL: z.string("Redis database URL is required"),
-  REDIS_DATABASE_CERT_PATH: z.string("Redis database cert path is required"),
   PORT: z.string("Port is required"),
   BUN_ENV: z.string("Bun env is required"),
   ENCRYPT_SECRET: z.string("Encrypt secret is required"),

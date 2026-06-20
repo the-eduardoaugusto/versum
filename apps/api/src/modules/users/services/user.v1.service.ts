@@ -1,7 +1,7 @@
-import { AuthRepository } from "../../auth/repositories/auth.repository";
 import { db } from "../../../infrastructure/db";
-import type { Profile } from "../repositories/profile.types.repository";
+import { AuthRepository } from "../../auth/repositories/auth.repository";
 import { ProfileRepository } from "../repositories/profile.repository";
+import type { Profile } from "../repositories/profile.types.repository";
 import { UserRepository } from "../repositories/user.repository";
 import type {
   CreateUserParams,
@@ -71,7 +71,11 @@ export class UserServiceV1 {
     return user;
   }
 
-  async getUserByIdWithProfile({ id }: { id: string }): Promise<User & { profile: Profile | undefined }> {
+  async getUserByIdWithProfile({
+    id,
+  }: {
+    id: string;
+  }): Promise<User & { profile: Profile | undefined }> {
     const user = await this.repository.findByIdWithProfile({ id });
 
     if (!user) {
@@ -118,9 +122,15 @@ export class UserServiceV1 {
     }
 
     await this.transaction(async (tx) => {
-      await this.authRepository.deleteSessionsByUserId({ userId: id }, tx as any);
+      await this.authRepository.deleteSessionsByUserId(
+        { userId: id },
+        tx as any,
+      );
       await this.profileRepository.deleteByUserId({ userId: id }, tx as any);
-      await this.authRepository.deleteMagicLinksByEmail({ email: user.email }, tx as any);
+      await this.authRepository.deleteMagicLinksByEmail(
+        { email: user.email },
+        tx as any,
+      );
       await this.repository.deleteUser({ id }, tx as any);
     });
   }
@@ -142,7 +152,10 @@ export class UserServiceV1 {
 
     const mapJourneyReadings = (r: unknown) => {
       const reading = r as { chapterId: string; readAt: Date };
-      return { chapterId: reading.chapterId, readAt: reading.readAt.toISOString() };
+      return {
+        chapterId: reading.chapterId,
+        readAt: reading.readAt.toISOString(),
+      };
     };
 
     const mapDiscoveryReadings = (r: unknown) => {
@@ -151,7 +164,13 @@ export class UserServiceV1 {
     };
 
     const mapMarks = (m: unknown) => {
-      const mark = m as { verseId: string; selectedVerseId: string; annotation: string | null; isPublic: boolean; createdAt: Date };
+      const mark = m as {
+        verseId: string;
+        selectedVerseId: string;
+        annotation: string | null;
+        isPublic: boolean;
+        createdAt: Date;
+      };
       return {
         verseId: mark.verseId,
         selectedVerseId: mark.selectedVerseId,
@@ -167,7 +186,13 @@ export class UserServiceV1 {
     };
 
     const mapConsentLogs = (c: unknown) => {
-      const log = c as { id: string; userId: string; purpose: string; granted: boolean; createdAt: Date };
+      const log = c as {
+        id: string;
+        userId: string;
+        purpose: string;
+        granted: boolean;
+        createdAt: Date;
+      };
       return {
         id: log.id,
         userId: log.userId,

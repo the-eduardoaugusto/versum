@@ -3,9 +3,11 @@
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import type { FullProfile } from "@/dal/orval/fetch/schemas/fullProfile";
 import type { JourneyStatusResponseData } from "@/dal/orval/fetch/schemas/journeyStatusResponseData";
 import { JourneyProgressSection } from "./journey-progress-section";
+import { ProfileEditForm } from "./profile-edit-form";
 import { ProfileHeader } from "./profile-header";
 
 interface ProfileViewProps {
@@ -22,12 +24,19 @@ export function ProfileView({ profile, journey }: ProfileViewProps) {
       : false,
   );
 
+  const [isEditing, setIsEditing] = useState(false);
+
   useGSAP(
     () => {
+      // Reveal only after GSAP has applied the initial hidden state, so the
+      // SSR-rendered content never flashes before the animation runs.
+      const reveal = () => containerRef.current?.classList.remove("invisible");
+
       if (prefersReducedMotion) {
         if (journey) {
           gsap.set(".progress-fill", { width: `${journey.percentComplete}%` });
         }
+        reveal();
         return;
       }
 
@@ -61,16 +70,46 @@ export function ProfileView({ profile, journey }: ProfileViewProps) {
           },
         );
       }
+
+      reveal();
     },
     {
       scope: containerRef,
-      dependencies: [prefersReducedMotion, journey?.percentComplete, journey?.isAtEnd],
+      dependencies: [
+        prefersReducedMotion,
+        journey?.percentComplete,
+        journey?.isAtEnd,
+        isEditing,
+      ],
     },
   );
 
+  if (isEditing) {
+    return (
+      <div ref={containerRef} className="flex flex-col min-h-full">
+        <ProfileEditForm profile={profile} onDone={() => setIsEditing(false)} />
+      </div>
+    );
+  }
+
   return (
-    <div ref={containerRef} className="flex flex-col min-h-full">
-      <ProfileHeader profile={profile} />
+    <div
+      ref={containerRef}
+      className="invisible flex flex-col min-h-full max-w-screen"
+    >
+      <div className="flex items-start justify-between">
+        <ProfileHeader profile={profile} />
+        <div className="px-6 py-8">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setIsEditing(true)}
+          >
+            Editar
+          </Button>
+        </div>
+      </div>
 
       {journey ? (
         <JourneyProgressSection journey={journey} />
