@@ -33,6 +33,7 @@ export function useJourneyProgress() {
       mutation: {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["journey-status"] });
+          queryClient.invalidateQueries({ queryKey: ["journey-feed"] });
         },
         onError: (error) => {
           if (error instanceof ApiError && error.response.status === 409) {
