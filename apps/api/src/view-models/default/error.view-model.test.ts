@@ -4,7 +4,10 @@ import { ApiErrorViewModel } from "./error.view-model";
 describe("ApiErrorViewModel", () => {
   describe("constructor", () => {
     it("should create instance with message and code", () => {
-      const vm = new ApiErrorViewModel("Something went wrong", "INTERNAL_ERROR");
+      const vm = new ApiErrorViewModel(
+        "Something went wrong",
+        "INTERNAL_ERROR",
+      );
 
       expect(vm.success).toBe(false);
       expect(vm.message).toBe("Something went wrong");
@@ -30,7 +33,10 @@ describe("ApiErrorViewModel", () => {
 
   describe("toJSON", () => {
     it("should return correct JSON with message and code", () => {
-      const vm = new ApiErrorViewModel("Something went wrong", "INTERNAL_ERROR");
+      const vm = new ApiErrorViewModel(
+        "Something went wrong",
+        "INTERNAL_ERROR",
+      );
       const json = vm.toJSON();
 
       expect(json).toEqual({
@@ -70,7 +76,10 @@ describe("ApiErrorViewModel", () => {
     });
 
     it("should handle special characters in error message", () => {
-      const vm = new ApiErrorViewModel("Error with special chars: <>&\"'", "SPECIAL_ERROR");
+      const vm = new ApiErrorViewModel(
+        "Error with special chars: <>&\"'",
+        "SPECIAL_ERROR",
+      );
       const json = vm.toJSON();
 
       expect(json).toEqual({

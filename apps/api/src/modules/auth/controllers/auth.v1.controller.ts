@@ -35,7 +35,10 @@ export class AuthControllerV1 {
     });
 
     return c.json(
-      SuccessViewModel.create({ message: "Logged in successfully!", code: "AUTHENTICATED" }),
+      SuccessViewModel.create({
+        message: "Logged in successfully!",
+        code: "AUTHENTICATED",
+      }),
       200,
     );
   };
@@ -52,7 +55,10 @@ export class AuthControllerV1 {
     });
 
     return c.json(
-      SuccessViewModel.create({ message: "Magic link sent!", code: "MAGIC_LINK_SENT" }),
+      SuccessViewModel.create({
+        message: "Magic link sent!",
+        code: "MAGIC_LINK_SENT",
+      }),
       200,
     );
   };
@@ -70,7 +76,10 @@ export class AuthControllerV1 {
       expires: new Date(0),
     });
     return c.json(
-      SuccessViewModel.create({ message: "Logged out successfully!", code: "LOGGED_OUT" }),
+      SuccessViewModel.create({
+        message: "Logged out successfully!",
+        code: "LOGGED_OUT",
+      }),
       200,
     );
   };

@@ -4,8 +4,8 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import type { ExportReadingHistoryDiscoveryItem } from './exportReadingHistoryDiscoveryItem';
-import type { ExportReadingHistoryJourneyItem } from './exportReadingHistoryJourneyItem';
+import type { ExportReadingHistoryDiscoveryItem } from "./exportReadingHistoryDiscoveryItem";
+import type { ExportReadingHistoryJourneyItem } from "./exportReadingHistoryJourneyItem";
 
 /**
  * Histórico de leitura

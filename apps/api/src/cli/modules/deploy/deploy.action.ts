@@ -1,5 +1,5 @@
-import prompts from "prompts";
 import { logger } from "@versum/logger";
+import prompts from "prompts";
 import { initCli } from "../../index";
 import { deployToSquareCloud } from "./deploy.service";
 
@@ -26,8 +26,7 @@ export async function deployAction() {
       "Informe sua Square Cloud API Key (ou defina SQUARE_API_KEY no .env):",
   });
 
-  const apiKey =
-    apiKeyResponse.value || process.env.SQUARE_API_KEY;
+  const apiKey = apiKeyResponse.value || process.env.SQUARE_API_KEY;
 
   if (!apiKey) {
     logger(

@@ -1,15 +1,21 @@
 import type { Context } from "hono";
+import { CloudinaryService } from "@/infrastructure/cloudinary/cloudinary.service.ts";
 import type { Session } from "@/modules/auth/repositories/auth.types.repository";
-import { BadRequestError, InternalServerError, NotFoundError } from "@/utils/app/errors/index";
+import { BadRequestError, NotFoundError } from "@/utils/app/errors/index";
 import { SuccessViewModel } from "@/view-models/default/success.view-model";
 import { ProfileServiceV1 } from "../services/profile.v1.service";
-import { cloudinaryClient } from "@/infrastructure/cloudinary/client";
+import { assertValidAvatar } from "../utils/avatar-validation.ts";
 
 export class ProfileControllerV1 {
   private readonly service: ProfileServiceV1;
+  private readonly cloudinary: CloudinaryService;
 
-  constructor({ service }: { service?: ProfileServiceV1 } = {}) {
+  constructor({
+    service,
+    cloudinary,
+  }: { service?: ProfileServiceV1; cloudinary?: CloudinaryService } = {}) {
     this.service = service ?? new ProfileServiceV1();
+    this.cloudinary = cloudinary ?? new CloudinaryService();
   }
 
   createProfile = async (c: Context) => {
@@ -22,7 +28,11 @@ export class ProfileControllerV1 {
     });
 
     return c.json(
-      SuccessViewModel.create({ data: profile, message: "Profile created", code: "PROFILE_CREATED" }),
+      SuccessViewModel.create({
+        data: profile,
+        message: "Profile created",
+        code: "PROFILE_CREATED",
+      }),
       201,
     );
   };
@@ -39,7 +49,11 @@ export class ProfileControllerV1 {
     }
 
     return c.json(
-      SuccessViewModel.create({ data: profile, message: "Profile retrieved", code: "PROFILE_RETRIEVED" }),
+      SuccessViewModel.create({
+        data: profile,
+        message: "Profile retrieved",
+        code: "PROFILE_RETRIEVED",
+      }),
       200,
     );
   };
@@ -54,7 +68,11 @@ export class ProfileControllerV1 {
     });
 
     return c.json(
-      SuccessViewModel.create({ data: profile, message: "Profile updated", code: "PROFILE_UPDATED" }),
+      SuccessViewModel.create({
+        data: profile,
+        message: "Profile updated",
+        code: "PROFILE_UPDATED",
+      }),
       200,
     );
   };
@@ -75,46 +93,91 @@ export class ProfileControllerV1 {
     }
 
     return c.json(
-      SuccessViewModel.create({ data: profile, message: "Profile retrieved", code: "PROFILE_RETRIEVED" }),
+      SuccessViewModel.create({
+        data: profile,
+        message: "Profile retrieved",
+        code: "PROFILE_RETRIEVED",
+      }),
       200,
     );
   };
 
-  updateProfilePicture = async (c: Context) => {
+  checkUsername = async (c: Context) => {
     const session = c.get("session") as Session;
-    const body = await c.req.parseBody();
-    const file = body["file"];
+    const username = c.req.param("username");
 
-    if (!(file instanceof File)) {
-      throw new BadRequestError("File is required");
+    if (!username) {
+      throw new BadRequestError("Username is required");
     }
 
-    if (file.type !== "image/jpeg" && file.type !== "image/png") {
-      throw new BadRequestError("Invalid file type. Only JPEG and PNG are accepted");
-    }
-
-    const buffer = Buffer.from(await file.arrayBuffer());
-
-    let pictureUrl: string;
-    try {
-      pictureUrl = await cloudinaryClient.uploadBuffer(buffer, {
-        public_id: session.userId,
-        folder: "profiles",
-        overwrite: true,
-        eager: [{ width: 500, height: 500, crop: "fill", gravity: "face", quality: "auto:good" }],
-        eager_async: false,
-      });
-    } catch {
-      throw new InternalServerError("Failed to upload image");
-    }
-
-    const profile = await this.service.updateProfilePicture({
-      userId: session.userId,
-      pictureUrl,
+    const available = await this.service.isUsernameAvailable({
+      username,
+      currentUserId: session.userId,
     });
 
     return c.json(
-      SuccessViewModel.create({ data: profile, message: "Profile picture updated", code: "PROFILE_PICTURE_UPDATED" }),
+      SuccessViewModel.create({
+        data: { available },
+        message: "Username availability checked",
+        code: "USERNAME_AVAILABILITY_CHECKED",
+      }),
+      200,
+    );
+  };
+
+  uploadAvatar = async (c: Context) => {
+    const session = c.get("session") as Session;
+
+    const body = await c.req.parseBody();
+    const file = body.file;
+
+    if (!(file instanceof File)) {
+      throw new BadRequestError("Avatar file is required");
+    }
+
+    const arrayBuffer = await file.arrayBuffer();
+    const bytes = new Uint8Array(arrayBuffer);
+
+    assertValidAvatar({ mimeType: file.type, size: file.size, bytes });
+
+    await this.service.assertProfileEditable({ userId: session.userId });
+
+    const secureUrl = await this.cloudinary.uploadAvatar({
+      userId: session.userId,
+      bytes: Buffer.from(arrayBuffer),
+    });
+
+    const profile = await this.service.updateProfile({
+      userId: session.userId,
+      pictureUrl: secureUrl,
+    });
+
+    return c.json(
+      SuccessViewModel.create({
+        data: profile,
+        message: "Avatar updated",
+        code: "AVATAR_UPDATED",
+      }),
+      200,
+    );
+  };
+
+  deleteAvatar = async (c: Context) => {
+    const session = c.get("session") as Session;
+
+    const profile = await this.service.updateProfile({
+      userId: session.userId,
+      pictureUrl: null,
+    });
+
+    await this.cloudinary.destroyAvatar({ userId: session.userId });
+
+    return c.json(
+      SuccessViewModel.create({
+        data: profile,
+        message: "Avatar removed",
+        code: "AVATAR_REMOVED",
+      }),
       200,
     );
   };

@@ -23,7 +23,10 @@ describe("ProfileServiceV1", () => {
     findByUserId: vi.fn<() => Promise<Profile | null>>(),
     findByUsername: vi.fn<() => Promise<Profile | null>>(),
     update: vi.fn<() => Promise<Profile>>(),
-    existsByUsername: vi.fn<() => Promise<{exists: boolean} | { exists: true, profileId: string }>>(),
+    existsByUsername:
+      vi.fn<
+        () => Promise<{ exists: boolean } | { exists: true; profileId: string }>
+      >(),
   });
 
   const createMockConsentLogsRepository = () => ({
@@ -36,7 +39,9 @@ describe("ProfileServiceV1", () => {
     mockConsentLogsRepository,
   }: {
     mockRepository: ReturnType<typeof createMockRepository>;
-    mockConsentLogsRepository: ReturnType<typeof createMockConsentLogsRepository>;
+    mockConsentLogsRepository: ReturnType<
+      typeof createMockConsentLogsRepository
+    >;
   }) =>
     new ProfileServiceV1({
       repository:
@@ -120,7 +125,7 @@ describe("ProfileServiceV1", () => {
       const mockConsentLogsRepository = createMockConsentLogsRepository();
       mockConsentLogsRepository.hasConsent.mockResolvedValue(true);
       mockRepository.findByUserId.mockResolvedValue(null);
-      mockRepository.existsByUsername.mockResolvedValue({exists: false});
+      mockRepository.existsByUsername.mockResolvedValue({ exists: false });
       mockRepository.create.mockResolvedValue(mockProfile);
       service = createService({ mockRepository, mockConsentLogsRepository });
 
@@ -155,7 +160,9 @@ describe("ProfileServiceV1", () => {
           username: "johndoe",
           name: "John Doe",
         }),
-      ).rejects.toThrow("Consentimento para armazenar conteúdo do perfil não foi concedido");
+      ).rejects.toThrow(
+        "Consentimento para armazenar conteúdo do perfil não foi concedido",
+      );
 
       expect(mockConsentLogsRepository.hasConsent).toHaveBeenCalledWith({
         userId: mockProfile.userId,
@@ -217,7 +224,10 @@ describe("ProfileServiceV1", () => {
       const mockConsentLogsRepository = createMockConsentLogsRepository();
       mockConsentLogsRepository.hasConsent.mockResolvedValue(true);
       mockRepository.findByUserId.mockResolvedValue(null);
-      mockRepository.existsByUsername.mockResolvedValue({exists: true, profileId: "other-profile-id"});
+      mockRepository.existsByUsername.mockResolvedValue({
+        exists: true,
+        profileId: "other-profile-id",
+      });
       service = createService({ mockRepository, mockConsentLogsRepository });
 
       await expect(
@@ -250,7 +260,7 @@ describe("ProfileServiceV1", () => {
       const mockConsentLogsRepository = createMockConsentLogsRepository();
       mockConsentLogsRepository.hasConsent.mockResolvedValue(true);
       mockRepository.findByUserId.mockResolvedValue(null);
-      mockRepository.existsByUsername.mockResolvedValue({exists: false});
+      mockRepository.existsByUsername.mockResolvedValue({ exists: false });
       mockRepository.create.mockResolvedValue(mockProfile);
       service = createService({ mockRepository, mockConsentLogsRepository });
 
@@ -270,7 +280,7 @@ describe("ProfileServiceV1", () => {
       const mockConsentLogsRepository = createMockConsentLogsRepository();
       mockConsentLogsRepository.hasConsent.mockResolvedValue(true);
       mockRepository.findByUserId.mockResolvedValue(null);
-      mockRepository.existsByUsername.mockResolvedValue({exists: false});
+      mockRepository.existsByUsername.mockResolvedValue({ exists: false });
       mockRepository.create.mockResolvedValue(mockProfile);
       service = createService({ mockRepository, mockConsentLogsRepository });
 
@@ -289,7 +299,7 @@ describe("ProfileServiceV1", () => {
       const mockConsentLogsRepository = createMockConsentLogsRepository();
       mockConsentLogsRepository.hasConsent.mockResolvedValue(true);
       mockRepository.findByUserId.mockResolvedValue(null);
-      mockRepository.existsByUsername.mockResolvedValue({exists: false});
+      mockRepository.existsByUsername.mockResolvedValue({ exists: false });
       mockRepository.create.mockResolvedValue(mockProfile);
       service = createService({ mockRepository, mockConsentLogsRepository });
 
@@ -304,66 +314,6 @@ describe("ProfileServiceV1", () => {
     });
   });
 
-  describe("updateProfilePicture", () => {
-    it("should update pictureUrl and return updated profile", async () => {
-      const mockRepository = createMockRepository();
-      const mockConsentLogsRepository = createMockConsentLogsRepository();
-      const updatedProfile = { ...mockProfile, pictureUrl: "https://res.cloudinary.com/versum/profiles/user1.jpg" };
-      mockConsentLogsRepository.hasConsent.mockResolvedValue(true);
-      mockRepository.findByUserId.mockResolvedValue(mockProfile);
-      mockRepository.update.mockResolvedValue(updatedProfile);
-      service = createService({ mockRepository, mockConsentLogsRepository });
-
-      const result = await service.updateProfilePicture({
-        userId: mockProfile.userId,
-        pictureUrl: "https://res.cloudinary.com/versum/profiles/user1.jpg",
-      });
-
-      expect(result).toEqual(updatedProfile);
-      expect(mockRepository.update).toHaveBeenCalledWith({
-        id: mockProfile.id,
-        pictureUrl: "https://res.cloudinary.com/versum/profiles/user1.jpg",
-      });
-    });
-
-    it("should throw ForbiddenError when consent not granted", async () => {
-      const mockRepository = createMockRepository();
-      const mockConsentLogsRepository = createMockConsentLogsRepository();
-      mockConsentLogsRepository.hasConsent.mockResolvedValue(false);
-      service = createService({ mockRepository, mockConsentLogsRepository });
-
-      await expect(
-        service.updateProfilePicture({
-          userId: mockProfile.userId,
-          pictureUrl: "https://res.cloudinary.com/versum/profiles/user1.jpg",
-        }),
-      ).rejects.toThrow("Consentimento para armazenar conteúdo do perfil não foi concedido");
-
-      expect(mockConsentLogsRepository.hasConsent).toHaveBeenCalledWith({
-        userId: mockProfile.userId,
-        purpose: "profile_content",
-      });
-      expect(mockRepository.update).not.toHaveBeenCalled();
-    });
-
-    it("should throw NotFoundError when profile does not exist", async () => {
-      const mockRepository = createMockRepository();
-      const mockConsentLogsRepository = createMockConsentLogsRepository();
-      mockConsentLogsRepository.hasConsent.mockResolvedValue(true);
-      mockRepository.findByUserId.mockResolvedValue(null);
-      service = createService({ mockRepository, mockConsentLogsRepository });
-
-      await expect(
-        service.updateProfilePicture({
-          userId: "nonexistent-user",
-          pictureUrl: "https://res.cloudinary.com/versum/profiles/user1.jpg",
-        }),
-      ).rejects.toThrow("Profile not found");
-
-      expect(mockRepository.update).not.toHaveBeenCalled();
-    });
-  });
-
   describe("updateProfile", () => {
     beforeEach(() => {
       vi.clearAllMocks();
@@ -374,7 +324,7 @@ describe("ProfileServiceV1", () => {
       const mockConsentLogsRepository = createMockConsentLogsRepository();
       mockConsentLogsRepository.hasConsent.mockResolvedValue(true);
       mockRepository.findByUserId.mockResolvedValue(mockProfile);
-      mockRepository.existsByUsername.mockResolvedValue({exists: false});
+      mockRepository.existsByUsername.mockResolvedValue({ exists: false });
       mockRepository.update.mockResolvedValue({
         ...mockProfile,
         name: "Jane Doe",
@@ -406,7 +356,9 @@ describe("ProfileServiceV1", () => {
           userId: mockProfile.userId,
           name: "John Updated",
         }),
-      ).rejects.toThrow("Consentimento para armazenar conteúdo do perfil não foi concedido");
+      ).rejects.toThrow(
+        "Consentimento para armazenar conteúdo do perfil não foi concedido",
+      );
 
       expect(mockConsentLogsRepository.hasConsent).toHaveBeenCalledWith({
         userId: mockProfile.userId,
@@ -434,7 +386,10 @@ describe("ProfileServiceV1", () => {
       const mockConsentLogsRepository = createMockConsentLogsRepository();
       mockConsentLogsRepository.hasConsent.mockResolvedValue(true);
       mockRepository.findByUserId.mockResolvedValue(mockProfile);
-      mockRepository.existsByUsername.mockResolvedValue({exists: true, profileId: "different-profile-id"});
+      mockRepository.existsByUsername.mockResolvedValue({
+        exists: true,
+        profileId: "different-profile-id",
+      });
       service = createService({ mockRepository, mockConsentLogsRepository });
 
       await expect(
@@ -450,7 +405,10 @@ describe("ProfileServiceV1", () => {
       const mockConsentLogsRepository = createMockConsentLogsRepository();
       mockConsentLogsRepository.hasConsent.mockResolvedValue(true);
       mockRepository.findByUserId.mockResolvedValue(mockProfile);
-      mockRepository.existsByUsername.mockResolvedValue({exists: true, profileId: mockProfile.id});
+      mockRepository.existsByUsername.mockResolvedValue({
+        exists: true,
+        profileId: mockProfile.id,
+      });
       mockRepository.update.mockResolvedValue(mockProfile);
       service = createService({ mockRepository, mockConsentLogsRepository });
 
@@ -463,13 +421,57 @@ describe("ProfileServiceV1", () => {
     });
   });
 
+  describe("assertProfileEditable", () => {
+    it("should throw error when consent not granted", async () => {
+      const mockRepository = createMockRepository();
+      const mockConsentLogsRepository = createMockConsentLogsRepository();
+      mockConsentLogsRepository.hasConsent.mockResolvedValue(false);
+      service = createService({ mockRepository, mockConsentLogsRepository });
+
+      await expect(
+        service.assertProfileEditable({ userId: mockProfile.userId }),
+      ).rejects.toThrow(
+        "Consentimento para armazenar conteúdo do perfil não foi concedido",
+      );
+
+      expect(mockConsentLogsRepository.hasConsent).toHaveBeenCalledWith({
+        userId: mockProfile.userId,
+        purpose: "profile_content",
+      });
+    });
+
+    it("should throw error when profile not found", async () => {
+      const mockRepository = createMockRepository();
+      const mockConsentLogsRepository = createMockConsentLogsRepository();
+      mockConsentLogsRepository.hasConsent.mockResolvedValue(true);
+      mockRepository.findByUserId.mockResolvedValue(null);
+      service = createService({ mockRepository, mockConsentLogsRepository });
+
+      await expect(
+        service.assertProfileEditable({ userId: "nonexistent" }),
+      ).rejects.toThrow("Profile not found");
+    });
+
+    it("should resolve to the profile when consent granted and profile exists", async () => {
+      const mockRepository = createMockRepository();
+      const mockConsentLogsRepository = createMockConsentLogsRepository();
+      mockConsentLogsRepository.hasConsent.mockResolvedValue(true);
+      mockRepository.findByUserId.mockResolvedValue(mockProfile);
+      service = createService({ mockRepository, mockConsentLogsRepository });
+
+      await expect(
+        service.assertProfileEditable({ userId: mockProfile.userId }),
+      ).resolves.toEqual(mockProfile);
+    });
+  });
+
   describe("validation", () => {
     it("should normalize username to lowercase", async () => {
       const mockRepository = createMockRepository();
       const mockConsentLogsRepository = createMockConsentLogsRepository();
       mockConsentLogsRepository.hasConsent.mockResolvedValue(true);
       mockRepository.findByUserId.mockResolvedValue(null);
-      mockRepository.existsByUsername.mockResolvedValue({exists: false});
+      mockRepository.existsByUsername.mockResolvedValue({ exists: false });
       mockRepository.create.mockResolvedValue(mockProfile);
       service = createService({ mockRepository, mockConsentLogsRepository });
 
@@ -491,7 +493,7 @@ describe("ProfileServiceV1", () => {
       const mockConsentLogsRepository = createMockConsentLogsRepository();
       mockConsentLogsRepository.hasConsent.mockResolvedValue(true);
       mockRepository.findByUserId.mockResolvedValue(null);
-      mockRepository.existsByUsername.mockResolvedValue({exists: false});
+      mockRepository.existsByUsername.mockResolvedValue({ exists: false });
       mockRepository.create.mockResolvedValue(mockProfile);
       service = createService({ mockRepository, mockConsentLogsRepository });
 
@@ -506,6 +508,72 @@ describe("ProfileServiceV1", () => {
           name: "&lt;img src=&quot;x&quot; onerror=&quot;alert(1)&quot;&gt;John",
         }),
       );
+    });
+  });
+
+  describe("isUsernameAvailable", () => {
+    it("returns true when the username is free", async () => {
+      const mockRepository = createMockRepository();
+      const mockConsentLogsRepository = createMockConsentLogsRepository();
+      mockRepository.existsByUsername.mockResolvedValue({ exists: false });
+      mockRepository.findByUserId.mockResolvedValue(mockProfile);
+      service = createService({ mockRepository, mockConsentLogsRepository });
+
+      await expect(
+        service.isUsernameAvailable({
+          username: "freeone",
+          currentUserId: mockProfile.userId,
+        }),
+      ).resolves.toBe(true);
+    });
+
+    it("returns true when the username belongs to the caller", async () => {
+      const mockRepository = createMockRepository();
+      const mockConsentLogsRepository = createMockConsentLogsRepository();
+      mockRepository.existsByUsername.mockResolvedValue({
+        exists: true,
+        profileId: mockProfile.id,
+      });
+      mockRepository.findByUserId.mockResolvedValue(mockProfile);
+      service = createService({ mockRepository, mockConsentLogsRepository });
+
+      await expect(
+        service.isUsernameAvailable({
+          username: "mine",
+          currentUserId: mockProfile.userId,
+        }),
+      ).resolves.toBe(true);
+    });
+
+    it("returns false when another profile owns the username", async () => {
+      const mockRepository = createMockRepository();
+      const mockConsentLogsRepository = createMockConsentLogsRepository();
+      mockRepository.existsByUsername.mockResolvedValue({
+        exists: true,
+        profileId: "other-profile-id",
+      });
+      mockRepository.findByUserId.mockResolvedValue(mockProfile);
+      service = createService({ mockRepository, mockConsentLogsRepository });
+
+      await expect(
+        service.isUsernameAvailable({
+          username: "taken",
+          currentUserId: mockProfile.userId,
+        }),
+      ).resolves.toBe(false);
+    });
+
+    it("throws on invalid username format", async () => {
+      const mockRepository = createMockRepository();
+      const mockConsentLogsRepository = createMockConsentLogsRepository();
+      service = createService({ mockRepository, mockConsentLogsRepository });
+
+      await expect(
+        service.isUsernameAvailable({
+          username: "a b",
+          currentUserId: mockProfile.userId,
+        }),
+      ).rejects.toThrow();
     });
   });
 });

@@ -27,6 +27,9 @@ export const StepTransition = forwardRef<
     if (!el) return;
 
     gsap.set(el, { opacity: 0 });
+    // Reveal only after the hidden state is applied, so the SSR-rendered
+    // content does not flash before the enter animation runs.
+    el.classList.remove("invisible");
     gsap.to(el, {
       opacity: 1,
       duration: ENTER_DURATION,
@@ -55,7 +58,7 @@ export const StepTransition = forwardRef<
   );
 
   return (
-    <div ref={elRef} style={{ willChange: "opacity" }}>
+    <div ref={elRef} className="invisible" style={{ willChange: "opacity" }}>
       {children}
     </div>
   );

@@ -16,12 +16,12 @@ export function JourneyProgressSection({
   ] as const;
 
   return (
-    <section className="px-6 pb-6" aria-label="Progresso da Jornada">
+    <section className="px-6 pb-6 max-w-" aria-label="Progresso da Jornada">
       <div className="flex items-center gap-3 mb-4">
         <h2 className="text-xs font-medium text-muted-foreground uppercase tracking-widest shrink-0">
           Jornada
         </h2>
-        <Separator />
+        <Separator className="flex-1" />
       </div>
 
       <Card>

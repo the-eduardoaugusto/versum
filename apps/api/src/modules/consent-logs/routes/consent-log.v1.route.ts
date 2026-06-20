@@ -8,7 +8,9 @@ import {
   recordConsentBodySchema,
 } from "../schemas/v1/consent-log.v1.common.schema.ts";
 
-export const createConsentLogRoutesV1 = (controller: ConsentLogControllerV1) => {
+export const createConsentLogRoutesV1 = (
+  controller: ConsentLogControllerV1,
+) => {
   const router = new OpenAPIHono({
     defaultHook: validationErrorHook,
   });
@@ -49,7 +51,8 @@ export const createConsentLogRoutesV1 = (controller: ConsentLogControllerV1) => 
     path: "/",
     tags: ["Consent Logs"],
     summary: "Obter histórico de consentimentos",
-    description: "Retorna todos os registros de consentimento do usuário autenticado.",
+    description:
+      "Retorna todos os registros de consentimento do usuário autenticado.",
     security: [{ cookieAuth: [] }],
     responses: {
       200: {

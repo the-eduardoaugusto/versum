@@ -13,12 +13,13 @@
 | Codegen | Orval (OpenAPI → TanStack Query + Zod) |
 
 ## Read Before Coding
-`.ai/prd.md` | `.ai/docs/naming-convention.md` | `.ai/docs/api-development.md` | `.ai/docs/git-flow.md` | `.ai/rules/`
+Docs live in the `Obsidian Vault/` (Obsidian) — start at `Obsidian Vault/_Index.md`.
+`Obsidian Vault/PRD.md` | `Obsidian Vault/Docs/Naming Convention.md` | `Obsidian Vault/Docs/API Development.md` | `Obsidian Vault/Docs/Git Flow.md` | `Obsidian Vault/Rules/`
 
 ## Structure
 ```
 versum/
-├── .ai/                 # Docs & rules
+├── Obsidian Vault/      # Docs & rules (Obsidian vault)
 ├── apps/api/            # REST backend (Hono)
 ├── apps/client/         # Frontend (Next.js App Router)
 ├── apps/landing-page/   # Marketing
@@ -34,8 +35,8 @@ versum/
 
 ## Pre-Coding Checklist
 1. Read AGENTS.md fully
-2. Read `.ai/docs/git-flow.md`
-3. Read `.ai/prd.md` + relevant `.ai/docs/` + `.ai/rules/`
+2. Read `Obsidian Vault/Docs/Git Flow.md`
+3. Read `Obsidian Vault/PRD.md` + relevant `Obsidian Vault/Docs/` + `Obsidian Vault/Rules/`
 4. `git branch --show-current` — if `development`, STOP, create sub-branch
 5. `git checkout -b <type>/ai-<desc> development`
 6. `git stash && git pull origin development --rebase && git stash pop`

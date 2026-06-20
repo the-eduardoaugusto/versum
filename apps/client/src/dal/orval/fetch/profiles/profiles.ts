@@ -4,144 +4,180 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
+
+import postApiV1ProfilesMeMutator from "../../../../lib/api-fetcher";
+import getApiV1ProfilesMeMutator from "../../../../lib/api-fetcher";
+import patchApiV1ProfilesMeMutator from "../../../../lib/api-fetcher";
+import getApiV1ProfilesUsernameMutator from "../../../../lib/api-fetcher";
+import getApiV1ProfilesCheckUsernameUsernameMutator from "../../../../lib/api-fetcher";
+import postApiV1ProfilesMeAvatarMutator from "../../../../lib/api-fetcher";
+import deleteApiV1ProfilesMeAvatarMutator from "../../../../lib/api-fetcher";
 import type {
+  CheckUsernameAvailabilityResponse,
   CreateProfileBody,
   CreateProfileResponse,
+  DeleteAvatarResponse,
   GetAuthenticatedProfileResponse,
   GetProfileByUsernameResponse,
   UpdateAuthenticatedProfileBody,
   UpdateAuthenticatedProfileResponse,
   UpdateProfilePictureResponse,
-  UploadProfilePictureBody
-} from '../schemas';
-
-import postApiV1ProfilesMeMutator from '../../../../lib/api-fetcher';
-import getApiV1ProfilesMeMutator from '../../../../lib/api-fetcher';
-import patchApiV1ProfilesMeMutator from '../../../../lib/api-fetcher';
-import getApiV1ProfilesUsernameMutator from '../../../../lib/api-fetcher';
-import putApiV1ProfilesMePictureMutator from '../../../../lib/api-fetcher';
+  UploadProfilePictureBody,
+} from "../schemas";
 
 export const getPostApiV1ProfilesMeUrl = () => {
-
-
-
-
-  return `/api/v1/profiles/@me`
-}
+  return `/api/v1/profiles/@me`;
+};
 
 /**
  * Cria um novo perfil para o usuário autenticado.
  * @summary Criar perfil do usuário autenticado
  */
-export const postApiV1ProfilesMe = async (createProfileBody?: CreateProfileBody, options?: RequestInit): Promise<CreateProfileResponse> => {
-
-  return postApiV1ProfilesMeMutator<CreateProfileResponse>(getPostApiV1ProfilesMeUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(createProfileBody)
-  }
-);}
-
+export const postApiV1ProfilesMe = async (
+  createProfileBody?: CreateProfileBody,
+  options?: RequestInit,
+): Promise<CreateProfileResponse> => {
+  return postApiV1ProfilesMeMutator<CreateProfileResponse>(
+    getPostApiV1ProfilesMeUrl(),
+    {
+      ...options,
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(createProfileBody),
+    },
+  );
+};
 
 export const getGetApiV1ProfilesMeUrl = () => {
-
-
-
-
-  return `/api/v1/profiles/@me`
-}
+  return `/api/v1/profiles/@me`;
+};
 
 /**
  * Retorna os dados do perfil do usuário autenticado.
  * @summary Obter perfil do usuário autenticado
  */
-export const getApiV1ProfilesMe = async ( options?: RequestInit): Promise<GetAuthenticatedProfileResponse> => {
-
-  return getApiV1ProfilesMeMutator<GetAuthenticatedProfileResponse>(getGetApiV1ProfilesMeUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
+export const getApiV1ProfilesMe = async (
+  options?: RequestInit,
+): Promise<GetAuthenticatedProfileResponse> => {
+  return getApiV1ProfilesMeMutator<GetAuthenticatedProfileResponse>(
+    getGetApiV1ProfilesMeUrl(),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
 
 export const getPatchApiV1ProfilesMeUrl = () => {
-
-
-
-
-  return `/api/v1/profiles/@me`
-}
+  return `/api/v1/profiles/@me`;
+};
 
 /**
  * Atualiza os dados do perfil do usuário autenticado.
  * @summary Atualizar perfil do usuário autenticado
  */
-export const patchApiV1ProfilesMe = async (updateAuthenticatedProfileBody?: UpdateAuthenticatedProfileBody, options?: RequestInit): Promise<UpdateAuthenticatedProfileResponse> => {
+export const patchApiV1ProfilesMe = async (
+  updateAuthenticatedProfileBody?: UpdateAuthenticatedProfileBody,
+  options?: RequestInit,
+): Promise<UpdateAuthenticatedProfileResponse> => {
+  return patchApiV1ProfilesMeMutator<UpdateAuthenticatedProfileResponse>(
+    getPatchApiV1ProfilesMeUrl(),
+    {
+      ...options,
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(updateAuthenticatedProfileBody),
+    },
+  );
+};
 
-  return patchApiV1ProfilesMeMutator<UpdateAuthenticatedProfileResponse>(getPatchApiV1ProfilesMeUrl(),
-  {
-    ...options,
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(updateAuthenticatedProfileBody)
-  }
-);}
-
-
-export const getGetApiV1ProfilesUsernameUrl = (username: string,) => {
-
-
-
-
-  return `/api/v1/profiles/${username}`
-}
+export const getGetApiV1ProfilesUsernameUrl = (username: string) => {
+  return `/api/v1/profiles/${username}`;
+};
 
 /**
  * Retorna os dados públicos de um perfil pelo username.
  * @summary Obter perfil por username
  */
-export const getApiV1ProfilesUsername = async (username: string, options?: RequestInit): Promise<GetProfileByUsernameResponse> => {
+export const getApiV1ProfilesUsername = async (
+  username: string,
+  options?: RequestInit,
+): Promise<GetProfileByUsernameResponse> => {
+  return getApiV1ProfilesUsernameMutator<GetProfileByUsernameResponse>(
+    getGetApiV1ProfilesUsernameUrl(username),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
 
-  return getApiV1ProfilesUsernameMutator<GetProfileByUsernameResponse>(getGetApiV1ProfilesUsernameUrl(username),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
-export const getPutApiV1ProfilesMePictureUrl = () => {
-
-
-
-
-  return `/api/v1/profiles/@me/picture`
-}
+export const getGetApiV1ProfilesCheckUsernameUsernameUrl = (
+  username: string,
+) => {
+  return `/api/v1/profiles/check-username/${username}`;
+};
 
 /**
- * Faz upload de uma nova foto de perfil e atualiza o perfil do usuário. Formatos aceitos: JPEG e PNG. Tamanho máximo: 5MB.
- * @summary Atualizar foto de perfil
+ * Verifica se um username está disponível para usar.
+ * @summary Verificar disponibilidade de username
  */
-export const putApiV1ProfilesMePicture = async (uploadProfilePictureBody: UploadProfilePictureBody, options?: RequestInit): Promise<UpdateProfilePictureResponse> => {
-    const formData = new FormData();
-if(uploadProfilePictureBody.file !== undefined) {
- formData.append(`file`, uploadProfilePictureBody.file);
- }
+export const getApiV1ProfilesCheckUsernameUsername = async (
+  username: string,
+  options?: RequestInit,
+): Promise<CheckUsernameAvailabilityResponse> => {
+  return getApiV1ProfilesCheckUsernameUsernameMutator<CheckUsernameAvailabilityResponse>(
+    getGetApiV1ProfilesCheckUsernameUsernameUrl(username),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
 
-  return putApiV1ProfilesMePictureMutator<UpdateProfilePictureResponse>(getPutApiV1ProfilesMePictureUrl(),
-  {
-    ...options,
-    method: 'PUT'
-    ,
-    body: formData
+export const getPostApiV1ProfilesMeAvatarUrl = () => {
+  return `/api/v1/profiles/@me/avatar`;
+};
+
+/**
+ * Faz upload de uma nova foto de perfil. Formatos: JPEG, PNG, WEBP. Tamanho máximo: 5MB.
+ * @summary Upload de foto de perfil
+ */
+export const postApiV1ProfilesMeAvatar = async (
+  uploadProfilePictureBody?: UploadProfilePictureBody,
+  options?: RequestInit,
+): Promise<UpdateProfilePictureResponse> => {
+  const formData = new FormData();
+  if (uploadProfilePictureBody?.file !== undefined) {
+    formData.append(`file`, uploadProfilePictureBody.file);
   }
-);}
 
+  return postApiV1ProfilesMeAvatarMutator<UpdateProfilePictureResponse>(
+    getPostApiV1ProfilesMeAvatarUrl(),
+    {
+      ...options,
+      method: "POST",
+      body: formData,
+    },
+  );
+};
 
+export const getDeleteApiV1ProfilesMeAvatarUrl = () => {
+  return `/api/v1/profiles/@me/avatar`;
+};
+
+/**
+ * Remove a foto de perfil do usuário autenticado.
+ * @summary Deletar foto de perfil
+ */
+export const deleteApiV1ProfilesMeAvatar = async (
+  options?: RequestInit,
+): Promise<DeleteAvatarResponse> => {
+  return deleteApiV1ProfilesMeAvatarMutator<DeleteAvatarResponse>(
+    getDeleteApiV1ProfilesMeAvatarUrl(),
+    {
+      ...options,
+      method: "DELETE",
+    },
+  );
+};
