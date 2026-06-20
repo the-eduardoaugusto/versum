@@ -4,6 +4,10 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
+
+import getApiV1ReadingsDiscoveryNextMutator from "../../../../lib/api-fetcher";
+import postApiV1ReadingsDiscoveryMutator from "../../../../lib/api-fetcher";
+import getApiV1ReadingsDiscoveryStatsMutator from "../../../../lib/api-fetcher";
 import type {
   DiscoveryMarkVersesResponse,
   DiscoveryNextVersesResponse,
@@ -11,10 +15,6 @@ import type {
   GetApiV1ReadingsDiscoveryNextParams,
   PostApiV1ReadingsDiscoveryBody,
 } from "../schemas";
-
-import getApiV1ReadingsDiscoveryNextMutator from "../../../../lib/api-fetcher";
-import postApiV1ReadingsDiscoveryMutator from "../../../../lib/api-fetcher";
-import getApiV1ReadingsDiscoveryStatsMutator from "../../../../lib/api-fetcher";
 
 export const getGetApiV1ReadingsDiscoveryNextUrl = (
   params?: GetApiV1ReadingsDiscoveryNextParams,

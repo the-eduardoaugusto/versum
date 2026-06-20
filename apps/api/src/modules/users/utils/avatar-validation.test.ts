@@ -10,16 +10,28 @@ const WEBP = new Uint8Array([
 describe("assertValidAvatar", () => {
   it("accepts a valid jpeg", () => {
     expect(() =>
-      assertValidAvatar({ mimeType: "image/jpeg", size: JPEG.length, bytes: JPEG }),
+      assertValidAvatar({
+        mimeType: "image/jpeg",
+        size: JPEG.length,
+        bytes: JPEG,
+      }),
     ).not.toThrow();
   });
 
   it("accepts png and webp", () => {
     expect(() =>
-      assertValidAvatar({ mimeType: "image/png", size: PNG.length, bytes: PNG }),
+      assertValidAvatar({
+        mimeType: "image/png",
+        size: PNG.length,
+        bytes: PNG,
+      }),
     ).not.toThrow();
     expect(() =>
-      assertValidAvatar({ mimeType: "image/webp", size: WEBP.length, bytes: WEBP }),
+      assertValidAvatar({
+        mimeType: "image/webp",
+        size: WEBP.length,
+        bytes: WEBP,
+      }),
     ).not.toThrow();
   });
 
@@ -41,7 +53,11 @@ describe("assertValidAvatar", () => {
 
   it("rejects declared-but-fake content (mime says png, bytes are jpeg)", () => {
     expect(() =>
-      assertValidAvatar({ mimeType: "image/png", size: JPEG.length, bytes: JPEG }),
+      assertValidAvatar({
+        mimeType: "image/png",
+        size: JPEG.length,
+        bytes: JPEG,
+      }),
     ).toThrow(/content/i);
   });
 });

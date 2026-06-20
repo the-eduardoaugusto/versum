@@ -28,10 +28,15 @@ export function ProfileView({ profile, journey }: ProfileViewProps) {
 
   useGSAP(
     () => {
+      // Reveal only after GSAP has applied the initial hidden state, so the
+      // SSR-rendered content never flashes before the animation runs.
+      const reveal = () => containerRef.current?.classList.remove("invisible");
+
       if (prefersReducedMotion) {
         if (journey) {
           gsap.set(".progress-fill", { width: `${journey.percentComplete}%` });
         }
+        reveal();
         return;
       }
 
@@ -65,6 +70,8 @@ export function ProfileView({ profile, journey }: ProfileViewProps) {
           },
         );
       }
+
+      reveal();
     },
     {
       scope: containerRef,
@@ -72,6 +79,7 @@ export function ProfileView({ profile, journey }: ProfileViewProps) {
         prefersReducedMotion,
         journey?.percentComplete,
         journey?.isAtEnd,
+        isEditing,
       ],
     },
   );
@@ -85,7 +93,10 @@ export function ProfileView({ profile, journey }: ProfileViewProps) {
   }
 
   return (
-    <div ref={containerRef} className="flex flex-col min-h-full">
+    <div
+      ref={containerRef}
+      className="invisible flex flex-col min-h-full max-w-screen"
+    >
       <div className="flex items-start justify-between">
         <ProfileHeader profile={profile} />
         <div className="px-6 py-8">

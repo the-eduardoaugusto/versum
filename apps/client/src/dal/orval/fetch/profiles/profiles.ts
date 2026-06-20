@@ -4,6 +4,14 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
+
+import postApiV1ProfilesMeMutator from "../../../../lib/api-fetcher";
+import getApiV1ProfilesMeMutator from "../../../../lib/api-fetcher";
+import patchApiV1ProfilesMeMutator from "../../../../lib/api-fetcher";
+import getApiV1ProfilesUsernameMutator from "../../../../lib/api-fetcher";
+import getApiV1ProfilesCheckUsernameUsernameMutator from "../../../../lib/api-fetcher";
+import postApiV1ProfilesMeAvatarMutator from "../../../../lib/api-fetcher";
+import deleteApiV1ProfilesMeAvatarMutator from "../../../../lib/api-fetcher";
 import type {
   CheckUsernameAvailabilityResponse,
   CreateProfileBody,
@@ -16,14 +24,6 @@ import type {
   UpdateProfilePictureResponse,
   UploadProfilePictureBody,
 } from "../schemas";
-
-import postApiV1ProfilesMeMutator from "../../../../lib/api-fetcher";
-import getApiV1ProfilesMeMutator from "../../../../lib/api-fetcher";
-import patchApiV1ProfilesMeMutator from "../../../../lib/api-fetcher";
-import getApiV1ProfilesUsernameMutator from "../../../../lib/api-fetcher";
-import getApiV1ProfilesCheckUsernameUsernameMutator from "../../../../lib/api-fetcher";
-import postApiV1ProfilesMeAvatarMutator from "../../../../lib/api-fetcher";
-import deleteApiV1ProfilesMeAvatarMutator from "../../../../lib/api-fetcher";
 
 export const getPostApiV1ProfilesMeUrl = () => {
   return `/api/v1/profiles/@me`;

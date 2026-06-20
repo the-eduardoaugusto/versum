@@ -1,5 +1,5 @@
-import prompts from "prompts";
 import { logger } from "@versum/logger";
+import prompts from "prompts";
 import { initCli } from "../../index";
 import { buildProject } from "./build.service";
 

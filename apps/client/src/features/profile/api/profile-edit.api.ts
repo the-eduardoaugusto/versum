@@ -1,7 +1,7 @@
 import {
+  deleteApiV1ProfilesMeAvatar,
   getApiV1ProfilesCheckUsernameUsername,
   postApiV1ProfilesMeAvatar,
-  deleteApiV1ProfilesMeAvatar,
 } from "@/dal/orval/fetch/profiles/profiles";
 
 export const MAX_AVATAR_BYTES = 5 * 1024 * 1024;

@@ -1,7 +1,8 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
-import type { Hono } from "hono";
 import { logger } from "@versum/logger";
+import type { Hono } from "hono";
 import { validationErrorHook } from "@/utils/app/errors/validation.hook.ts";
+import { env } from "@/utils/env/parser.ts";
 import { SetupCron } from "./setups/setup-cron.ts";
 import { SetupListeners } from "./setups/setup-listeners.ts";
 import { SetupMiddlewares } from "./setups/setup-middlewares.ts";
@@ -53,11 +54,42 @@ export class App {
     });
   }
 
-  start() {
+  private async readTlsCerts() {
+    if (env.BUN_ENV !== "development") return;
+    const certs = await Promise.all([
+      Bun.file(".certs/tls.key.pem").text(),
+      Bun.file(".certs/tls.cert.pem").text(),
+    ]);
+
+    if (!certs[0] || !certs[1]) {
+      throw new Error(
+        "Failed to read TLS certificates. Please check the file paths and permissions.",
+      );
+    }
+
+    logger("info", "Successfully read TLS certificates.");
+    return certs;
+  }
+
+  async start() {
     try {
       this.showRoutes();
+      const certs = await this.readTlsCerts();
+      const server = Bun.serve({
+        fetch: this.hono.fetch,
+        port: env.PORT,
+        tls: {
+          cert: certs?.[1],
+          key: certs?.[0],
+        },
+      });
+      logger(
+        "info",
+        `Server is running on port ${server.port} with TLS: ${!!certs}`,
+      );
     } catch (error) {
-      logger("error", error);
+      logger("error", "Failed to start server:", error);
+      process.exit(1);
     }
   }
 }

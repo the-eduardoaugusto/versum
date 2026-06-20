@@ -29,7 +29,11 @@ export async function deployToSquareCloud(apiKey: string) {
 
   const file = Bun.file(zipPath);
   const formData = new FormData();
-  formData.append("file", new Blob([await file.arrayBuffer()]), "versum-api.zip");
+  formData.append(
+    "file",
+    new Blob([await file.arrayBuffer()]),
+    "versum-api.zip",
+  );
 
   const response = await fetch(SQUARE_API_URL, {
     method: "POST",

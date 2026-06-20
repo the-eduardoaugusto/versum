@@ -24,10 +24,10 @@ async function ProfileContent() {
       : undefined;
 
   if (!profile) {
-    notFound();
+    return "Profile not found!";
   }
 
-  return <ProfileView profile={profile!} journey={journey ?? null} />;
+  return <ProfileView profile={profile} journey={journey ?? null} />;
 }
 
 interface ProfilePageProps {
@@ -35,7 +35,8 @@ interface ProfilePageProps {
 }
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
-  const { username } = await params;
+  const { username: encodedUsername } = await params;
+  const username = decodeURIComponent(encodedUsername);
 
   if (username !== "@me") notFound();
 

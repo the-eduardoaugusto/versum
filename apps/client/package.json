@@ -10,6 +10,7 @@
     "lint": "biome check",
     "lint:fix": "biome check --write",
     "format": "biome format --write",
+    "orval": "NODE_TLS_REJECT_UNAUTHORIZED=0 orval",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"

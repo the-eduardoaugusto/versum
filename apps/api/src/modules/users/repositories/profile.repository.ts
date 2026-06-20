@@ -3,10 +3,10 @@ import { InternalServerError } from "@/utils/app/errors";
 import { db as drizzle } from "../../../infrastructure/db/index";
 import { profiles } from "../../../infrastructure/db/schema";
 import type {
-    CreateProfileParams,
-    iProfileRepository,
-    Profile,
-    UpdateProfileParams,
+  CreateProfileParams,
+  iProfileRepository,
+  Profile,
+  UpdateProfileParams,
 } from "./profile.types.repository";
 
 export class ProfileRepository implements iProfileRepository {
@@ -74,16 +74,25 @@ export class ProfileRepository implements iProfileRepository {
     return updated;
   }
 
-  async existsByUsername({ username }: { username: string }): Promise<{ exists: boolean, profileId: string } | { exists: false }> {
+  async existsByUsername({
+    username,
+  }: {
+    username: string;
+  }): Promise<{ exists: boolean; profileId: string } | { exists: false }> {
     const profile = await this.db.query.profiles.findFirst({
       where: (profiles, { eq }) =>
         eq(profiles.username, username.toLowerCase()),
       columns: { id: true },
     });
-    return profile ? { exists: true, profileId: profile.id } : { exists: false };
+    return profile
+      ? { exists: true, profileId: profile.id }
+      : { exists: false };
   }
 
-  async deleteByUserId({ userId }: { userId: string }, tx?: typeof this.db): Promise<void> {
+  async deleteByUserId(
+    { userId }: { userId: string },
+    tx?: typeof this.db,
+  ): Promise<void> {
     const client = tx ?? this.db;
     await client.delete(profiles).where(eq(profiles.userId, userId));
   }

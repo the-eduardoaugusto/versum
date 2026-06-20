@@ -13,6 +13,8 @@ export interface iProfileRepository {
   findByUserId(params: { userId: string }): Promise<Profile | null>;
   findByUsername(params: { username: string }): Promise<Profile | null>;
   update(params: UpdateProfileParams & { id: string }): Promise<Profile>;
-  existsByUsername(params: { username: string }): Promise<{ exists: boolean, profileId: string } | { exists: false }>;
+  existsByUsername(params: {
+    username: string;
+  }): Promise<{ exists: boolean; profileId: string } | { exists: false }>;
   deleteByUserId(params: { userId: string }, tx?: unknown): Promise<void>;
 }
