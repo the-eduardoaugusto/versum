@@ -1,5 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { usePostApiV1ReadingsJourneyNext } from "@/dal/orval/tanstackQuery/journey/journey";
+import { ApiError } from "@/lib/api-fetcher";
 import type { FeedProgress } from "../types";
 import { useGetApiV1JourneyStatus } from "./use-get-journey-status";
 
@@ -27,14 +28,22 @@ function toProgress(
 export function useJourneyProgress() {
   const queryClient = useQueryClient();
 
-  const { mutateAsync: markAsRead, isPending: isMarking } =
+  const { mutateAsync: markAsReadMutation, isPending: isMarking } =
     usePostApiV1ReadingsJourneyNext({
       mutation: {
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["journey-status"] });
         },
+        onError: (error) => {
+          if (error instanceof ApiError && error.response.status === 409) {
+            queryClient.invalidateQueries({ queryKey: ["journey-feed"] });
+          }
+        },
       },
     });
+
+  const markAsRead = (chapterId: string) =>
+    markAsReadMutation({ data: { chapterId } });
 
   const { data: statusData } = useGetApiV1JourneyStatus();
 

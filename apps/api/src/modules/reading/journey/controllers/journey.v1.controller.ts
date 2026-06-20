@@ -42,8 +42,12 @@ export class JourneyControllerV1 {
 
   markCurrentAsRead = async (c: Context) => {
     const session = c.get("session") as Session;
+    const body = (await c.req.json()) as { chapterId: string };
 
-    const result = await this.service.markCurrentAsRead(session.userId);
+    const result = await this.service.markCurrentAsRead(
+      session.userId,
+      body.chapterId,
+    );
 
     return c.json(
       SuccessViewModel.create({
