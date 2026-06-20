@@ -13,6 +13,7 @@ import type {
   JourneyFeedResponse,
   JourneyNextProgressResponse,
   JourneyStatusResponse,
+  PostApiV1ReadingsJourneyNextBody,
 } from "../schemas";
 
 export const getGetApiV1ReadingsJourneyFeedUrl = (
@@ -55,10 +56,11 @@ export const getPostApiV1ReadingsJourneyNextUrl = () => {
 };
 
 /**
- * Salva o capítulo atual como lido e avança para o próximo.
+ * Confirma a leitura de um capítulo específico e avança o progresso. Idempotente.
  * @summary Avançar progresso
  */
 export const postApiV1ReadingsJourneyNext = async (
+  postApiV1ReadingsJourneyNextBody?: PostApiV1ReadingsJourneyNextBody,
   options?: RequestInit,
 ): Promise<JourneyNextProgressResponse> => {
   return postApiV1ReadingsJourneyNextMutator<JourneyNextProgressResponse>(
@@ -66,6 +68,8 @@ export const postApiV1ReadingsJourneyNext = async (
     {
       ...options,
       method: "POST",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(postApiV1ReadingsJourneyNextBody),
     },
   );
 };
