@@ -1,7 +1,7 @@
+import { logger } from "@versum/logger";
 import { sql } from "drizzle-orm";
 import prompts from "prompts";
 import { db } from "@/infrastructure/db/config.ts";
-import { logger } from "@versum/logger";
 import {
   assertTruncatableTableNames,
   TRUNCATE_PRESETS,

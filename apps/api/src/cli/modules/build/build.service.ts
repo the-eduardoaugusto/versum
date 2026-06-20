@@ -1,6 +1,6 @@
-import { readFileSync, existsSync } from "node:fs";
-import { readdir, mkdir, rm, writeFile, stat, cp } from "node:fs/promises";
-import { resolve, relative } from "node:path";
+import { existsSync, readFileSync } from "node:fs";
+import { cp, mkdir, readdir, rm, stat, writeFile } from "node:fs/promises";
+import { relative, resolve } from "node:path";
 import JSZip from "jszip";
 
 const API_ROOT = resolve(import.meta.dir, "..", "..", "..", "..");
@@ -50,9 +50,7 @@ export async function buildProject(): Promise<string> {
   );
 
   // Externalize all npm deps (only workspace deps are bundled inline)
-  const npmDeps = Object.entries(
-    apiPkg.dependencies as Record<string, string>,
-  )
+  const npmDeps = Object.entries(apiPkg.dependencies as Record<string, string>)
     .filter(([, version]) => version !== "workspace:*")
     .map(([name]) => name);
 
@@ -75,9 +73,13 @@ export async function buildProject(): Promise<string> {
   }
 
   // Copy static assets — Bun.build doesn't know about files read via Bun.file() at runtime
-  await cp(resolve(API_ROOT, "src", "assets"), resolve(buildDir, "src", "assets"), {
-    recursive: true,
-  });
+  await cp(
+    resolve(API_ROOT, "src", "assets"),
+    resolve(buildDir, "src", "assets"),
+    {
+      recursive: true,
+    },
+  );
 
   // 2. Generate deploy package.json (only npm deps, workspace ones are bundled)
   const dependencies: Record<string, string> = {};
@@ -110,9 +112,7 @@ export async function buildProject(): Promise<string> {
   const install = Bun.spawnSync(["bun", "install"], { cwd: buildDir });
 
   if (!install.success) {
-    throw new Error(
-      `bun install failed:\n${install.stderr.toString()}`,
-    );
+    throw new Error(`bun install failed:\n${install.stderr.toString()}`);
   }
 
   // 4. Remove node_modules (SquareCloud runs bun install on deploy)

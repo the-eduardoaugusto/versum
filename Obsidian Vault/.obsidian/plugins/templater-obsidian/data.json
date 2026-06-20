@@ -1,0 +1,8 @@
+{
+  "templates_folder": "deveres diários/Templates",
+  "trigger_on_file_creation": true,
+  "auto_jump_to_cursor": false,
+  "enable_system_commands": false,
+  "syntax_highlighting": true,
+  "enable_ribbon_icon": true
+}

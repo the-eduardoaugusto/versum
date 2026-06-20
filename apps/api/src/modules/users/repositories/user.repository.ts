@@ -1,6 +1,8 @@
 import { eq } from "drizzle-orm";
+import { InternalServerError } from "@/utils/app/errors";
 import { db as drizzle } from "../../../infrastructure/db/index";
 import { users } from "../../../infrastructure/db/schema";
+import type { Profile } from "./profile.types.repository";
 import type {
   CreateUserParams,
   iUserRepository,
@@ -8,8 +10,6 @@ import type {
   User,
   UserExportData,
 } from "./user.types.repository";
-import { InternalServerError } from "@/utils/app/errors";
-import type { Profile } from "./profile.types.repository";
 
 export class UserRepository implements iUserRepository {
   private readonly db: typeof drizzle;
@@ -34,18 +34,26 @@ export class UserRepository implements iUserRepository {
     return user ?? null;
   }
 
-  async findByIdWithProfile({ id }: { id: string }): Promise<(User & { profile: Profile | undefined }) | null> {
+  async findByIdWithProfile({
+    id,
+  }: {
+    id: string;
+  }): Promise<(User & { profile: Profile | undefined }) | null> {
     const user = await this.db.query.users.findFirst({
       where: (users, { eq }) => eq(users.id, id),
       with: {
-        profile: true
-      }
+        profile: true,
+      },
     });
 
     return user ?? null;
   }
 
-  async findByIdWithAllData({ id }: { id: string }): Promise<UserExportData | null> {
+  async findByIdWithAllData({
+    id,
+  }: {
+    id: string;
+  }): Promise<UserExportData | null> {
     const user = await this.db.query.users.findFirst({
       where: (users, { eq }) => eq(users.id, id),
       with: {

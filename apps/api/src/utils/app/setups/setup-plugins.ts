@@ -12,12 +12,17 @@ export class SetupPlugins {
     const isSecure = Bun.env.COOKIE_SECURE === "true";
     const cookieName = isSecure ? "__Host-session" : "session";
 
-    this.app.openAPIRegistry.registerComponent("securitySchemes", "cookieAuth", {
-      type: "apiKey",
-      in: "cookie",
-      name: cookieName,
-      description: "Session token obtido via magic link. Enviado automaticamente pelo browser como cookie HttpOnly.",
-    });
+    this.app.openAPIRegistry.registerComponent(
+      "securitySchemes",
+      "cookieAuth",
+      {
+        type: "apiKey",
+        in: "cookie",
+        name: cookieName,
+        description:
+          "Session token obtido via magic link. Enviado automaticamente pelo browser como cookie HttpOnly.",
+      },
+    );
   }
 
   setupPlugins() {

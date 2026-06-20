@@ -4,16 +4,16 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
+
+import getApiV1ReadingsJourneyFeedMutator from "../../../../lib/api-fetcher";
+import postApiV1ReadingsJourneyNextMutator from "../../../../lib/api-fetcher";
+import getApiV1ReadingsJourneyStatusMutator from "../../../../lib/api-fetcher";
 import type {
   GetApiV1ReadingsJourneyFeedParams,
   JourneyFeedResponse,
   JourneyNextProgressResponse,
   JourneyStatusResponse,
 } from "../schemas";
-
-import getApiV1ReadingsJourneyFeedMutator from "../../../../lib/api-fetcher";
-import postApiV1ReadingsJourneyNextMutator from "../../../../lib/api-fetcher";
-import getApiV1ReadingsJourneyStatusMutator from "../../../../lib/api-fetcher";
 
 export const getGetApiV1ReadingsJourneyFeedUrl = (
   params?: GetApiV1ReadingsJourneyFeedParams,

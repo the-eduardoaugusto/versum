@@ -326,7 +326,7 @@ export const GetApiV1PublicBibleBooksDynamicIdChaptersResponse = zod
  */
 
 export const getApiV1PublicBibleBooksDynamicIdChaptersNumberPathNumberRegExp =
-  new RegExp("^\\d+$");
+  /^\d+$/;
 
 export const GetApiV1PublicBibleBooksDynamicIdChaptersNumberParams = zod.object(
   {
@@ -423,7 +423,7 @@ export const GetApiV1PublicBibleBooksDynamicIdChaptersNumberResponse = zod
  */
 
 export const getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesPathNumberRegExp =
-  new RegExp("^\\d+$");
+  /^\d+$/;
 
 export const GetApiV1PublicBibleBooksDynamicIdChaptersNumberVersesParams =
   zod.object({
@@ -538,9 +538,9 @@ export const GetApiV1PublicBibleBooksDynamicIdChaptersNumberVersesResponse = zod
  */
 
 export const getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVersePathNumberRegExp =
-  new RegExp("^\\d+$");
+  /^\d+$/;
 export const getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVersePathVerseRegExp =
-  new RegExp("^\\d+$");
+  /^\d+$/;
 
 export const GetApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseParams =
   zod.object({

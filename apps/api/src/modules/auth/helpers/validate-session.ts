@@ -13,14 +13,17 @@ export class ValidateSession {
     session?: Session | null;
     requestIp?: string;
     requestUA?: string;
-    }) {
+  }) {
     if (!session) throw new UnauthorizedError("Session not found");
     if (session.expiresAt.getTime() < Date.now())
       throw new UnauthorizedError("Session expired");
-    if (session.revokedAt)
-      throw new UnauthorizedError("Session revoked");
+    if (session.revokedAt) throw new UnauthorizedError("Session revoked");
 
-    if (session.userAgent && requestUA && session.userAgent !== hashMetadata(requestUA)) {
+    if (
+      session.userAgent &&
+      requestUA &&
+      session.userAgent !== hashMetadata(requestUA)
+    ) {
       throw new UnauthorizedError("Session user-agent does not match");
     }
 

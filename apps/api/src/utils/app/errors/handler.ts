@@ -1,6 +1,6 @@
+import { logger } from "@versum/logger";
 import type { Context } from "hono";
 import { ApiErrorViewModel } from "../../../view-models/default/error.view-model.ts";
-import { logger } from "@versum/logger";
 import {
   BadRequestError,
   BaseError,
@@ -36,7 +36,8 @@ export class ErrorHandler {
       );
     }
 
-    logger("error",
+    logger(
+      "error",
       details ? `Erro no ${details}:` : "Erro não tratado:",
       String(err),
     );

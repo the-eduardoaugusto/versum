@@ -1,6 +1,6 @@
 import type { OpenAPIHono } from "@hono/zod-openapi";
-import { redis } from "../../../infrastructure/redis";
 import { logger } from "@versum/logger";
+import { redis } from "../../../infrastructure/redis";
 import { ErrorHandler } from "../errors/index.ts";
 
 export class SetupListeners {

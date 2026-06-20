@@ -107,7 +107,11 @@ export class BibleControllerV1 {
     });
 
     return c.json(
-      SuccessViewModel.create({ data: chapter, message: "Chapter retrieved", code: "CHAPTER_RETRIEVED" }),
+      SuccessViewModel.create({
+        data: chapter,
+        message: "Chapter retrieved",
+        code: "CHAPTER_RETRIEVED",
+      }),
       200,
     );
   };
@@ -168,7 +172,11 @@ export class BibleControllerV1 {
     });
 
     return c.json(
-      SuccessViewModel.create({ data: verse, message: "Verse retrieved", code: "VERSE_RETRIEVED" }),
+      SuccessViewModel.create({
+        data: verse,
+        message: "Verse retrieved",
+        code: "VERSE_RETRIEVED",
+      }),
       200,
     );
   };

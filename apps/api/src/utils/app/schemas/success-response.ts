@@ -4,8 +4,16 @@ const paginationViewModelSchema = z
   .object({
     currentPage: z.number().int().positive().describe("Página atual"),
     totalPages: z.number().int().positive().describe("Número total de páginas"),
-    totalItems: z.number().int().nonnegative().describe("Número total de itens"),
-    itemsPerPage: z.number().int().positive().describe("Número de itens por página"),
+    totalItems: z
+      .number()
+      .int()
+      .nonnegative()
+      .describe("Número total de itens"),
+    itemsPerPage: z
+      .number()
+      .int()
+      .positive()
+      .describe("Número de itens por página"),
     hasNextPage: z.boolean().describe("Indica se existe próxima página"),
     hasPrevPage: z.boolean().describe("Indica se existe página anterior"),
   })
@@ -19,7 +27,10 @@ export function createSuccessResponseSchema<T extends z.ZodType>(
   includePagination = false,
 ) {
   const schema: Record<string, z.ZodType> = {
-    success: z.boolean().default(true).describe("Indica se a requisição foi bem-sucedida"),
+    success: z
+      .boolean()
+      .default(true)
+      .describe("Indica se a requisição foi bem-sucedida"),
     message: z.string().describe("Mensagem de contexto da resposta"),
     code: z.string().describe("Código da resposta"),
   };

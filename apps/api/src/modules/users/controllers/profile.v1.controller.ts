@@ -1,7 +1,7 @@
 import type { Context } from "hono";
+import { CloudinaryService } from "@/infrastructure/cloudinary/cloudinary.service.ts";
 import type { Session } from "@/modules/auth/repositories/auth.types.repository";
 import { BadRequestError, NotFoundError } from "@/utils/app/errors/index";
-import { CloudinaryService } from "@/infrastructure/cloudinary/cloudinary.service.ts";
 import { SuccessViewModel } from "@/view-models/default/success.view-model";
 import { ProfileServiceV1 } from "../services/profile.v1.service";
 import { assertValidAvatar } from "../utils/avatar-validation.ts";
@@ -28,7 +28,11 @@ export class ProfileControllerV1 {
     });
 
     return c.json(
-      SuccessViewModel.create({ data: profile, message: "Profile created", code: "PROFILE_CREATED" }),
+      SuccessViewModel.create({
+        data: profile,
+        message: "Profile created",
+        code: "PROFILE_CREATED",
+      }),
       201,
     );
   };
@@ -45,7 +49,11 @@ export class ProfileControllerV1 {
     }
 
     return c.json(
-      SuccessViewModel.create({ data: profile, message: "Profile retrieved", code: "PROFILE_RETRIEVED" }),
+      SuccessViewModel.create({
+        data: profile,
+        message: "Profile retrieved",
+        code: "PROFILE_RETRIEVED",
+      }),
       200,
     );
   };
@@ -60,7 +68,11 @@ export class ProfileControllerV1 {
     });
 
     return c.json(
-      SuccessViewModel.create({ data: profile, message: "Profile updated", code: "PROFILE_UPDATED" }),
+      SuccessViewModel.create({
+        data: profile,
+        message: "Profile updated",
+        code: "PROFILE_UPDATED",
+      }),
       200,
     );
   };
@@ -81,7 +93,11 @@ export class ProfileControllerV1 {
     }
 
     return c.json(
-      SuccessViewModel.create({ data: profile, message: "Profile retrieved", code: "PROFILE_RETRIEVED" }),
+      SuccessViewModel.create({
+        data: profile,
+        message: "Profile retrieved",
+        code: "PROFILE_RETRIEVED",
+      }),
       200,
     );
   };

@@ -5,7 +5,11 @@ import { SuccessViewModel } from "./success.view-model";
 describe("SuccessViewModel", () => {
   describe("create", () => {
     it("should create instance with data, message and code", () => {
-      const vm = SuccessViewModel.create({ data: { id: "123", name: "Test" }, message: "Retrieved", code: "RETRIEVED" });
+      const vm = SuccessViewModel.create({
+        data: { id: "123", name: "Test" },
+        message: "Retrieved",
+        code: "RETRIEVED",
+      });
 
       expect(vm.success).toBe(true);
       expect(vm.data).toEqual({ id: "123", name: "Test" });
@@ -36,7 +40,10 @@ describe("SuccessViewModel", () => {
     });
 
     it("should create instance without data", () => {
-      const vm = SuccessViewModel.create({ message: "Operation completed", code: "COMPLETED" });
+      const vm = SuccessViewModel.create({
+        message: "Operation completed",
+        code: "COMPLETED",
+      });
 
       expect(vm.success).toBe(true);
       expect(vm.data).toBeUndefined();
@@ -46,35 +53,55 @@ describe("SuccessViewModel", () => {
     });
 
     it("should handle array data", () => {
-      const vm = SuccessViewModel.create({ data: [1, 2, 3], message: "Retrieved", code: "RETRIEVED" });
+      const vm = SuccessViewModel.create({
+        data: [1, 2, 3],
+        message: "Retrieved",
+        code: "RETRIEVED",
+      });
 
       expect(vm.success).toBe(true);
       expect(vm.data).toEqual([1, 2, 3]);
     });
 
     it("should handle empty array data", () => {
-      const vm = SuccessViewModel.create({ data: [], message: "Retrieved", code: "RETRIEVED" });
+      const vm = SuccessViewModel.create({
+        data: [],
+        message: "Retrieved",
+        code: "RETRIEVED",
+      });
 
       expect(vm.success).toBe(true);
       expect(vm.data).toEqual([]);
     });
 
     it("should handle string data", () => {
-      const vm = SuccessViewModel.create({ data: "hello", message: "Retrieved", code: "RETRIEVED" });
+      const vm = SuccessViewModel.create({
+        data: "hello",
+        message: "Retrieved",
+        code: "RETRIEVED",
+      });
 
       expect(vm.success).toBe(true);
       expect(vm.data).toBe("hello");
     });
 
     it("should handle number data", () => {
-      const vm = SuccessViewModel.create({ data: 42, message: "Retrieved", code: "RETRIEVED" });
+      const vm = SuccessViewModel.create({
+        data: 42,
+        message: "Retrieved",
+        code: "RETRIEVED",
+      });
 
       expect(vm.success).toBe(true);
       expect(vm.data).toBe(42);
     });
 
     it("should handle boolean data", () => {
-      const vm = SuccessViewModel.create({ data: true, message: "Retrieved", code: "RETRIEVED" });
+      const vm = SuccessViewModel.create({
+        data: true,
+        message: "Retrieved",
+        code: "RETRIEVED",
+      });
 
       expect(vm.success).toBe(true);
       expect(vm.data).toBe(true);
@@ -83,7 +110,11 @@ describe("SuccessViewModel", () => {
 
   describe("toJSON", () => {
     it("should return correct JSON with data, message and code", () => {
-      const vm = SuccessViewModel.create({ data: { id: "123" }, message: "Retrieved", code: "RETRIEVED" });
+      const vm = SuccessViewModel.create({
+        data: { id: "123" },
+        message: "Retrieved",
+        code: "RETRIEVED",
+      });
       const json = vm.toJSON();
 
       expect(json).toEqual({
@@ -101,7 +132,12 @@ describe("SuccessViewModel", () => {
         totalItems: 100,
       });
 
-      const vm = SuccessViewModel.create({ data: { items: ["a"] }, pagination, message: "Items retrieved", code: "ITEMS_RETRIEVED" });
+      const vm = SuccessViewModel.create({
+        data: { items: ["a"] },
+        pagination,
+        message: "Items retrieved",
+        code: "ITEMS_RETRIEVED",
+      });
       const json = vm.toJSON();
 
       expect(json).toEqual({
@@ -121,7 +157,10 @@ describe("SuccessViewModel", () => {
     });
 
     it("should return correct JSON without data", () => {
-      const vm = SuccessViewModel.create({ message: "Operation completed", code: "COMPLETED" });
+      const vm = SuccessViewModel.create({
+        message: "Operation completed",
+        code: "COMPLETED",
+      });
       const json = vm.toJSON();
 
       expect(json).toEqual({

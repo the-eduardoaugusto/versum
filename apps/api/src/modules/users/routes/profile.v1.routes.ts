@@ -3,22 +3,22 @@ import { bodyLimit } from "hono/body-limit";
 import { AuthMiddleware } from "@/middlewares/auth.middleware.ts";
 import { AvatarUploadRateLimiter } from "@/middlewares/rate-limiter/middleware.ts";
 import { createErrorResponses } from "../../../utils/app/errors/openapi.ts";
-import { MAX_AVATAR_BYTES } from "../utils/avatar-validation.ts";
 import { validationErrorHook } from "../../../utils/app/errors/validation.hook.ts";
 import type { ProfileControllerV1 } from "../controllers/profile.v1.controller.ts";
 import {
+  checkUsernameAvailabilityResponseSchema,
   createProfileBodySchema,
   createProfileResponseSchema,
+  deleteAvatarResponseSchema,
   getAuthenticatedProfileResponseSchema,
   getProfileByUsernameResponseSchema,
   updateAuthenticatedProfileBodySchema,
   updateAuthenticatedProfileResponseSchema,
-  usernameParamSchema,
-  checkUsernameAvailabilityResponseSchema,
-  uploadProfilePictureBodySchema,
   updateProfilePictureResponseSchema,
-  deleteAvatarResponseSchema,
+  uploadProfilePictureBodySchema,
+  usernameParamSchema,
 } from "../schemas/v1/profiles.v1.common.schema.ts";
+import { MAX_AVATAR_BYTES } from "../utils/avatar-validation.ts";
 
 export const createProfileRoutesV1 = (controller: ProfileControllerV1) => {
   const router = new OpenAPIHono({

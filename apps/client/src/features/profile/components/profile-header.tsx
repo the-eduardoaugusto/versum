@@ -1,3 +1,5 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { FullProfile } from "@/dal/orval/fetch/schemas/fullProfile";
 import { cn } from "@/lib/utils";
 
@@ -27,13 +29,16 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
         )}
       >
         {profile.pictureUrl ? (
-          // biome-ignore lint/performance/noImgElement: avatar images use external domains not configured in next.config
-          <img
-            src={profile.pictureUrl}
-            alt={profile.name}
-            className="w-full h-full object-cover"
-            loading="eager"
-          />
+          <Avatar className="w-full h-full">
+            <AvatarImage
+              src={profile.pictureUrl}
+              alt={profile.name}
+              className="w-full h-full object-cover"
+            />
+            <AvatarFallback className="w-full h-full rounded-full">
+              <Skeleton className="w-full h-full" />
+            </AvatarFallback>
+          </Avatar>
         ) : (
           <div
             role="img"
@@ -48,7 +53,7 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
       </div>
 
       <div className="flex flex-col gap-0.5 min-w-0">
-        <h1 className="text-xl font-semibold leading-tight truncate">
+        <h1 className="text-xl font-normal leading-tight truncate">
           {profile.name}
         </h1>
         <p className="text-sm text-muted-foreground truncate">

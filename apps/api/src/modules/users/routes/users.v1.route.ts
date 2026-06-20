@@ -22,8 +22,8 @@ export const createUsersRoutesV1 = (controller: UsersControllerV1) => {
     path: "/@me",
     tags: ["Users"],
     summary: "Obter usuário autenticado",
-      description: "Retorna os dados do usuário autenticado.",
-      security: [{ cookieAuth: [] }],
+    description: "Retorna os dados do usuário autenticado.",
+    security: [{ cookieAuth: [] }],
     responses: {
       200: {
         content: {
@@ -42,8 +42,8 @@ export const createUsersRoutesV1 = (controller: UsersControllerV1) => {
     path: "/@me",
     tags: ["Users"],
     summary: "Atualizar usuário autenticado",
-      description: "Atualiza os dados do usuário autenticado.",
-      security: [{ cookieAuth: [] }],
+    description: "Atualiza os dados do usuário autenticado.",
+    security: [{ cookieAuth: [] }],
     request: {
       body: {
         content: {
@@ -71,7 +71,8 @@ export const createUsersRoutesV1 = (controller: UsersControllerV1) => {
     path: "/@me",
     tags: ["Users"],
     summary: "Deletar usuário autenticado",
-    description: "Remove a conta do usuário e todos os dados associados (direito de eliminação LGPD Art. 18, VI).",
+    description:
+      "Remove a conta do usuário e todos os dados associados (direito de eliminação LGPD Art. 18, VI).",
     security: [{ cookieAuth: [] }],
     responses: {
       204: {
@@ -86,7 +87,8 @@ export const createUsersRoutesV1 = (controller: UsersControllerV1) => {
     path: "/@me/export",
     tags: ["Users"],
     summary: "Exportar dados do usuário autenticado",
-    description: "Exporta todos os dados pessoais do usuário (direito de portabilidade LGPD Art. 18, II e V).",
+    description:
+      "Exporta todos os dados pessoais do usuário (direito de portabilidade LGPD Art. 18, II e V).",
     security: [{ cookieAuth: [] }],
     responses: {
       200: {

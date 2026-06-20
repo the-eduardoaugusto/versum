@@ -1,8 +1,8 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { logger } from "@versum/logger";
 import { AuthMiddleware } from "@/middlewares/auth.middleware.ts";
 import { createErrorResponses } from "@/utils/app/errors/openapi.ts";
 import { validationErrorHook } from "@/utils/app/errors/validation.hook.ts";
-import { logger } from "@versum/logger";
 import { DiscoveryControllerV1 } from "../controllers/discovery.v1.controller.ts";
 import {
   discoveryStatsResponseSchema,

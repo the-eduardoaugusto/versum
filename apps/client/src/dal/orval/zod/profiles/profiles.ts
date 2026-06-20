@@ -13,9 +13,7 @@ import * as zod from "zod";
 export const postApiV1ProfilesMeBodyUsernameMin = 3;
 export const postApiV1ProfilesMeBodyUsernameMax = 50;
 
-export const postApiV1ProfilesMeBodyUsernameRegExp = new RegExp(
-  "^[a-zA-Z0-9_]+$",
-);
+export const postApiV1ProfilesMeBodyUsernameRegExp = /^[a-zA-Z0-9_]+$/;
 export const postApiV1ProfilesMeBodyNameMax = 100;
 
 export const postApiV1ProfilesMeBodyBioMax = 500;
@@ -56,9 +54,7 @@ export const getApiV1ProfilesMeResponseSuccessDefault = true;
 export const getApiV1ProfilesMeResponseDataUsernameMin = 3;
 export const getApiV1ProfilesMeResponseDataUsernameMax = 50;
 
-export const getApiV1ProfilesMeResponseDataUsernameRegExp = new RegExp(
-  "^[a-zA-Z0-9_]+$",
-);
+export const getApiV1ProfilesMeResponseDataUsernameRegExp = /^[a-zA-Z0-9_]+$/;
 export const getApiV1ProfilesMeResponseDataNameMax = 100;
 
 export const getApiV1ProfilesMeResponseDataBioMax = 500;
@@ -117,9 +113,7 @@ export const GetApiV1ProfilesMeResponse = zod
 export const patchApiV1ProfilesMeBodyUsernameMin = 3;
 export const patchApiV1ProfilesMeBodyUsernameMax = 50;
 
-export const patchApiV1ProfilesMeBodyUsernameRegExp = new RegExp(
-  "^[a-zA-Z0-9_]+$",
-);
+export const patchApiV1ProfilesMeBodyUsernameRegExp = /^[a-zA-Z0-9_]+$/;
 export const patchApiV1ProfilesMeBodyNameMax = 100;
 
 export const patchApiV1ProfilesMeBodyBioMax = 500;
@@ -158,9 +152,7 @@ export const patchApiV1ProfilesMeResponseSuccessDefault = true;
 export const patchApiV1ProfilesMeResponseDataUsernameMin = 3;
 export const patchApiV1ProfilesMeResponseDataUsernameMax = 50;
 
-export const patchApiV1ProfilesMeResponseDataUsernameRegExp = new RegExp(
-  "^[a-zA-Z0-9_]+$",
-);
+export const patchApiV1ProfilesMeResponseDataUsernameRegExp = /^[a-zA-Z0-9_]+$/;
 export const patchApiV1ProfilesMeResponseDataNameMax = 100;
 
 export const patchApiV1ProfilesMeResponseDataBioMax = 500;
@@ -218,9 +210,7 @@ export const PatchApiV1ProfilesMeResponse = zod
  */
 export const getApiV1ProfilesUsernamePathUsernameMax = 50;
 
-export const getApiV1ProfilesUsernamePathUsernameRegExp = new RegExp(
-  "^[a-zA-Z0-9_]+$",
-);
+export const getApiV1ProfilesUsernamePathUsernameRegExp = /^[a-zA-Z0-9_]+$/;
 
 export const GetApiV1ProfilesUsernameParams = zod.object({
   username: zod
@@ -235,9 +225,8 @@ export const getApiV1ProfilesUsernameResponseSuccessDefault = true;
 export const getApiV1ProfilesUsernameResponseDataUsernameMin = 3;
 export const getApiV1ProfilesUsernameResponseDataUsernameMax = 50;
 
-export const getApiV1ProfilesUsernameResponseDataUsernameRegExp = new RegExp(
-  "^[a-zA-Z0-9_]+$",
-);
+export const getApiV1ProfilesUsernameResponseDataUsernameRegExp =
+  /^[a-zA-Z0-9_]+$/;
 export const getApiV1ProfilesUsernameResponseDataNameMax = 100;
 
 export const getApiV1ProfilesUsernameResponseDataBioMax = 500;
@@ -296,7 +285,7 @@ export const GetApiV1ProfilesUsernameResponse = zod
 export const getApiV1ProfilesCheckUsernameUsernamePathUsernameMax = 50;
 
 export const getApiV1ProfilesCheckUsernameUsernamePathUsernameRegExp =
-  new RegExp("^[a-zA-Z0-9_]+$");
+  /^[a-zA-Z0-9_]+$/;
 
 export const GetApiV1ProfilesCheckUsernameUsernameParams = zod.object({
   username: zod
@@ -340,9 +329,8 @@ export const postApiV1ProfilesMeAvatarResponseSuccessDefault = true;
 export const postApiV1ProfilesMeAvatarResponseDataUsernameMin = 3;
 export const postApiV1ProfilesMeAvatarResponseDataUsernameMax = 50;
 
-export const postApiV1ProfilesMeAvatarResponseDataUsernameRegExp = new RegExp(
-  "^[a-zA-Z0-9_]+$",
-);
+export const postApiV1ProfilesMeAvatarResponseDataUsernameRegExp =
+  /^[a-zA-Z0-9_]+$/;
 export const postApiV1ProfilesMeAvatarResponseDataNameMax = 100;
 
 export const postApiV1ProfilesMeAvatarResponseDataBioMax = 500;
@@ -402,9 +390,8 @@ export const deleteApiV1ProfilesMeAvatarResponseSuccessDefault = true;
 export const deleteApiV1ProfilesMeAvatarResponseDataUsernameMin = 3;
 export const deleteApiV1ProfilesMeAvatarResponseDataUsernameMax = 50;
 
-export const deleteApiV1ProfilesMeAvatarResponseDataUsernameRegExp = new RegExp(
-  "^[a-zA-Z0-9_]+$",
-);
+export const deleteApiV1ProfilesMeAvatarResponseDataUsernameRegExp =
+  /^[a-zA-Z0-9_]+$/;
 export const deleteApiV1ProfilesMeAvatarResponseDataNameMax = 100;
 
 export const deleteApiV1ProfilesMeAvatarResponseDataBioMax = 500;

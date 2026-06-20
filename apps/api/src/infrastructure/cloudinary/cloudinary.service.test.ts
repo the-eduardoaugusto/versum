@@ -21,7 +21,8 @@ describe("CloudinaryService", () => {
   it("uploads bytes and resolves the secure_url", async () => {
     uploadStream.mockImplementation((_opts: any, cb: any) => {
       const stream = {
-        end: () => cb(null, { secure_url: "https://res.cloudinary.com/x/y.webp" }),
+        end: () =>
+          cb(null, { secure_url: "https://res.cloudinary.com/x/y.webp" }),
       };
       return stream;
     });
@@ -34,7 +35,10 @@ describe("CloudinaryService", () => {
 
     expect(url).toBe("https://res.cloudinary.com/x/y.webp");
     expect(uploadStream).toHaveBeenCalledWith(
-      expect.objectContaining({ public_id: "versum/avatars/user-1", overwrite: true }),
+      expect.objectContaining({
+        public_id: "versum/avatars/user-1",
+        overwrite: true,
+      }),
       expect.any(Function),
     );
   });
@@ -53,6 +57,8 @@ describe("CloudinaryService", () => {
     destroy.mockResolvedValue({ result: "ok" });
     const service = new CloudinaryService();
     await service.destroyAvatar({ userId: "user-1" });
-    expect(destroy).toHaveBeenCalledWith("versum/avatars/user-1", { invalidate: true });
+    expect(destroy).toHaveBeenCalledWith("versum/avatars/user-1", {
+      invalidate: true,
+    });
   });
 });

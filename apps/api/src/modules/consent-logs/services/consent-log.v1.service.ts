@@ -1,7 +1,10 @@
 import { hashMetadata } from "../../../utils/crypto/metadata-hash.ts";
-import { CONSENT_PURPOSES } from "../schemas/v1/consent-log.v1.common.schema";
 import { ConsentLogsRepository } from "../repositories/consent-logs.repository";
-import type { ConsentLog, CreateConsentLogParams } from "../repositories/consent-logs.types.repository";
+import type {
+  ConsentLog,
+  CreateConsentLogParams,
+} from "../repositories/consent-logs.types.repository";
+import { CONSENT_PURPOSES } from "../schemas/v1/consent-log.v1.common.schema";
 
 interface ConsentInput {
   purpose: string;
@@ -21,7 +24,11 @@ export class ConsentLogServiceV1 {
     ip?: string;
   }): Promise<ConsentLog[]> {
     for (const consent of params.consents) {
-      if (!CONSENT_PURPOSES.includes(consent.purpose as typeof CONSENT_PURPOSES[number])) {
+      if (
+        !CONSENT_PURPOSES.includes(
+          consent.purpose as (typeof CONSENT_PURPOSES)[number],
+        )
+      ) {
         throw new Error(`Invalid consent purpose: ${consent.purpose}`);
       }
     }
@@ -40,7 +47,10 @@ export class ConsentLogServiceV1 {
     return this.repository.getConsentLogsByUserId({ userId });
   }
 
-  async hasConsent(params: { userId: string; purpose: string }): Promise<boolean> {
+  async hasConsent(params: {
+    userId: string;
+    purpose: string;
+  }): Promise<boolean> {
     return this.repository.hasConsent(params);
   }
 }
