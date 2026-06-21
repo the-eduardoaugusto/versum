@@ -1,6 +1,7 @@
 import type { Context } from "hono";
 import { ZodError } from "zod";
 import type { Session } from "@/modules/auth/repositories/auth.types.repository.ts";
+import { BadRequestError } from "@/utils/app/errors/index.ts";
 import { SuccessViewModel } from "@/view-models/default/success.view-model.ts";
 import { JourneyServiceV1 } from "../services/journey.v1.service.ts";
 
@@ -42,7 +43,17 @@ export class JourneyControllerV1 {
 
   markCurrentAsRead = async (c: Context) => {
     const session = c.get("session") as Session;
-    const body = (await c.req.json()) as { chapterId: string };
+
+    let body: { chapterId?: unknown };
+    try {
+      body = await c.req.json();
+    } catch {
+      throw new BadRequestError("Invalid JSON body");
+    }
+
+    if (typeof body.chapterId !== "string" || body.chapterId.length === 0) {
+      throw new BadRequestError("chapterId is required");
+    }
 
     const result = await this.service.markCurrentAsRead(
       session.userId,
