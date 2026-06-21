@@ -10,7 +10,11 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "./index.ts";
-import { extractErrorMessage, isValidationError } from "./utils.ts";
+import {
+  extractErrorMessage,
+  isJsonParseError,
+  isValidationError,
+} from "./utils.ts";
 
 export class ErrorHandler {
   private readonly ctx: Context;
@@ -33,6 +37,13 @@ export class ErrorHandler {
           extractErrorMessage(err, "Validation error"),
           "VALIDATION_ERROR",
         ),
+      );
+    }
+
+    if (isJsonParseError(err)) {
+      this.ctx.status(400);
+      return this.ctx.json(
+        new ApiErrorViewModel("Invalid JSON body", "BAD_REQUEST"),
       );
     }
 
