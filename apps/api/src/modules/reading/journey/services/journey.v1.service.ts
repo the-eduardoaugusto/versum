@@ -59,7 +59,9 @@ export class JourneyServiceV1 {
     transaction?: typeof db.transaction;
   } = {}) {
     this.repository = repository ?? new JourneyRepositoryV1();
-    this.transaction = transaction ?? db.transaction;
+    // bind to db: db.transaction is a method that relies on `this`; storing it
+    // as a loose reference would lose the binding and crash on this.session.
+    this.transaction = transaction ?? db.transaction.bind(db);
   }
 
   private mapChapter(result: ChapterWithContent): ChapterWithContentResponse {
