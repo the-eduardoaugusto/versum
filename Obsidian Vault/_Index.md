@@ -37,10 +37,8 @@ Cada nota tem paginação (◀ anterior · próximo ▶) seguindo esta trilha:
 5. [[Git Flow]]
 6. [[LGPD Implementation]]
 7. [[Incident Response Plan]]
-8. [[Profile Edit System - Design]]
-9. [[Profile Edit System - Implementation Plan]]
-10. [[01 Security]] · [[02 Scalability]] · [[03 Modularization]] · [[04 General Practices]] · [[05 Tooling]] · [[06 Frontend Animations]]
-11. [[LGPD Compliance]] → [[LGPD Compliance - Next Phases]]
+8. [[01 Security]] · [[02 Scalability]] · [[03 Modularization]] · [[04 General Practices]] · [[05 Tooling]] · [[06 Frontend Animations]]
+9. [[LGPD Compliance]] → [[LGPD Compliance - Next Phases]]
 
 ---
 

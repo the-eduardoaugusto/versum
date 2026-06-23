@@ -17,6 +17,7 @@ Decisões técnicas permanentes (ADRs) sobre a arquitetura.
 | Decisão | Contexto |
 |:--|:--|
 | [[Docs/Decisions/Journey Feed - Progress Confirmation]] | Race condition, idempotência, confirmação de progresso |
+| [[Docs/Decisions/Incident Response Plan]] | Detecção, triagem, contenção, notificação ANPD (LGPD) |
 
 ---
 

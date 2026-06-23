@@ -1,13 +1,14 @@
 ---
 title: "Incident Response Plan"
-section: Docs
-tags: [versum, docs]
-up: "[[Docs/_Index|Docs]]"
-prev: "[[LGPD Implementation]]"
-next: "[[Profile Edit System - Design]]"
+section: "Docs"
+subsection: "Decisions"
+tags: [versum, incident-response, security]
+up: "[[Docs/Decisions/_Index]]"
+related: ["[[Rules/01 Security]]", "[[Docs/Guides/LGPD Implementation]]"]
+depth: 2
 ---
 
-🏠 [[_Index|Home]] › 📚 [[Docs/_Index|Docs]] › **Incident Response Plan**
+🏠 [[_Index|Home]] › 📚 [[Docs/_Index|Docs]] › 🎯 [[Docs/Decisions/_Index|Decisions]] › **Incident Response**
 
 ---
 
