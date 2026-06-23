@@ -1,10 +1,11 @@
 ---
 title: "Profile Edit System - Design"
-section: Docs
-tags: [versum, docs]
-up: "[[Docs/_Index|Docs]]"
-prev: "[[Incident Response Plan]]"
-next: "[[Profile Edit System - Implementation Plan]]"
+section: Plans
+subsection: Feature Plans
+tags: [versum, design, feature]
+up: "[[Plans/Feature Plans/_Index]]"
+related: ["[[Plans/Feature Plans/Profile Edit System/Implementation Plan]]"]
+depth: 2
 ---
 
 🏠 [[_Index|Home]] › 📚 [[Docs/_Index|Docs]] › **Profile Edit System - Design**
