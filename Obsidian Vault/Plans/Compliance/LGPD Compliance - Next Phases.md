@@ -1,10 +1,11 @@
 ---
 title: "LGPD Compliance - Next Phases"
 section: Plans
-tags: [versum, plans]
-up: "[[Plans/_Index|Plans]]"
-prev: "[[LGPD Compliance]]"
-next: null
+subsection: Compliance
+tags: [versum, compliance, lgpd]
+up: "[[Plans/Compliance/_Index]]"
+related: ["[[Plans/Compliance/LGPD Compliance]]"]
+depth: 2
 ---
 
 🏠 [[_Index|Home]] › 🗺️ [[Plans/_Index|Plans]] › **LGPD Compliance - Next Phases**
