@@ -35,12 +35,27 @@ apps/client/
 └── package.json
 ```
 
+## Features
+
+| Feature | Localização | Descrição |
+|:--|:--|:--|
+| **Feed/Journey** | `features/feed/journey/` | Feed infinito de leitura bíblica com scroll snap |
+| **Login** | `features/login/` | Autenticação via magic link |
+| **Onboarding** | `features/onboarding/` | Fluxo de boas-vindas e setup inicial |
+| **Profile** | `features/profile/` | Edição de perfil, avatar, preferências |
+
 ## Padrões
 
 - **Componentes:** PascalCase
 - **Imports:** `@/` alias pra imports absolutos
-- **State:** Context API + TanStack Query
+- **State:** TanStack Query (server state), useState (local state)
 - **Testes:** Colocalizados com componentes
+- **Styling:** Tailwind CSS v4 + shadcn/ui
+
+## Próximas Seções
+
+- [[Docs/Apps/Client/Components|Components]] — estrutura de componentes (ui, shared, feature)
+- [[Docs/Apps/Client/State Management|State Management]] — TanStack Query patterns
 
 ---
 
