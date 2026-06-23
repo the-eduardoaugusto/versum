@@ -1,10 +1,11 @@
 ---
 title: "LGPD Compliance"
 section: Plans
-tags: [versum, plans]
-up: "[[Plans/_Index|Plans]]"
-prev: "[[06 Frontend Animations]]"
-next: "[[LGPD Compliance - Next Phases]]"
+subsection: Compliance
+tags: [versum, compliance, lgpd]
+up: "[[Plans/Compliance/_Index]]"
+related: ["[[Plans/Compliance/LGPD Compliance - Next Phases]]"]
+depth: 2
 ---
 
 🏠 [[_Index|Home]] › 🗺️ [[Plans/_Index|Plans]] › **LGPD Compliance**
