@@ -19,20 +19,20 @@ Guias de desenvolvimento, convenções, arquitetura e documentação de apps/pac
 
 | Seção | Conteúdo |
 |:--|:--|
-| 📖 [[Docs/Guides/_Index\|Guides]] | Convenções, padrões técnicos, fluxos (Naming, API Dev, Git Flow, LGPD) |
-| 📱 [[Docs/Apps/_Index\|Apps]] | Documentação de API, Client, Landing Page e packages |
-| 🎯 [[Docs/Decisions/_Index\|Decisions]] | Decisões arquiteturais permanentes (ADRs) |
-| 🔗 [[Docs/Journey Feed Client Architecture\|Journey Feed]] | Arquitetura completa da feature de leitura (tipos, componentes, hooks, fluxos) |
+| 📖 [[Docs/Guides/_Index|Guides]] | Convenções, padrões técnicos, fluxos (Naming, API Dev, Git Flow, LGPD) |
+| 📱 [[Docs/Apps/_Index|Apps]] | Documentação de API, Client, Landing Page e packages |
+| 🎯 [[Docs/Decisions/_Index|Decisions]] | Decisões arquiteturais permanentes (ADRs) |
+| 🔗 [[Docs/Journey Feed Client Architecture|Journey Feed]] | Arquitetura completa da feature de leitura (tipos, componentes, hooks, fluxos) |
 
 ---
 
 ## Ordem Recomendada para Novo Dev
 
-1. [[_Index\|🏠 Versum Home]] — contextualização
+1. [[_Index|🏠 Versum Home]] — contextualização
 2. [[PRD]] — visão de produto
-3. [[Docs/Guides/Naming Convention]] — convenções básicas
-4. [[Docs/Guides/API Development]] — padrões técnicos
-5. [[Docs/Guides/Git Flow]] — fluxo de trabalho
+3. [[Docs/Naming Convention]] — convenções básicas
+4. [[Docs/API Development]] — padrões técnicos
+5. [[Docs/Git Flow]] — fluxo de trabalho
 6. [[Docs/Apps/_Index]] — estrutura das apps
 7. [[Rules/_Index]] — regras de código
 8. [[Plans/_Index]] — roadmaps e planejamento
