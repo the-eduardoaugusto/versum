@@ -5,7 +5,7 @@ type ErrorResponse = {
   data: unknown;
 };
 
-class ApiError extends Error {
+export class ApiError extends Error {
   response: ErrorResponse;
 
   constructor(message: string, response: ErrorResponse) {

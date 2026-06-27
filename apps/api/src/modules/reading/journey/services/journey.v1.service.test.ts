@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { ConflictError, NotFoundError } from "@/utils/app/errors/index";
 import type {
   ChapterWithContent,
   JourneyRepositoryV1,
@@ -45,7 +46,14 @@ const createMockRepository = () => ({
   markChapterAsRead: vi.fn<() => Promise<void>>(),
   getReadChaptersCount: vi.fn<() => Promise<number>>(),
   getTotalChapters: vi.fn<() => Promise<number>>(),
+  isChapterRead: vi.fn<() => Promise<boolean>>().mockResolvedValue(false),
+  findChapterById: vi.fn<() => Promise<boolean>>().mockResolvedValue(true),
 });
+
+const createMockTransaction = () =>
+  vi.fn((callback: (tx: unknown) => unknown) =>
+    callback({}),
+  ) as unknown as typeof import("../../../../infrastructure/db").db.transaction;
 
 describe("JourneyServiceV1", () => {
   let service: JourneyServiceV1;
@@ -155,34 +163,115 @@ describe("JourneyServiceV1", () => {
   });
 
   describe("markCurrentAsRead", () => {
-    it("should mark current chapter as read and return success", async () => {
+    it("should mark chapter as read when it matches the expected current chapter", async () => {
       const mockRepo = createMockRepository();
+      mockRepo.findChapterById.mockResolvedValue(true);
+      mockRepo.isChapterRead.mockResolvedValue(false);
       mockRepo.findNextChapterToRead.mockResolvedValue(mockChapterData);
       mockRepo.markChapterAsRead.mockResolvedValue();
       service = new JourneyServiceV1({
         repository: mockRepo as unknown as JourneyRepositoryV1,
+        transaction: createMockTransaction(),
       });
 
-      const result = await service.markCurrentAsRead("user-123");
+      const result = await service.markCurrentAsRead(
+        "user-123",
+        mockChapterData.chapter.id,
+      );
 
       expect(result).toEqual({ success: true });
-      expect(mockRepo.markChapterAsRead).toHaveBeenCalledWith({
-        userId: "user-123",
-        chapterId: mockChapterData.chapter.id,
-      });
+      expect(mockRepo.markChapterAsRead).toHaveBeenCalledWith(
+        {
+          userId: "user-123",
+          chapterId: mockChapterData.chapter.id,
+        },
+        expect.anything(),
+      );
     });
 
-    it("should return success even when no chapter to mark", async () => {
+    it("should be idempotent when the chapter was already marked as read", async () => {
       const mockRepo = createMockRepository();
-      mockRepo.findNextChapterToRead.mockResolvedValue(null);
+      mockRepo.findChapterById.mockResolvedValue(true);
+      mockRepo.isChapterRead.mockResolvedValue(true);
       service = new JourneyServiceV1({
         repository: mockRepo as unknown as JourneyRepositoryV1,
+        transaction: createMockTransaction(),
       });
 
-      const result = await service.markCurrentAsRead("user-123");
+      const result = await service.markCurrentAsRead(
+        "user-123",
+        mockChapterData.chapter.id,
+      );
 
       expect(result).toEqual({ success: true });
       expect(mockRepo.markChapterAsRead).not.toHaveBeenCalled();
+      expect(mockRepo.findNextChapterToRead).not.toHaveBeenCalled();
+    });
+
+    it("should throw ConflictError when chapterId does not match the expected current chapter", async () => {
+      const mockRepo = createMockRepository();
+      mockRepo.findChapterById.mockResolvedValue(true);
+      mockRepo.isChapterRead.mockResolvedValue(false);
+      mockRepo.findNextChapterToRead.mockResolvedValue(mockChapterData);
+      service = new JourneyServiceV1({
+        repository: mockRepo as unknown as JourneyRepositoryV1,
+        transaction: createMockTransaction(),
+      });
+
+      await expect(
+        service.markCurrentAsRead("user-123", "stale-chapter-id"),
+      ).rejects.toThrow(ConflictError);
+      expect(mockRepo.markChapterAsRead).not.toHaveBeenCalled();
+    });
+
+    it("should throw ConflictError when there is no chapter pending confirmation", async () => {
+      const mockRepo = createMockRepository();
+      mockRepo.findChapterById.mockResolvedValue(true);
+      mockRepo.isChapterRead.mockResolvedValue(false);
+      mockRepo.findNextChapterToRead.mockResolvedValue(null);
+      service = new JourneyServiceV1({
+        repository: mockRepo as unknown as JourneyRepositoryV1,
+        transaction: createMockTransaction(),
+      });
+
+      await expect(
+        service.markCurrentAsRead("user-123", mockChapterData.chapter.id),
+      ).rejects.toThrow(ConflictError);
+      expect(mockRepo.markChapterAsRead).not.toHaveBeenCalled();
+    });
+
+    it("should throw NotFoundError when chapterId does not exist", async () => {
+      const mockRepo = createMockRepository();
+      mockRepo.findChapterById.mockResolvedValue(false);
+      service = new JourneyServiceV1({
+        repository: mockRepo as unknown as JourneyRepositoryV1,
+        transaction: createMockTransaction(),
+      });
+
+      await expect(
+        service.markCurrentAsRead("user-123", "non-existent-chapter-id"),
+      ).rejects.toThrow(NotFoundError);
+      expect(mockRepo.isChapterRead).not.toHaveBeenCalled();
+      expect(mockRepo.markChapterAsRead).not.toHaveBeenCalled();
+    });
+
+    it("should mark the first chapter as read for a user with no reading history", async () => {
+      const mockRepo = createMockRepository();
+      mockRepo.findChapterById.mockResolvedValue(true);
+      mockRepo.isChapterRead.mockResolvedValue(false);
+      mockRepo.findNextChapterToRead.mockResolvedValue(mockChapterData);
+      mockRepo.markChapterAsRead.mockResolvedValue();
+      service = new JourneyServiceV1({
+        repository: mockRepo as unknown as JourneyRepositoryV1,
+        transaction: createMockTransaction(),
+      });
+
+      const result = await service.markCurrentAsRead(
+        "new-user",
+        mockChapterData.chapter.id,
+      );
+
+      expect(result).toEqual({ success: true });
     });
   });
 

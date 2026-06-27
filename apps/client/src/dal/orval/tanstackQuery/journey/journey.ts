@@ -27,6 +27,7 @@ import type {
   JourneyFeedResponse,
   JourneyNextProgressResponse,
   JourneyStatusResponse,
+  PostApiV1ReadingsJourneyNextBody,
 } from "../schemas";
 
 export type getApiV1ReadingsJourneyFeedResponse200 = {
@@ -263,9 +264,24 @@ export type postApiV1ReadingsJourneyNextResponse200 = {
   status: 200;
 };
 
+export type postApiV1ReadingsJourneyNextResponse400 = {
+  data: ApiErrorResponse;
+  status: 400;
+};
+
 export type postApiV1ReadingsJourneyNextResponse401 = {
   data: ApiErrorResponse;
   status: 401;
+};
+
+export type postApiV1ReadingsJourneyNextResponse404 = {
+  data: ApiErrorResponse;
+  status: 404;
+};
+
+export type postApiV1ReadingsJourneyNextResponse409 = {
+  data: ApiErrorResponse;
+  status: 409;
 };
 
 export type postApiV1ReadingsJourneyNextResponse500 = {
@@ -278,7 +294,10 @@ export type postApiV1ReadingsJourneyNextResponseSuccess =
     headers: Headers;
   };
 export type postApiV1ReadingsJourneyNextResponseError = (
+  | postApiV1ReadingsJourneyNextResponse400
   | postApiV1ReadingsJourneyNextResponse401
+  | postApiV1ReadingsJourneyNextResponse404
+  | postApiV1ReadingsJourneyNextResponse409
   | postApiV1ReadingsJourneyNextResponse500
 ) & {
   headers: Headers;
@@ -293,15 +312,18 @@ export const getPostApiV1ReadingsJourneyNextUrl = () => {
 };
 
 /**
- * Salva o capítulo atual como lido e avança para o próximo.
+ * Confirma a leitura de um capítulo específico e avança o progresso. Idempotente.
  * @summary Avançar progresso
  */
 export const postApiV1ReadingsJourneyNext = async (
+  postApiV1ReadingsJourneyNextBody?: PostApiV1ReadingsJourneyNextBody,
   options?: RequestInit,
 ): Promise<postApiV1ReadingsJourneyNextResponse> => {
   const res = await fetch(getPostApiV1ReadingsJourneyNextUrl(), {
     ...options,
     method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(postApiV1ReadingsJourneyNextBody),
   });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
@@ -323,14 +345,14 @@ export const getPostApiV1ReadingsJourneyNextMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof postApiV1ReadingsJourneyNext>>,
     TError,
-    void,
+    { data?: PostApiV1ReadingsJourneyNextBody },
     TContext
   >;
   fetch?: RequestInit;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof postApiV1ReadingsJourneyNext>>,
   TError,
-  void,
+  { data?: PostApiV1ReadingsJourneyNextBody },
   TContext
 > => {
   const mutationKey = ["postApiV1ReadingsJourneyNext"];
@@ -344,9 +366,11 @@ export const getPostApiV1ReadingsJourneyNextMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof postApiV1ReadingsJourneyNext>>,
-    void
-  > = () => {
-    return postApiV1ReadingsJourneyNext(fetchOptions);
+    { data?: PostApiV1ReadingsJourneyNextBody }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return postApiV1ReadingsJourneyNext(data, fetchOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -355,7 +379,9 @@ export const getPostApiV1ReadingsJourneyNextMutationOptions = <
 export type PostApiV1ReadingsJourneyNextMutationResult = NonNullable<
   Awaited<ReturnType<typeof postApiV1ReadingsJourneyNext>>
 >;
-
+export type PostApiV1ReadingsJourneyNextMutationBody =
+  | PostApiV1ReadingsJourneyNextBody
+  | undefined;
 export type PostApiV1ReadingsJourneyNextMutationError = ApiErrorResponse;
 
 /**
@@ -369,7 +395,7 @@ export const usePostApiV1ReadingsJourneyNext = <
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof postApiV1ReadingsJourneyNext>>,
       TError,
-      void,
+      { data?: PostApiV1ReadingsJourneyNextBody },
       TContext
     >;
     fetch?: RequestInit;
@@ -378,7 +404,7 @@ export const usePostApiV1ReadingsJourneyNext = <
 ): UseMutationResult<
   Awaited<ReturnType<typeof postApiV1ReadingsJourneyNext>>,
   TError,
-  void,
+  { data?: PostApiV1ReadingsJourneyNextBody },
   TContext
 > => {
   return useMutation(

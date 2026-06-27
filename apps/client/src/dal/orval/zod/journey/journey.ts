@@ -218,9 +218,15 @@ export const GetApiV1ReadingsJourneyFeedResponse = zod
   .describe("Resposta de sucesso para JourneyFeedResponse");
 
 /**
- * Salva o capítulo atual como lido e avança para o próximo.
+ * Confirma a leitura de um capítulo específico e avança o progresso. Idempotente.
  * @summary Avançar progresso
  */
+export const PostApiV1ReadingsJourneyNextBody = zod.object({
+  chapterId: zod
+    .uuid()
+    .describe("ID do capítulo que o cliente está confirmando como lido"),
+});
+
 export const postApiV1ReadingsJourneyNextResponseSuccessDefault = true;
 export const postApiV1ReadingsJourneyNextResponsePaginationCurrentPageExclusiveMin = 0;
 

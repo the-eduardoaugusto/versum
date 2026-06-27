@@ -1,24 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { getPostApiV1ReadingsJourneyNextUrl } from "@/dal/orval/tanstackQuery/journey/journey";
+import { postApiV1ReadingsJourneyNext } from "@/dal/orval/fetch/journey/journey";
 import type { FeedChapter } from "../types";
 
 interface UseActiveChapterOptions {
   chapters: FeedChapter[];
   isAtEnd: boolean;
   fetchNextPage: () => Promise<void>;
-}
-
-async function markChapterAsRead() {
-  const url = getPostApiV1ReadingsJourneyNextUrl();
-  const res = await fetch(url, {
-    method: "POST",
-    credentials: "include",
-  });
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(body.message ?? `HTTP ${res.status}`);
-  }
-  return res.json();
 }
 
 export function useActiveChapter(
@@ -64,7 +51,7 @@ export function useActiveChapter(
               if (!hasBeenActiveRef.current.has(chapterId)) return;
               if (hasBeenReadRef.current.has(chapterId)) return;
               hasBeenReadRef.current.add(chapterId);
-              markChapterAsRead()
+              postApiV1ReadingsJourneyNext({ chapterId })
                 .then(() => {
                   // Buffer fetch must happen AFTER the POST so the server pointer
                   // has advanced and GET /feed returns the next set of chapters.
