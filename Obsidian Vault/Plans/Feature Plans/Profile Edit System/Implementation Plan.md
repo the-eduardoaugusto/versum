@@ -1,10 +1,11 @@
 ---
 title: "Profile Edit System - Implementation Plan"
-section: Docs
-tags: [versum, docs]
-up: "[[Docs/_Index|Docs]]"
-prev: "[[Profile Edit System - Design]]"
-next: "[[01 Security]]"
+section: Plans
+subsection: Feature Plans
+tags: [versum, plan, implementation]
+up: "[[Plans/Feature Plans/_Index]]"
+related: ["[[Plans/Feature Plans/Profile Edit System/Design]]"]
+depth: 2
 ---
 
 🏠 [[_Index|Home]] › 📚 [[Docs/_Index|Docs]] › **Profile Edit System - Implementation Plan**
