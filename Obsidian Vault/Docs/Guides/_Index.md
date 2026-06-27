@@ -4,6 +4,8 @@ section: "Docs"
 subsection: "Guides"
 tags: [versum, guides, moc]
 up: "[[Docs/_Index]]"
+prev: "[[Docs/_Index]]"
+next: "[[Docs/Apps/_Index]]"
 related: []
 depth: 1
 ---
@@ -21,7 +23,7 @@ Guias atemporais de desenvolvimento — convenções, padrões técnicos, fluxos
 | [[Docs/API Response Standardization\|API Response Standardization]] | Envelope unificado de resposta |
 | [[Docs/Git Flow\|Git Flow]] | Branches, conventional commits, sandbox IA |
 | [[Docs/LGPD Implementation\|LGPD Implementation]] | Middleware de consentimento, deleção, portabilidade |
-| [[Docs/Incident Response Plan\|Incident Response Plan]] | Detecção, triagem, contenção, notificação ANPD |
+| [[Docs/Decisions/Incident Response Plan\|Incident Response Plan]] | Detecção, triagem, contenção, notificação ANPD |
 
 ---
 

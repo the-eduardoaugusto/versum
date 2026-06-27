@@ -4,6 +4,8 @@ section: "Docs"
 subsection: "Apps"
 tags: [versum, apps, moc]
 up: "[[Docs/_Index]]"
+prev: "[[Docs/Guides/_Index]]"
+next: "[[Docs/Decisions/_Index]]"
 related: ["[[Docs/Guides/API Development]]", "[[Rules/03 Modularization]]"]
 depth: 1
 ---

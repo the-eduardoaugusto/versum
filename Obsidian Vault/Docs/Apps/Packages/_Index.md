@@ -4,6 +4,7 @@ section: "Docs"
 subsection: "Apps"
 tags: [versum, packages, moc]
 up: "[[Docs/Apps/_Index]]"
+prev: "[[Docs/Apps/_Index]]"
 related: []
 depth: 1
 ---

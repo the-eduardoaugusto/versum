@@ -4,6 +4,7 @@ section: "Plans"
 subsection: "Compliance"
 tags: [versum, plans, compliance, lgpd, moc]
 up: "[[Plans/_Index]]"
+prev: "[[Plans/Feature Plans/_Index]]"
 related: []
 depth: 1
 ---
@@ -20,4 +21,4 @@ Roadmaps e planos de conformidade legal e regulatória.
 
 ---
 
-◀ [[Plans/_Index|🏠 Home]] ▶
+◀ [[Plans/Feature Plans/_Index|Feature Plans]] ▶

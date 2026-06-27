@@ -3,6 +3,8 @@ title: "Docs"
 section: Docs
 tags: [versum, docs, moc]
 up: "[[_Index|Home]]"
+prev: "[[PRD]]"
+next: "[[Rules/_Index]]"
 ---
 
 🏠 [[_Index|Home]] › 📚 **Docs**
