@@ -11,10 +11,14 @@
             "id": "44803073099aa03c",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "Docs/_Index.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "Nova aba"
+              "title": "_Index"
             }
           }
         ]
@@ -193,6 +197,9 @@
   },
   "active": "36c9a9864d4e6747",
   "lastOpenFiles": [
+    "Docs/Guides/_Index.md.tmp.39875.5a7459c40a13",
+    "Docs/Guides/_Index.md.tmp.39875.f5fb4cd8efc1",
+    "Docs/Guides/Naming Convention.md",
     "Docs/Apps/Packages/_Index.md.tmp.39875.7f353c985288",
     "Plans/_Index.md.tmp.39875.136625bdb676",
     "Rules/_Index.md.tmp.39875.d4e11889e13e",
@@ -202,9 +209,6 @@
     "Docs/Decisions/_Index.md.tmp.39875.951b78d14c0f",
     "Plans/Compliance/_Index.md.tmp.39875.6276d6d31b4e",
     "Plans/Feature Plans/_Index.md.tmp.39875.c4494ca8ffeb",
-    "Plans/Feature Plans/_Index.md.tmp.39875.bce96a6c39de",
-    "Plans/Feature Plans/_Index.md.tmp.39875.5caa09174bcf",
-    "Docs/Guides/Naming Convention.md",
     "Docs/_Index.md",
     "Docs/Git Flow.md",
     "Docs/Guides/_Index.md",

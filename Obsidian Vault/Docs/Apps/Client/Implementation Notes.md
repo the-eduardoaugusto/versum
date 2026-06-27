@@ -4,7 +4,7 @@ section: "Docs"
 subsection: "Apps"
 tags: [versum, client, journey-feed, implementation]
 up: "[[Docs/Apps/Client/_Overview]]"
-related: ["[[Docs/Decisions/Journey Feed - Progress Confirmation]]", "[[Docs/Guides/API Development]]"]
+related: ["[[Docs/Decisions/Journey Feed - Progress Confirmation]]", "[[Docs/API Development]]"]
 depth: 3
 ---
 

@@ -1,10 +1,10 @@
----
+[[Docs/Apps/Client/Journey Feed Features|---
 title: "Client"
 section: "Docs"
 subsection: "Apps"
 tags: [versum, app, client, frontend]
 up: "[[Docs/Apps/_Index]]"
-related: ["[[Docs/Guides/API Development]]", "[[Rules/06 Frontend Animations]]"]
+related: ["[[Docs/API Development]]", "[[Rules/06 Frontend Animations]]"]
 depth: 1
 ---
 
