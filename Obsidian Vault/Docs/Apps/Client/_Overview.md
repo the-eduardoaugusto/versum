@@ -4,7 +4,7 @@ section: "Docs"
 subsection: "Apps"
 tags: [versum, app, client, frontend]
 up: "[[Docs/Apps/_Index]]"
-related: ["[[Docs/Guides/API Development]]", "[[Rules/06 Frontend Animations]]"]
+related: ["[[Docs/API Development]]", "[[Rules/06 Frontend Animations]]"]
 depth: 1
 ---
 
@@ -39,7 +39,7 @@ apps/client/
 
 | Feature | Localização | Descrição |
 |:--|:--|:--|
-| **Feed/Journey** | `features/feed/journey/` | [[Docs/Apps/Client/Journey Feed Features\|Feed infinito de leitura bíblica com scroll snap]] |
+| **Feed/Journey** | `features/feed/journey/` | [[Docs/Apps/Client/Journey Feed Features|Feed infinito de leitura bíblica com scroll snap]] |
 | **Login** | `features/login/` | Autenticação via magic link |
 | **Onboarding** | `features/onboarding/` | Fluxo de boas-vindas e setup inicial |
 | **Profile** | `features/profile/` | Edição de perfil, avatar, preferências |

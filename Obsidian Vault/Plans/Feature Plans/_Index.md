@@ -4,6 +4,8 @@ section: "Plans"
 subsection: "Feature Plans"
 tags: [versum, plans, features, moc]
 up: "[[Plans/_Index]]"
+prev: "[[Plans/_Index]]"
+next: "[[Plans/Compliance/_Index]]"
 related: []
 depth: 1
 ---
@@ -20,4 +22,4 @@ Designs e roadmaps de implementação para features.
 
 ---
 
-◀ [[Plans/_Index|🏠 Home]] · [[Plans/Compliance/_Index|Compliance]] ▶
+◀ [[Plans/_Index|Plans]] · [[Plans/Compliance/_Index|Compliance]] ▶

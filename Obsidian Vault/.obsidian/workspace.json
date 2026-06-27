@@ -4,17 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "f2c5902403d6f445",
+        "id": "bbacee3d86fe3fcb",
         "type": "tabs",
         "children": [
           {
-            "id": "c357550c46a6ccc4",
+            "id": "44803073099aa03c",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "Docs/_Index.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "Nova aba"
+              "title": "_Index"
             }
           }
         ]
@@ -191,43 +195,43 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "c357550c46a6ccc4",
+  "active": "36c9a9864d4e6747",
   "lastOpenFiles": [
+    "Docs/Guides/_Index.md.tmp.39875.5a7459c40a13",
+    "Docs/Guides/_Index.md.tmp.39875.f5fb4cd8efc1",
+    "Docs/Guides/Naming Convention.md",
+    "Docs/Apps/Packages/_Index.md.tmp.39875.7f353c985288",
+    "Plans/_Index.md.tmp.39875.136625bdb676",
+    "Rules/_Index.md.tmp.39875.d4e11889e13e",
+    "Docs/_Index.md.tmp.39875.829ea6556934",
+    "Docs/Guides/_Index.md.tmp.39875.ecc8b1d617a4",
+    "Docs/Apps/_Index.md.tmp.39875.dda3f928c77d",
+    "Docs/Decisions/_Index.md.tmp.39875.951b78d14c0f",
+    "Plans/Compliance/_Index.md.tmp.39875.6276d6d31b4e",
+    "Plans/Feature Plans/_Index.md.tmp.39875.c4494ca8ffeb",
+    "Docs/_Index.md",
+    "Docs/Git Flow.md",
+    "Docs/Guides/_Index.md",
+    "Docs/Guides/Git Flow.md",
     "Rules/07 Vault Standard.md",
     "Plans/Vault Refactoring - Implementation Plan.md",
     "Plans/Vault Refactoring - Design.md",
     "Plans/Feature Plans/Profile Edit System/Implementation Plan.md",
     "Plans/Feature Plans/Profile Edit System/Design.md",
     "Plans/Feature Plans/_Index.md",
-    "Plans/Feature Plans/Profile Edit System",
-    "Plans/Feature Plans",
     "Plans/Compliance/_Index.md",
     "Plans/Compliance/LGPD Compliance.md",
     "Plans/Compliance/LGPD Compliance - Next Phases.md",
-    "Plans/Compliance",
     "Docs/Journey Feed Data Flow Examples.md",
     "Docs/Journey Feed Client Architecture.md",
     "Docs/Journey Feed - Progress Confirmation.md",
-    "Docs/Guides/_Index.md",
-    "Docs/Guides",
     "Docs/Decisions/_Index.md",
     "Docs/Decisions/Journey Feed - Progress Confirmation.md",
     "Docs/Decisions/Incident Response Plan.md",
-    "Docs/Decisions",
     "Docs/Apps/Packages/Logger/_Overview.md",
     "Docs/Apps/Packages/_Index.md",
-    "Docs/Apps/Packages/Logger",
     "Docs/Apps/Landing Page/_Overview.md",
     "Docs/Apps/Client/_Overview.md",
-    "Docs/Apps/Client/State Management.md",
-    "Docs/Apps/Client/Journey Feed Features.md",
-    "Docs/Apps/Client/Implementation Notes.md",
-    "Docs/Apps/Client/Components.md",
-    "Docs/Apps/API/_Overview.md",
-    "Docs/Apps/API/Services.md",
-    "Docs/Apps/Packages",
-    "Docs/Apps/Landing Page",
-    "Docs/Apps/Client",
-    "Docs/Apps/API"
+    "Docs/Apps/Client/State Management.md"
   ]
 }

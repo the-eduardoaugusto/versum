@@ -4,7 +4,7 @@ section: "Docs"
 subsection: "Decisions"
 tags: [versum, incident-response, security]
 up: "[[Docs/Decisions/_Index]]"
-related: ["[[Rules/01 Security]]", "[[Docs/Guides/LGPD Implementation]]"]
+related: ["[[Rules/01 Security]]", "[[Docs/LGPD Implementation]]"]
 depth: 2
 ---
 

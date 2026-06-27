@@ -4,7 +4,7 @@ section: "Docs"
 subsection: "Apps"
 tags: [versum, api, services]
 up: "[[Docs/Apps/API/_Overview]]"
-related: ["[[Docs/Apps/API/Database]]", "[[Docs/Guides/API Development]]"]
+related: ["[[Docs/Apps/API/Database]]", "[[Docs/API Development]]"]
 depth: 2
 ---
 
