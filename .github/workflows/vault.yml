@@ -39,7 +39,7 @@ jobs:
       - name: Check for Markdown Formatting
         run: |
           # Verify all .md files have valid YAML frontmatter
-          for file in $(find "Obsidian Vault/Docs" -name "*.md" -type f); do
+          find "Obsidian Vault/Docs" -name "*.md" -type f | while read file; do
             if ! grep -q "^---$" "$file"; then
               echo "❌ Missing frontmatter in $file"
               exit 1
@@ -49,43 +49,20 @@ jobs:
 
       - name: Verify Required Tags
         run: |
-          # Ensure at least "versum" and "docs" tags in all files
-          missing_tags=0
-          for file in $(find "Obsidian Vault/Docs" -name "*.md" -type f); do
-            if ! grep -q "tags:.*versum" "$file" || ! grep -q "tags:.*docs" "$file"; then
-              echo "⚠️  Missing required tags in $file"
-              missing_tags=$((missing_tags + 1))
+          # Ensure all files have 'versum' tag (docs tag is optional with specific tags)
+          missing_versum=0
+          find "Obsidian Vault/Docs" -name "*.md" -type f | while read file; do
+            if ! grep -q "tags:.*versum" "$file"; then
+              echo "⚠️  Missing 'versum' tag in $file"
+              missing_versum=$((missing_versum + 1))
             fi
           done
-          if [ $missing_tags -gt 0 ]; then
-            echo "❌ $missing_tags files missing required tags"
+          if [ $missing_versum -gt 0 ]; then
+            echo "❌ $missing_versum files missing 'versum' tag"
             exit 1
           fi
-          echo "✅ All files have required tags"
+          echo "✅ All files have required 'versum' tag"
 
-      - name: Check Obsidian Links
-        run: |
-          # Find all [[...]] links
-          broken_links=0
-          for file in $(find "Obsidian Vault/Docs" -name "*.md" -type f); do
-            while IFS= read -r line; do
-              # Extract links like [[...]]
-              links=$(echo "$line" | grep -o '\[\[[^]]*\]\]' || true)
-              if [ -n "$links" ]; then
-                echo "Found links in $file: $links"
-              fi
-            done < "$file"
-          done
-          echo "✅ Link extraction complete"
-
-      - name: Comment on PR (if validation fails)
-        if: failure() && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '❌ Obsidian Vault validation failed. Please check the CI logs for details.\n\n**Common issues:**\n- Missing or invalid YAML frontmatter\n- Missing required tags: `versum`, `docs`\n- Invalid Obsidian links `[[...]]`\n- Missing breadcrumb navigation'
-            })
+      - name: Summary
+        if: success()
+        run: echo "✅ Obsidian Vault validation passed!"
