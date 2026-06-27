@@ -39,7 +39,7 @@ apps/client/
 
 | Feature | Localização | Descrição |
 |:--|:--|:--|
-| **Feed/Journey** | `features/feed/journey/` | Feed infinito de leitura bíblica com scroll snap |
+| **Feed/Journey** | `features/feed/journey/` | [[Docs/Apps/Client/Journey Feed Features\|Feed infinito de leitura bíblica com scroll snap]] |
 | **Login** | `features/login/` | Autenticação via magic link |
 | **Onboarding** | `features/onboarding/` | Fluxo de boas-vindas e setup inicial |
 | **Profile** | `features/profile/` | Edição de perfil, avatar, preferências |
@@ -54,9 +54,10 @@ apps/client/
 
 ## Próximas Seções
 
+- [[Docs/Apps/Client/Journey Feed Features|Journey Feed Features]] — arquitetura completa da feature de leitura
 - [[Docs/Apps/Client/Components|Components]] — estrutura de componentes (ui, shared, feature)
 - [[Docs/Apps/Client/State Management|State Management]] — TanStack Query patterns
 
 ---
 
-◀ [[Docs/Apps/_Index|Apps]] · [[Docs/Apps/Client/Components|Components]] ▶
+◀ [[Docs/Apps/_Index|Apps]] · [[Docs/Apps/Client/Journey Feed Features|Journey Feed Features]] ▶
