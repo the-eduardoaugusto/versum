@@ -11,10 +11,14 @@
             "id": "c357550c46a6ccc4",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "Docs/Journey Feed Client Architecture.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "Nova aba"
+              "title": "Journey Feed Client Architecture"
             }
           }
         ]
@@ -193,10 +197,27 @@
   },
   "active": "c357550c46a6ccc4",
   "lastOpenFiles": [
+    "Rules/_Index.md.tmp.5096.6c4e5b768be1",
+    "Rules/07 Vault Standard.md.tmp.5096.d817f0fd1a01",
+    "Rules/07 Vault Standard.md.tmp.5096.aa89d5d4ce42",
+    "Rules/07 Vault Standard.md",
+    "Rules/04 Vault Standard.md",
+    "Rules/04 Vault Standard.md.tmp.5096.f1d038a34a2b",
+    "Docs/Apps/Client/Journey Feed Features.md.tmp.5096.0b5fb8abee0e",
+    "Docs/Journey Feed Data Flow Examples.md.tmp.5096.8086438e75aa",
+    "Docs/Journey Feed Client Architecture.md.tmp.5096.2431ccd5a3aa",
+    "Docs/Apps/Client/Journey Feed Features.md.tmp.5096.54a2ade006f4",
+    "Docs/Journey Feed Data Flow Examples.md.tmp.5096.70ef193d5d8f",
+    "Docs/Journey Feed Client Architecture.md.tmp.5096.f8036621ec60",
+    "Docs/Journey Feed - Progress Confirmation.md",
+    "Docs/Journey Feed Data Flow Examples.md",
+    "Docs/Journey Feed Client Architecture.md",
+    "Docs/_Index.md",
+    "Docs/_Index.md.tmp.5096.99d6cb2b5f66",
+    "Docs/Apps/Client/Journey Feed Features.md",
     "_Index.md",
     "PRD.md",
     "Profile Edit System - Design.md",
-    "Docs/_Index.md",
     "Docs/Apps/_Index.md",
     "Docs/Apps/Client/State Management.md",
     "Docs/Apps/Client/Components.md",
@@ -211,23 +232,6 @@
     "Docs/API Response Standardization.md",
     "Docs/API Development.md",
     "Docs/Naming Convention.md",
-    "www/youtube/videos next/vídeo 1/Roteamento e sua primeira página.md",
-    "deveres diários/2026/05-maio/2026-05-08.md",
-    "deveres diários/2026/05-maio/2026-05-09.md",
-    "deveres diários/2026/05-maio/_Index.md",
-    "deveres diários/2026/_Index.md",
-    "www/youtube/videos next/vídeo 2/Dados dinâmicos, rotas dinâmicas e otimização de imagens.md",
-    "deveres diários/_Index.md",
-    "deveres diários/Templates/tp_daily_dever.md",
-    "Excalidraw",
-    "www/youtube/video git",
-    "deveres diários/2026/05-maio",
-    "deveres diários/Templates",
-    "deveres diários/2026/05-maio",
-    "deveres diários/2026",
-    "www/youtube/videos next/vídeo 3",
-    "www/youtube/videos next/vídeo 2",
-    "www/youtube/videos next/vídeo 1",
-    "www/youtube/videos next"
+    "www/youtube/videos next/vídeo 1/Roteamento e sua primeira página.md"
   ]
 }
