@@ -4,7 +4,7 @@ section: "Docs"
 subsection: "Apps"
 tags: [versum, app, api, backend]
 up: "[[Docs/Apps/_Index]]"
-related: ["[[Docs/Guides/API Development]]", "[[Docs/Guides/Naming Convention]]", "[[Rules/02 Scalability]]"]
+related: ["[[Docs/API Development]]", "[[Docs/Naming Convention]]", "[[Rules/02 Scalability]]"]
 depth: 1
 ---
 

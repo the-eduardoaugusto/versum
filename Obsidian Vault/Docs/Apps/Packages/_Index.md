@@ -15,7 +15,7 @@ Pacotes compartilhados da monorepo.
 
 | Pacote | Descrição |
 |:--|:--|
-| [[Docs/Apps/Packages/Logger/_Overview\|Logger]] | @versum/logger — logging centralizado |
+| [[Docs/Apps/Packages/Logger/_Overview|Logger]]|Logger]] | @versum/logger — logging centralizado |
 
 ---
 

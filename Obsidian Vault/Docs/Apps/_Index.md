@@ -4,9 +4,9 @@ section: "Docs"
 subsection: "Apps"
 tags: [versum, apps, moc]
 up: "[[Docs/_Index]]"
-prev: "[[Docs/Guides/_Index]]"
+prev: "[[Docs/_Index]]"
 next: "[[Docs/Decisions/_Index]]"
-related: ["[[Docs/Guides/API Development]]", "[[Rules/03 Modularization]]"]
+related: ["[[Docs/API Development]]", "[[Rules/03 Modularization]]"]
 depth: 1
 ---
 
@@ -18,15 +18,15 @@ Documentação de estrutura, arquitetura e padrões para cada aplicação e paco
 
 | App | Descrição |
 |:--|:--|
-| [[Docs/Apps/API/_Overview\|API]] | REST backend — Hono, Drizzle ORM, PostgreSQL |
-| [[Docs/Apps/Client/_Overview\|Client]] | Frontend — Next.js 16, React 19, Tailwind v4 |
-| [[Docs/Apps/Landing Page/_Overview\|Landing Page]] | Página de marketing |
+| [[Docs/Apps/API/_Overview|API]] | REST backend — Hono, Drizzle ORM, PostgreSQL |
+| [[Docs/Apps/Client/_Overview|Client]] | Frontend — Next.js 16, React 19, Tailwind v4 |
+| [[Docs/Apps/Landing Page/_Overview|Landing Page]] | Página de marketing |
 
 ## Pacotes
 
 | Pacote | Descrição |
 |:--|:--|
-| [[Docs/Apps/Packages/Logger/_Overview\|Logger]] | @versum/logger — logging centralizado |
+| [[Docs/Apps/Packages/Logger/_Overview|Logger]] | @versum/logger — logging centralizado |
 
 ---
 

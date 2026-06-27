@@ -4,7 +4,7 @@ section: "Docs"
 subsection: "Apps"
 tags: [versum, api, database, postgresql, drizzle]
 up: "[[Docs/Apps/API/_Overview]]"
-related: ["[[Docs/Apps/API/Services]]", "[[Docs/Guides/Naming Convention]]"]
+related: ["[[Docs/Apps/API/Services]]", "[[Docs/Naming Convention]]"]
 depth: 2
 ---
 
