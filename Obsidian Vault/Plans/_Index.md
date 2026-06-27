@@ -1,6 +1,6 @@
 ---
 title: "Plans"
-section: Plans
+section: "Plans"
 tags: [versum, plans, moc]
 up: "[[_Index|Home]]"
 ---
@@ -11,14 +11,20 @@ up: "[[_Index|Home]]"
 
 # 🗺️ Plans
 
-Planos de implementação e roadmaps de conformidade.
+Planos de implementação, designs de features e roadmaps de conformidade.
 
-## Conteúdo
+## Seções
 
-| Nota | Sobre |
+| Seção | Descrição |
 |:--|:--|
-| [[LGPD Compliance]] | Mapa de dados e plano de adequação à LGPD |
-| [[LGPD Compliance - Next Phases]] | Próximas fases para completar a adequação |
+| 🚀 [[Plans/Feature Plans/_Index\|Feature Plans]] | Designs e roadmaps de implementação para features |
+| ⚖️ [[Plans/Compliance/_Index\|Compliance]] | Planos de conformidade (LGPD, etc.) |
+
+---
+
+## Active Features
+
+- **Profile Edit System** — [[Plans/Feature Plans/Profile Edit System/Design|Design]] · [[Plans/Feature Plans/Profile Edit System/Implementation Plan|Plan]]
 
 ---
 

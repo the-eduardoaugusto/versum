@@ -11,22 +11,30 @@ up: "[[_Index|Home]]"
 
 # 📚 Docs
 
-Guias de desenvolvimento, convenções e arquitetura do Versum.
+Guias de desenvolvimento, convenções, arquitetura e documentação de apps/packages.
 
-## Conteúdo
+## Seções
 
-| Nota | Sobre |
+| Seção | Conteúdo |
 |:--|:--|
-| [[Naming Convention]] | DB `snake_case`, API `camelCase`, view models |
-| [[API Development]] | Estrutura de módulos, view models, erros, testes |
-| [[API Response Standardization]] | Envelope unificado de resposta (`success`/`message`/`code`) |
-| [[Git Flow]] | Branches, conventional commits, sandbox de agentes IA |
-| [[LGPD Implementation]] | Consent middleware, deleção, portabilidade |
-| [[Incident Response Plan]] | Detecção, triagem, contenção, notificação ANPD |
-| [[Profile Edit System - Design]] | Design do sistema de edição de perfil |
-| [[Profile Edit System - Implementation Plan]] | Plano de implementação task-by-task |
-| [Journey Feed - Client Implementation](Journey%20Feed%20-%20Client%20Implementation.html) | Documentação renderizada (HTML) |
+| 📖 [[Docs/Guides/_Index\|Guides]] | Convenções, padrões técnicos, fluxos (Naming, API Dev, Git Flow, LGPD) |
+| 📱 [[Docs/Apps/_Index\|Apps]] | Documentação de API, Client, Landing Page e packages |
+| 🎯 [[Docs/Decisions/_Index\|Decisions]] | Decisões arquiteturais permanentes (ADRs) |
+| 🔗 [[Docs/Journey Feed Client Architecture\|Journey Feed]] | Arquitetura completa da feature de leitura (tipos, componentes, hooks, fluxos) |
 
 ---
 
-◀ [[_Index|🏠 Home]] · próxima seção: 📐 [[Rules/_Index|Rules]] ▶
+## Ordem Recomendada para Novo Dev
+
+1. [[_Index\|🏠 Versum Home]] — contextualização
+2. [[PRD]] — visão de produto
+3. [[Docs/Guides/Naming Convention]] — convenções básicas
+4. [[Docs/Guides/API Development]] — padrões técnicos
+5. [[Docs/Guides/Git Flow]] — fluxo de trabalho
+6. [[Docs/Apps/_Index]] — estrutura das apps
+7. [[Rules/_Index]] — regras de código
+8. [[Plans/_Index]] — roadmaps e planejamento
+
+---
+
+◀ [[_Index|🏠 Home]] · próxima: 📐 [[Rules/_Index|Rules]] ▶

@@ -1,0 +1,68 @@
+name: CI - Obsidian Vault
+
+on:
+  pull_request:
+    paths:
+      - "Obsidian Vault/**"
+      - "scripts/validate-vault.ts"
+      - ".github/workflows/vault.yml"
+
+  push:
+    branches: [main, development]
+    paths:
+      - "Obsidian Vault/**"
+      - "scripts/validate-vault.ts"
+
+jobs:
+  validate:
+    name: Validate Vault Structure & Standards
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Validate Vault Structure
+        run: bun scripts/validate-vault.ts
+
+      - name: Check for Markdown Formatting
+        run: |
+          # Verify all .md files have valid YAML frontmatter
+          find "Obsidian Vault/Docs" -name "*.md" -type f | while read file; do
+            if ! grep -q "^---$" "$file"; then
+              echo "❌ Missing frontmatter in $file"
+              exit 1
+            fi
+          done
+          echo "✅ All markdown files have frontmatter"
+
+      - name: Verify Required Tags
+        run: |
+          # Ensure all files have 'versum' tag (docs tag is optional with specific tags)
+          missing_versum=0
+          find "Obsidian Vault/Docs" -name "*.md" -type f | while read file; do
+            if ! grep -q "tags:.*versum" "$file"; then
+              echo "⚠️  Missing 'versum' tag in $file"
+              missing_versum=$((missing_versum + 1))
+            fi
+          done
+          if [ $missing_versum -gt 0 ]; then
+            echo "❌ $missing_versum files missing 'versum' tag"
+            exit 1
+          fi
+          echo "✅ All files have required 'versum' tag"
+
+      - name: Summary
+        if: success()
+        run: echo "✅ Obsidian Vault validation passed!"
