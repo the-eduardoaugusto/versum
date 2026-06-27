@@ -1,16 +1,16 @@
 import {
   BadRequestError,
   ConflictError,
-  NotFoundError,
   ForbiddenError,
+  NotFoundError,
 } from "../../../utils/app/errors/index";
+import { ConsentLogsRepository } from "../../consent-logs/repositories/consent-logs.repository";
 import { ProfileRepository } from "../repositories/profile.repository";
 import type {
   CreateProfileParams,
   Profile,
   UpdateProfileParams,
 } from "../repositories/profile.types.repository";
-import { ConsentLogsRepository } from "../../consent-logs/repositories/consent-logs.repository";
 
 const USERNAME_REGEX = /^[a-zA-Z0-9_]+$/;
 const MAX_NAME_LENGTH = 100;
@@ -31,7 +31,8 @@ export class ProfileServiceV1 {
     consentLogsRepository?: ConsentLogsRepository;
   } = {}) {
     this.repository = repository ?? new ProfileRepository();
-    this.consentLogsRepository = consentLogsRepository ?? new ConsentLogsRepository();
+    this.consentLogsRepository =
+      consentLogsRepository ?? new ConsentLogsRepository();
   }
 
   private sanitizeHtml(input: string): string {
@@ -210,11 +211,13 @@ export class ProfileServiceV1 {
     return profile;
   }
 
-  async updateProfile(
-    params: UpdateProfileParams & { userId: string },
-  ): Promise<Profile> {
+  async assertProfileEditable({
+    userId,
+  }: {
+    userId: string;
+  }): Promise<Profile> {
     const hasConsent = await this.consentLogsRepository.hasConsent({
-      userId: params.userId,
+      userId,
       purpose: "profile_content",
     });
 
@@ -224,22 +227,32 @@ export class ProfileServiceV1 {
       );
     }
 
-    const profile = await this.repository.findByUserId({
-      userId: params.userId,
-    });
+    const profile = await this.repository.findByUserId({ userId });
 
     if (!profile) {
       throw new NotFoundError("Profile not found");
     }
 
+    return profile;
+  }
+
+  async updateProfile(
+    params: UpdateProfileParams & { userId: string },
+  ): Promise<Profile> {
+    const profile = await this.assertProfileEditable({ userId: params.userId });
+
     const sanitized = this.sanitizeAndValidate(params);
 
     if (sanitized.username) {
-      const profileWithSelectedUsername = await this.repository.existsByUsername({
-        username: sanitized.username,
-      });
+      const profileWithSelectedUsername =
+        await this.repository.existsByUsername({
+          username: sanitized.username,
+        });
 
-      if (profileWithSelectedUsername.exists && profileWithSelectedUsername.profileId !== profile.id) {
+      if (
+        profileWithSelectedUsername.exists &&
+        profileWithSelectedUsername.profileId !== profile.id
+      ) {
         throw new ConflictError("Username already in use");
       }
     }
@@ -250,4 +263,26 @@ export class ProfileServiceV1 {
     });
   }
 
+  async isUsernameAvailable({
+    username,
+    currentUserId,
+  }: {
+    username: string;
+    currentUserId: string;
+  }): Promise<boolean> {
+    this.validateUsername(username);
+    const normalized = username.trim().toLowerCase();
+
+    const result = await this.repository.existsByUsername({
+      username: normalized,
+    });
+    if (!result.exists) {
+      return true;
+    }
+
+    const ownProfile = await this.repository.findByUserId({
+      userId: currentUserId,
+    });
+    return ownProfile?.id === result.profileId;
+  }
 }

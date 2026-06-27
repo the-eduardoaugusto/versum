@@ -125,12 +125,6 @@ export const PostApiV1ReadingsDiscoveryResponse = zod
       .default(postApiV1ReadingsDiscoveryResponseSuccessDefault)
       .describe("Indica se a requisição foi bem-sucedida"),
     message: zod.string().optional().describe("Mensagem opcional de contexto"),
-    data: zod
-      .object({
-        success: zod.boolean(),
-      })
-      .optional()
-      .describe("Dados da resposta"),
     pagination: zod
       .object({
         currentPage: zod

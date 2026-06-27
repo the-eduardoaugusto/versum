@@ -4,108 +4,104 @@ import { SuccessViewModel } from "./success.view-model";
 
 describe("SuccessViewModel", () => {
   describe("create", () => {
-    it("should create instance with data only", () => {
-      const vm = SuccessViewModel.create({ id: "123", name: "Test" });
+    it("should create instance with data, message and code", () => {
+      const vm = SuccessViewModel.create({
+        data: { id: "123", name: "Test" },
+        message: "Retrieved",
+        code: "RETRIEVED",
+      });
 
       expect(vm.success).toBe(true);
       expect(vm.data).toEqual({ id: "123", name: "Test" });
       expect(vm.pagination).toBeUndefined();
-      expect(vm.message).toBeUndefined();
+      expect(vm.message).toBe("Retrieved");
+      expect(vm.code).toBe("RETRIEVED");
     });
 
-    it("should create instance with data and pagination", () => {
+    it("should create instance with data, pagination, message and code", () => {
       const pagination = PaginationViewModel.create({
         page: 1,
         limit: 10,
         totalItems: 100,
       });
 
-      const vm = SuccessViewModel.create({ items: ["a", "b"] }, pagination);
-
-      expect(vm.success).toBe(true);
-      expect(vm.data).toEqual({ items: ["a", "b"] });
-      expect(vm.pagination).toBe(pagination);
-      expect(vm.message).toBeUndefined();
-    });
-
-    it("should create instance with data and message", () => {
-      const vm = SuccessViewModel.create(
-        { id: "123" },
-        undefined,
-        "Operation successful",
-      );
-
-      expect(vm.success).toBe(true);
-      expect(vm.data).toEqual({ id: "123" });
-      expect(vm.pagination).toBeUndefined();
-      expect(vm.message).toBe("Operation successful");
-    });
-
-    it("should create instance with all parameters", () => {
-      const pagination = PaginationViewModel.create({
-        page: 1,
-        limit: 10,
-        totalItems: 100,
-      });
-
-      const vm = SuccessViewModel.create(
-        { items: ["a", "b"] },
+      const vm = SuccessViewModel.create({
+        data: { items: ["a", "b"] },
         pagination,
-        "Data retrieved successfully",
-      );
+        message: "Items retrieved",
+        code: "ITEMS_RETRIEVED",
+      });
 
       expect(vm.success).toBe(true);
       expect(vm.data).toEqual({ items: ["a", "b"] });
       expect(vm.pagination).toBe(pagination);
-      expect(vm.message).toBe("Data retrieved successfully");
+      expect(vm.message).toBe("Items retrieved");
+      expect(vm.code).toBe("ITEMS_RETRIEVED");
     });
 
     it("should create instance without data", () => {
-      const vm = SuccessViewModel.create();
+      const vm = SuccessViewModel.create({
+        message: "Operation completed",
+        code: "COMPLETED",
+      });
 
       expect(vm.success).toBe(true);
       expect(vm.data).toBeUndefined();
       expect(vm.pagination).toBeUndefined();
-      expect(vm.message).toBeUndefined();
-    });
-
-    it("should handle null data", () => {
-      const vm = SuccessViewModel.create(null);
-
-      expect(vm.success).toBe(true);
-      expect(vm.data).toBeNull();
+      expect(vm.message).toBe("Operation completed");
+      expect(vm.code).toBe("COMPLETED");
     });
 
     it("should handle array data", () => {
-      const vm = SuccessViewModel.create([1, 2, 3]);
+      const vm = SuccessViewModel.create({
+        data: [1, 2, 3],
+        message: "Retrieved",
+        code: "RETRIEVED",
+      });
 
       expect(vm.success).toBe(true);
       expect(vm.data).toEqual([1, 2, 3]);
     });
 
     it("should handle empty array data", () => {
-      const vm = SuccessViewModel.create([]);
+      const vm = SuccessViewModel.create({
+        data: [],
+        message: "Retrieved",
+        code: "RETRIEVED",
+      });
 
       expect(vm.success).toBe(true);
       expect(vm.data).toEqual([]);
     });
 
     it("should handle string data", () => {
-      const vm = SuccessViewModel.create("hello");
+      const vm = SuccessViewModel.create({
+        data: "hello",
+        message: "Retrieved",
+        code: "RETRIEVED",
+      });
 
       expect(vm.success).toBe(true);
       expect(vm.data).toBe("hello");
     });
 
     it("should handle number data", () => {
-      const vm = SuccessViewModel.create(42);
+      const vm = SuccessViewModel.create({
+        data: 42,
+        message: "Retrieved",
+        code: "RETRIEVED",
+      });
 
       expect(vm.success).toBe(true);
       expect(vm.data).toBe(42);
     });
 
     it("should handle boolean data", () => {
-      const vm = SuccessViewModel.create(true);
+      const vm = SuccessViewModel.create({
+        data: true,
+        message: "Retrieved",
+        code: "RETRIEVED",
+      });
 
       expect(vm.success).toBe(true);
       expect(vm.data).toBe(true);
@@ -113,39 +109,41 @@ describe("SuccessViewModel", () => {
   });
 
   describe("toJSON", () => {
-    it("should return correct JSON with data only", () => {
-      const vm = SuccessViewModel.create({ id: "123" });
+    it("should return correct JSON with data, message and code", () => {
+      const vm = SuccessViewModel.create({
+        data: { id: "123" },
+        message: "Retrieved",
+        code: "RETRIEVED",
+      });
       const json = vm.toJSON();
 
       expect(json).toEqual({
         success: true,
+        message: "Retrieved",
+        code: "RETRIEVED",
         data: { id: "123" },
       });
     });
 
-    it("should return correct JSON with data and message", () => {
-      const vm = SuccessViewModel.create({ id: "123" }, undefined, "Success!");
-      const json = vm.toJSON();
-
-      expect(json).toEqual({
-        success: true,
-        data: { id: "123" },
-        message: "Success!",
-      });
-    });
-
-    it("should return correct JSON with data and pagination", () => {
+    it("should return correct JSON with data, pagination, message and code", () => {
       const pagination = PaginationViewModel.create({
         page: 1,
         limit: 10,
         totalItems: 100,
       });
 
-      const vm = SuccessViewModel.create({ items: ["a"] }, pagination);
+      const vm = SuccessViewModel.create({
+        data: { items: ["a"] },
+        pagination,
+        message: "Items retrieved",
+        code: "ITEMS_RETRIEVED",
+      });
       const json = vm.toJSON();
 
       expect(json).toEqual({
         success: true,
+        message: "Items retrieved",
+        code: "ITEMS_RETRIEVED",
         data: { items: ["a"] },
         pagination: {
           currentPage: 1,
@@ -158,26 +156,17 @@ describe("SuccessViewModel", () => {
       });
     });
 
-    it("should return correct JSON with message only (no data)", () => {
-      const vm = SuccessViewModel.create(
-        undefined,
-        undefined,
-        "Operation completed",
-      );
+    it("should return correct JSON without data", () => {
+      const vm = SuccessViewModel.create({
+        message: "Operation completed",
+        code: "COMPLETED",
+      });
       const json = vm.toJSON();
 
       expect(json).toEqual({
         success: true,
         message: "Operation completed",
-      });
-    });
-
-    it("should return correct JSON without optional fields", () => {
-      const vm = SuccessViewModel.create();
-      const json = vm.toJSON();
-
-      expect(json).toEqual({
-        success: true,
+        code: "COMPLETED",
       });
     });
 
@@ -188,15 +177,18 @@ describe("SuccessViewModel", () => {
         totalItems: 50,
       });
 
-      const vm = SuccessViewModel.create(
-        { users: ["john", "jane"] },
+      const vm = SuccessViewModel.create({
+        data: { users: ["john", "jane"] },
         pagination,
-        "Users retrieved",
-      );
+        message: "Users retrieved",
+        code: "USERS_RETRIEVED",
+      });
       const json = vm.toJSON();
 
       expect(json).toEqual({
         success: true,
+        message: "Users retrieved",
+        code: "USERS_RETRIEVED",
         data: { users: ["john", "jane"] },
         pagination: {
           currentPage: 2,
@@ -206,7 +198,6 @@ describe("SuccessViewModel", () => {
           hasNextPage: true,
           hasPrevPage: true,
         },
-        message: "Users retrieved",
       });
     });
   });

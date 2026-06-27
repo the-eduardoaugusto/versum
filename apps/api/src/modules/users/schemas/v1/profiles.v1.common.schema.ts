@@ -86,11 +86,10 @@ export class ProfilesCommonSchemasV1 {
       description: "Payload para criar o perfil do usuário",
     });
 
-  static readonly createProfileResponseSchema =
-    createSuccessResponseSchema(
-      "CreateProfileResponse",
-      this.fullProfileSchema,
-    );
+  static readonly createProfileResponseSchema = createSuccessResponseSchema(
+    "CreateProfileResponse",
+    this.fullProfileSchema,
+  );
 
   static readonly getAuthenticatedProfileResponseSchema =
     createSuccessResponseSchema(
@@ -120,6 +119,40 @@ export class ProfilesCommonSchemasV1 {
       "GetProfileByUsernameResponse",
       this.fullProfileSchema,
     );
+
+  static readonly updateProfilePictureResponseSchema =
+    createSuccessResponseSchema(
+      "UpdateProfilePictureResponse",
+      this.fullProfileSchema,
+    );
+
+  static readonly uploadProfilePictureBodySchema = z
+    .object({
+      file: z.any().openapi({
+        type: "string",
+        format: "binary",
+        description: "Profile picture file (JPEG or PNG, max 5MB)",
+      }),
+    })
+    .openapi("UploadProfilePictureBody", {
+      description: "Multipart form data with profile picture file",
+    });
+
+  static readonly checkUsernameAvailabilityResponseSchema =
+    createSuccessResponseSchema(
+      "CheckUsernameAvailabilityResponse",
+      z.object({
+        available: z.boolean().openapi({
+          description: "Whether the username is available",
+          example: true,
+        }),
+      }),
+    );
+
+  static readonly deleteAvatarResponseSchema = createSuccessResponseSchema(
+    "DeleteAvatarResponse",
+    this.fullProfileSchema,
+  );
 
   static readonly usernameParamSchema = z.object({
     username: z
@@ -156,6 +189,14 @@ export const updateAuthenticatedProfileResponseSchema =
 export const usernameParamSchema = ProfilesCommonSchemasV1.usernameParamSchema;
 export const getProfileByUsernameResponseSchema =
   ProfilesCommonSchemasV1.getProfileByUsernameResponseSchema;
+export const updateProfilePictureResponseSchema =
+  ProfilesCommonSchemasV1.updateProfilePictureResponseSchema;
+export const uploadProfilePictureBodySchema =
+  ProfilesCommonSchemasV1.uploadProfilePictureBodySchema;
+export const checkUsernameAvailabilityResponseSchema =
+  ProfilesCommonSchemasV1.checkUsernameAvailabilityResponseSchema;
+export const deleteAvatarResponseSchema =
+  ProfilesCommonSchemasV1.deleteAvatarResponseSchema;
 
 export type ProfileSchema = z.infer<
   typeof ProfilesCommonSchemasV1.profileSchema

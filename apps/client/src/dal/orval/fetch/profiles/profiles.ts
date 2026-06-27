@@ -9,13 +9,20 @@ import postApiV1ProfilesMeMutator from "../../../../lib/api-fetcher";
 import getApiV1ProfilesMeMutator from "../../../../lib/api-fetcher";
 import patchApiV1ProfilesMeMutator from "../../../../lib/api-fetcher";
 import getApiV1ProfilesUsernameMutator from "../../../../lib/api-fetcher";
+import getApiV1ProfilesCheckUsernameUsernameMutator from "../../../../lib/api-fetcher";
+import postApiV1ProfilesMeAvatarMutator from "../../../../lib/api-fetcher";
+import deleteApiV1ProfilesMeAvatarMutator from "../../../../lib/api-fetcher";
 import type {
+  CheckUsernameAvailabilityResponse,
   CreateProfileBody,
   CreateProfileResponse,
+  DeleteAvatarResponse,
   GetAuthenticatedProfileResponse,
   GetProfileByUsernameResponse,
   UpdateAuthenticatedProfileBody,
   UpdateAuthenticatedProfileResponse,
+  UpdateProfilePictureResponse,
+  UploadProfilePictureBody,
 } from "../schemas";
 
 export const getPostApiV1ProfilesMeUrl = () => {
@@ -101,6 +108,76 @@ export const getApiV1ProfilesUsername = async (
     {
       ...options,
       method: "GET",
+    },
+  );
+};
+
+export const getGetApiV1ProfilesCheckUsernameUsernameUrl = (
+  username: string,
+) => {
+  return `/api/v1/profiles/check-username/${username}`;
+};
+
+/**
+ * Verifica se um username está disponível para usar.
+ * @summary Verificar disponibilidade de username
+ */
+export const getApiV1ProfilesCheckUsernameUsername = async (
+  username: string,
+  options?: RequestInit,
+): Promise<CheckUsernameAvailabilityResponse> => {
+  return getApiV1ProfilesCheckUsernameUsernameMutator<CheckUsernameAvailabilityResponse>(
+    getGetApiV1ProfilesCheckUsernameUsernameUrl(username),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
+
+export const getPostApiV1ProfilesMeAvatarUrl = () => {
+  return `/api/v1/profiles/@me/avatar`;
+};
+
+/**
+ * Faz upload de uma nova foto de perfil. Formatos: JPEG, PNG, WEBP. Tamanho máximo: 5MB.
+ * @summary Upload de foto de perfil
+ */
+export const postApiV1ProfilesMeAvatar = async (
+  uploadProfilePictureBody?: UploadProfilePictureBody,
+  options?: RequestInit,
+): Promise<UpdateProfilePictureResponse> => {
+  const formData = new FormData();
+  if (uploadProfilePictureBody?.file !== undefined) {
+    formData.append(`file`, uploadProfilePictureBody.file);
+  }
+
+  return postApiV1ProfilesMeAvatarMutator<UpdateProfilePictureResponse>(
+    getPostApiV1ProfilesMeAvatarUrl(),
+    {
+      ...options,
+      method: "POST",
+      body: formData,
+    },
+  );
+};
+
+export const getDeleteApiV1ProfilesMeAvatarUrl = () => {
+  return `/api/v1/profiles/@me/avatar`;
+};
+
+/**
+ * Remove a foto de perfil do usuário autenticado.
+ * @summary Deletar foto de perfil
+ */
+export const deleteApiV1ProfilesMeAvatar = async (
+  options?: RequestInit,
+): Promise<DeleteAvatarResponse> => {
+  return deleteApiV1ProfilesMeAvatarMutator<DeleteAvatarResponse>(
+    getDeleteApiV1ProfilesMeAvatarUrl(),
+    {
+      ...options,
+      method: "DELETE",
     },
   );
 };

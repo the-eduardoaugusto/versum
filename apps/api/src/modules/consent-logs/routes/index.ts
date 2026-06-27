@@ -8,7 +8,9 @@ export const createConsentLogRoutes = (version: ApiVersion) => {
       return createConsentLogRoutesV1(new ConsentLogControllerV1());
     default: {
       const exhaustiveCheck: never = version;
-      throw new Error(`Unsupported consent logs API version: ${exhaustiveCheck}`);
+      throw new Error(
+        `Unsupported consent logs API version: ${exhaustiveCheck}`,
+      );
     }
   }
 };

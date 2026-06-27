@@ -47,14 +47,23 @@ async function proxy(req: NextRequest) {
 
   const responseHeaders = new Headers();
   res.headers.forEach((value, key) => {
-    if (key !== "content-encoding" && key !== "transfer-encoding") {
-      if (key === "set-cookie") {
-        responseHeaders.append(key, value);
-      } else {
-        responseHeaders.set(key, value);
-      }
+    // set-cookie is handled separately below: Headers.forEach collapses
+    // multiple Set-Cookie values into one comma-joined string, which corrupts
+    // cookie flags/values. Skip it here.
+    if (
+      key !== "content-encoding" &&
+      key !== "transfer-encoding" &&
+      key !== "set-cookie"
+    ) {
+      responseHeaders.set(key, value);
     }
   });
+
+  // Read each Set-Cookie individually to preserve per-cookie attributes
+  // (HttpOnly; Secure; SameSite) and values containing commas (e.g. Expires).
+  for (const cookie of res.headers.getSetCookie()) {
+    responseHeaders.append("set-cookie", cookie);
+  }
 
   return new NextResponse(res.body, {
     status: res.status,

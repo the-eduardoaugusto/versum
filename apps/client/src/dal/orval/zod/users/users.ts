@@ -19,7 +19,8 @@ export const GetApiV1UsersMeResponse = zod
       .boolean()
       .default(getApiV1UsersMeResponseSuccessDefault)
       .describe("Indica se a requisição foi bem-sucedida"),
-    message: zod.string().optional().describe("Mensagem opcional de contexto"),
+    message: zod.string().describe("Mensagem de contexto da resposta"),
+    code: zod.string().describe("Código da resposta"),
     data: zod
       .object({
         user: zod
@@ -61,7 +62,8 @@ export const PatchApiV1UsersMeResponse = zod
       .boolean()
       .default(patchApiV1UsersMeResponseSuccessDefault)
       .describe("Indica se a requisição foi bem-sucedida"),
-    message: zod.string().optional().describe("Mensagem opcional de contexto"),
+    message: zod.string().describe("Mensagem de contexto da resposta"),
+    code: zod.string().describe("Código da resposta"),
     data: zod
       .object({
         user: zod
@@ -90,7 +92,8 @@ export const GetApiV1UsersMeExportResponse = zod
       .boolean()
       .default(getApiV1UsersMeExportResponseSuccessDefault)
       .describe("Indica se a requisição foi bem-sucedida"),
-    message: zod.string().optional().describe("Mensagem opcional de contexto"),
+    message: zod.string().describe("Mensagem de contexto da resposta"),
+    code: zod.string().describe("Código da resposta"),
     data: zod
       .object({
         exportedAt: zod.iso

@@ -1,0 +1,233 @@
+{
+  "main": {
+    "id": "33be50a9b23057be",
+    "type": "split",
+    "children": [
+      {
+        "id": "f2c5902403d6f445",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "c357550c46a6ccc4",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "Nova aba"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "dc4a60df61aef1bc",
+    "type": "split",
+    "children": [
+      {
+        "id": "10dfdf25bfc73cd8",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "36c9a9864d4e6747",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Explorador de arquivos"
+            }
+          },
+          {
+            "id": "c8a74b1f331dfddb",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Procurar"
+            }
+          },
+          {
+            "id": "9019caf2cf4bc32b",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Marcadores"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "9cf1e8b82508c9f7",
+    "type": "split",
+    "children": [
+      {
+        "id": "92fc790eef62ff1b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "07d3c92d4e90e3b3",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "www/youtube/videos next/_Index.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Links inversos para _Index"
+            }
+          },
+          {
+            "id": "ee49b00b19c5ac02",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "www/youtube/videos next/_Index.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Links de saída para _Index"
+            }
+          },
+          {
+            "id": "251a769b04fe70aa",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Etiquetas"
+            }
+          },
+          {
+            "id": "d2a1291b1c8d5531",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "Todas as propriedades"
+            }
+          },
+          {
+            "id": "931b93f89f7d6340",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "www/youtube/videos next/_Index.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Sumário de _Index"
+            }
+          },
+          {
+            "id": "b4d15d0bbaec16c6",
+            "type": "leaf",
+            "state": {
+              "type": "calendar",
+              "state": {},
+              "icon": "lucide-ghost",
+              "title": "calendar"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Abrir a troca rápida": false,
+      "canvas:Criar novo canvas": false,
+      "daily-notes:Abrir a nota de hoje": false,
+      "templates:Inserir modelo": false,
+      "command-palette:Abrir paleta de comandos": false,
+      "bases:Criar nova base": false,
+      "graph:Abrir visualização em gráfico": false,
+      "obsidian-excalidraw-plugin:New drawing": false,
+      "templater-obsidian:Templater": false
+    }
+  },
+  "active": "c357550c46a6ccc4",
+  "lastOpenFiles": [
+    "_Index.md",
+    "PRD.md",
+    "Profile Edit System - Design.md",
+    "Docs/_Index.md",
+    "Docs/Apps/_Index.md",
+    "Docs/Apps/Client/State Management.md",
+    "Docs/Apps/Client/Components.md",
+    "Docs/Apps/Client/_Overview.md",
+    "Docs/Apps/Packages/_Index.md",
+    "Docs/Apps/Packages/Logger/_Overview.md",
+    "Docs/Apps/API/Database.md",
+    "Docs/Apps/API/Services.md",
+    "Docs/Apps/API/_Overview.md",
+    "Docs/LGPD Implementation.md",
+    "Docs/Git Flow.md",
+    "Docs/API Response Standardization.md",
+    "Docs/API Development.md",
+    "Docs/Naming Convention.md",
+    "www/youtube/videos next/vídeo 1/Roteamento e sua primeira página.md",
+    "deveres diários/2026/05-maio/2026-05-08.md",
+    "deveres diários/2026/05-maio/2026-05-09.md",
+    "deveres diários/2026/05-maio/_Index.md",
+    "deveres diários/2026/_Index.md",
+    "www/youtube/videos next/vídeo 2/Dados dinâmicos, rotas dinâmicas e otimização de imagens.md",
+    "deveres diários/_Index.md",
+    "deveres diários/Templates/tp_daily_dever.md",
+    "Excalidraw",
+    "www/youtube/video git",
+    "deveres diários/2026/05-maio",
+    "deveres diários/Templates",
+    "deveres diários/2026/05-maio",
+    "deveres diários/2026",
+    "www/youtube/videos next/vídeo 3",
+    "www/youtube/videos next/vídeo 2",
+    "www/youtube/videos next/vídeo 1",
+    "www/youtube/videos next"
+  ]
+}

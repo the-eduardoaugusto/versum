@@ -73,7 +73,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ReactQueryProvider>{children}</ReactQueryProvider>
-          <Toaster />
+          <Toaster position="top-center" className="" />
         </ThemeProvider>
       </body>
     </html>

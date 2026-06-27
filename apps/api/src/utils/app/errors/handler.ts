@@ -1,6 +1,6 @@
+import { logger } from "@versum/logger";
 import type { Context } from "hono";
 import { ApiErrorViewModel } from "../../../view-models/default/error.view-model.ts";
-import { logger } from "@versum/logger";
 import {
   BadRequestError,
   BaseError,
@@ -36,17 +36,18 @@ export class ErrorHandler {
       );
     }
 
-    logger("error",
+    logger(
+      "error",
       details ? `Erro no ${details}:` : "Erro não tratado:",
       String(err),
     );
 
     this.ctx.status(500);
+    // Never reflect the underlying error message to the client: it can leak
+    // DB schema, query fragments, or internal invariants. The real error is
+    // already logged above.
     return this.ctx.json(
-      new ApiErrorViewModel(
-        extractErrorMessage(err, "Internal Server Error"),
-        "INTERNAL_SERVER_ERROR",
-      ),
+      new ApiErrorViewModel("Internal Server Error", "INTERNAL_SERVER_ERROR"),
     );
   }
   private getStatusCodeForError(err: unknown) {

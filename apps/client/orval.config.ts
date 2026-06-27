@@ -1,7 +1,7 @@
 import { defineConfig } from "orval";
 
 const openApiUrl = new URL(
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:4002/",
+  process.env.NEXT_PUBLIC_API_URL || "https://localhost:4002/",
 );
 openApiUrl.pathname = "/openapi.json";
 

@@ -21,13 +21,14 @@
 
 ## Documentação Obrigatória
 
+A documentação fica no `Obsidian Vault/` (vault Obsidian). Comece por `Obsidian Vault/_Index.md`.
 Sempre leia estes arquivos antes de codificar:
 
-- `.ai/prd.md` — Product Requirements Document
-- `.ai/docs/naming-convention.md` — Database, API e código
-- `.ai/docs/api-development.md` — Como criar endpoints
-- `.ai/docs/git-flow.md` — Branches, commits e sandbox
-- `.ai/rules/` — Regras de desenvolvimento
+- `Obsidian Vault/PRD.md` — Product Requirements Document
+- `Obsidian Vault/Docs/Naming Convention.md` — Database, API e código
+- `Obsidian Vault/Docs/API Development.md` — Como criar endpoints
+- `Obsidian Vault/Docs/Git Flow.md` — Branches, commits e sandbox
+- `Obsidian Vault/Rules/` — Regras de desenvolvimento
 
 ---
 
@@ -35,7 +36,7 @@ Sempre leia estes arquivos antes de codificar:
 
 ```
 versum/
-├── .ai/                 # Documentação e regras globais
+├── Obsidian Vault/      # Documentação e regras globais (Obsidian)
 ├── apps/
 │   ├── api/             # Backend REST (Hono)
 │   ├── client/          # Frontend (Next.js App Router)
@@ -59,10 +60,10 @@ versum/
 
 ### 2. Antes de Codificar — CHECKLIST OBRIGATÓRIO
 1. Leia `AGENTS.md` (este arquivo) — **todo, do início ao fim**
-2. Leia `.ai/docs/git-flow.md` — **entenda o fluxo de branches**
-3. Leia `.ai/prd.md`
-4. Leia `.ai/docs/` pertinente ao que vai fazer
-5. Leia `.ai/rules/` pertinente
+2. Leia `Obsidian Vault/Docs/Git Flow.md` — **entenda o fluxo de branches**
+3. Leia `Obsidian Vault/PRD.md`
+4. Leia `Obsidian Vault/Docs/` pertinente ao que vai fazer
+5. Leia `Obsidian Vault/Rules/` pertinente
 6. **Verifique a branch atual** com `git branch --show-current`
    - Se estiver em `development`, **PARE** e crie uma sub-branch
    - Se estiver em outra branch sem prefixo `ai-`, considere criar uma nova
