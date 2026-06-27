@@ -23,6 +23,7 @@ Regras de desenvolvimento e boas práticas aplicadas em todo o código.
 | [[04 General Practices]] | Qualidade, versionamento, docs, erros, CI/CD |
 | [[05 Tooling]] | Gerenciador de pacotes e runtime (Bun) |
 | [[06 Frontend Animations]] | GSAP + SSR sem flash de conteúdo |
+| [[07 Vault Standard]] | Padrão Obsidian Vault, frontmatter, tags, navegação |
 
 ---
 
