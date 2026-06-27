@@ -2,24 +2,24 @@ import { afterEach, describe, expect, it } from "vitest";
 import { getSessionCookieName } from "./auth";
 
 describe("getSessionCookieName", () => {
-  const ORIGINAL = process.env.NEXT_PUBLIC_API_URL;
+  const ORIGINAL = process.env.COOKIE_SECURE;
 
   afterEach(() => {
-    process.env.NEXT_PUBLIC_API_URL = ORIGINAL;
+    process.env.COOKIE_SECURE = ORIGINAL;
   });
 
-  it("retorna __Host-session para HTTPS", () => {
-    process.env.NEXT_PUBLIC_API_URL = "https://api.versum.work";
+  it("retorna __Host-session quando COOKIE_SECURE=true", () => {
+    process.env.COOKIE_SECURE = "true";
     expect(getSessionCookieName()).toBe("__Host-session");
   });
 
-  it("retorna session para HTTP", () => {
-    process.env.NEXT_PUBLIC_API_URL = "http://localhost:4002";
+  it("retorna session quando COOKIE_SECURE!=true", () => {
+    process.env.COOKIE_SECURE = "false";
     expect(getSessionCookieName()).toBe("session");
   });
 
-  it("retorna session se NEXT_PUBLIC_API_URL for undefined", () => {
-    delete process.env.NEXT_PUBLIC_API_URL;
+  it("retorna session se COOKIE_SECURE for undefined", () => {
+    delete process.env.COOKIE_SECURE;
     expect(getSessionCookieName()).toBe("session");
   });
 });

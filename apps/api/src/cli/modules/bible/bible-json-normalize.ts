@@ -113,9 +113,7 @@ function normalizeBookEntry(
           `Livro "${bookKey}" capítulo ${chapterNumber}: esperado objeto de versículos.`,
         );
       }
-      const verses = Object.entries(
-        rawChapter as unknown as CompactChapter,
-      )
+      const verses = Object.entries(rawChapter as unknown as CompactChapter)
         .map(([verseNumber, verseContent]) =>
           toVerse(verseContent, Number(verseNumber)),
         )
@@ -152,7 +150,10 @@ function normalizeBooks(
       }
       const chaptersMap: Record<string, Record<string, string>> = {};
       for (const ch of chaptersRaw) {
-        const chObj = ch as { chapter?: number; verses?: Array<{ verse: number; text: string }> };
+        const chObj = ch as {
+          chapter?: number;
+          verses?: Array<{ verse: number; text: string }>;
+        };
         const chNum = String(chObj.chapter ?? 0);
         chaptersMap[chNum] = {};
         const verses = chObj.verses ?? [];
@@ -163,10 +164,16 @@ function normalizeBooks(
       const wrappedBook = {
         name: bookObj.name as string,
         slug: bookObj.slug as string,
-        niceName: (bookObj.niceName as string) || toNiceName(bookObj.name as string),
+        niceName:
+          (bookObj.niceName as string) || toNiceName(bookObj.name as string),
         chapters: chaptersMap,
       };
-      return normalizeBookEntry(wrappedBook, wrappedBook.name, index, existingBooks);
+      return normalizeBookEntry(
+        wrappedBook,
+        wrappedBook.name,
+        index,
+        existingBooks,
+      );
     });
   }
 

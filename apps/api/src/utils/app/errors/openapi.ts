@@ -3,14 +3,14 @@ import { z } from "@hono/zod-openapi";
 export const apiErrorResponseSchema = z
   .object({
     success: z.literal(false).describe("Indica que ocorreu um erro"),
-    error: z.string().describe("Mensagem de erro"),
-    code: z.string().optional().describe("Código do erro"),
+    message: z.string().describe("Mensagem de erro"),
+    code: z.string().describe("Código do erro"),
   })
   .openapi("ApiErrorResponse", {
     description: "Resposta padrão de erro da API",
   });
 
-type ErrorStatusCode = 400 | 401 | 403 | 404 | 409 | 422 | 429 | 500;
+type ErrorStatusCode = 400 | 401 | 403 | 404 | 409 | 413 | 422 | 429 | 500;
 
 type ErrorResponseObject = {
   content: {
@@ -41,6 +41,7 @@ export const DEFAULT_ERROR_RESPONSE_DESCRIPTIONS: Record<
   403: "Acesso negado",
   404: "Recurso não encontrado",
   409: "Conflito de estado",
+  413: "Arquivo muito grande",
   422: "Entidade não processável",
   429: "Muitas requisições",
   500: "Erro interno do servidor",

@@ -1,6 +1,6 @@
 import type { OpenAPIHono } from "@hono/zod-openapi";
-import { redis } from "../../../infrastructure/redis";
 import { logger } from "@versum/logger";
+import { redis } from "../../../infrastructure/redis";
 import { ErrorHandler } from "../errors/index.ts";
 
 export class SetupListeners {
@@ -25,6 +25,7 @@ export class SetupListeners {
           level: "error",
         },
         `Server error: ${error.message}`,
+        error.cause ? `Caused by: ${error.cause}` : "",
       );
 
       return new ErrorHandler({ ctx }).handle(error);

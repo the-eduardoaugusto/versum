@@ -12,7 +12,9 @@ import type { ExportUserData } from "./exportUserData";
 export interface ExportUserDataResponse {
   /** Indica se a requisição foi bem-sucedida */
   success?: boolean;
-  /** Mensagem opcional de contexto */
-  message?: string;
+  /** Mensagem de contexto da resposta */
+  message: string;
+  /** Código da resposta */
+  code: string;
   data?: ExportUserData;
 }

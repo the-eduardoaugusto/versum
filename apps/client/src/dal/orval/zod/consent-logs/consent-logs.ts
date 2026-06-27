@@ -43,7 +43,8 @@ export const GetApiV1ConsentResponse = zod
       .boolean()
       .default(getApiV1ConsentResponseSuccessDefault)
       .describe("Indica se a requisição foi bem-sucedida"),
-    message: zod.string().optional().describe("Mensagem opcional de contexto"),
+    message: zod.string().describe("Mensagem de contexto da resposta"),
+    code: zod.string().describe("Código da resposta"),
     data: zod
       .object({
         consents: zod.array(

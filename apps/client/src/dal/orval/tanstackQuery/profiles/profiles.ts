@@ -23,12 +23,16 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 
 import type {
   ApiErrorResponse,
+  CheckUsernameAvailabilityResponse,
   CreateProfileBody,
   CreateProfileResponse,
+  DeleteAvatarResponse,
   GetAuthenticatedProfileResponse,
   GetProfileByUsernameResponse,
   UpdateAuthenticatedProfileBody,
   UpdateAuthenticatedProfileResponse,
+  UpdateProfilePictureResponse,
+  UploadProfilePictureBody,
 } from "../schemas";
 
 export type postApiV1ProfilesMeResponse201 = {
@@ -768,3 +772,539 @@ export function useGetApiV1ProfilesUsername<
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+export type getApiV1ProfilesCheckUsernameUsernameResponse200 = {
+  data: CheckUsernameAvailabilityResponse;
+  status: 200;
+};
+
+export type getApiV1ProfilesCheckUsernameUsernameResponse400 = {
+  data: ApiErrorResponse;
+  status: 400;
+};
+
+export type getApiV1ProfilesCheckUsernameUsernameResponse401 = {
+  data: ApiErrorResponse;
+  status: 401;
+};
+
+export type getApiV1ProfilesCheckUsernameUsernameResponse429 = {
+  data: ApiErrorResponse;
+  status: 429;
+};
+
+export type getApiV1ProfilesCheckUsernameUsernameResponse500 = {
+  data: ApiErrorResponse;
+  status: 500;
+};
+
+export type getApiV1ProfilesCheckUsernameUsernameResponseSuccess =
+  getApiV1ProfilesCheckUsernameUsernameResponse200 & {
+    headers: Headers;
+  };
+export type getApiV1ProfilesCheckUsernameUsernameResponseError = (
+  | getApiV1ProfilesCheckUsernameUsernameResponse400
+  | getApiV1ProfilesCheckUsernameUsernameResponse401
+  | getApiV1ProfilesCheckUsernameUsernameResponse429
+  | getApiV1ProfilesCheckUsernameUsernameResponse500
+) & {
+  headers: Headers;
+};
+
+export type getApiV1ProfilesCheckUsernameUsernameResponse =
+  | getApiV1ProfilesCheckUsernameUsernameResponseSuccess
+  | getApiV1ProfilesCheckUsernameUsernameResponseError;
+
+export const getGetApiV1ProfilesCheckUsernameUsernameUrl = (
+  username: string,
+) => {
+  return `/api/v1/profiles/check-username/${username}`;
+};
+
+/**
+ * Verifica se um username está disponível para usar.
+ * @summary Verificar disponibilidade de username
+ */
+export const getApiV1ProfilesCheckUsernameUsername = async (
+  username: string,
+  options?: RequestInit,
+): Promise<getApiV1ProfilesCheckUsernameUsernameResponse> => {
+  const res = await fetch(
+    getGetApiV1ProfilesCheckUsernameUsernameUrl(username),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: getApiV1ProfilesCheckUsernameUsernameResponse["data"] = body
+    ? JSON.parse(body)
+    : {};
+  return {
+    data,
+    status: res.status,
+    headers: res.headers,
+  } as getApiV1ProfilesCheckUsernameUsernameResponse;
+};
+
+export const getGetApiV1ProfilesCheckUsernameUsernameQueryKey = (
+  username: string,
+) => {
+  return [`/api/v1/profiles/check-username/${username}`] as const;
+};
+
+export const getGetApiV1ProfilesCheckUsernameUsernameQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiV1ProfilesCheckUsernameUsername>>,
+  TError = ApiErrorResponse,
+>(
+  username: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiV1ProfilesCheckUsernameUsername>>,
+        TError,
+        TData
+      >
+    >;
+    fetch?: RequestInit;
+  },
+) => {
+  const { query: queryOptions, fetch: fetchOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetApiV1ProfilesCheckUsernameUsernameQueryKey(username);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiV1ProfilesCheckUsernameUsername>>
+  > = ({ signal }) =>
+    getApiV1ProfilesCheckUsernameUsername(username, {
+      signal,
+      ...fetchOptions,
+    });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: username !== null && username !== undefined,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiV1ProfilesCheckUsernameUsername>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type GetApiV1ProfilesCheckUsernameUsernameQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiV1ProfilesCheckUsernameUsername>>
+>;
+export type GetApiV1ProfilesCheckUsernameUsernameQueryError = ApiErrorResponse;
+
+export function useGetApiV1ProfilesCheckUsernameUsername<
+  TData = Awaited<ReturnType<typeof getApiV1ProfilesCheckUsernameUsername>>,
+  TError = ApiErrorResponse,
+>(
+  username: string,
+  options: {
+    query: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiV1ProfilesCheckUsernameUsername>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiV1ProfilesCheckUsernameUsername>>,
+          TError,
+          Awaited<ReturnType<typeof getApiV1ProfilesCheckUsernameUsername>>
+        >,
+        "initialData"
+      >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetApiV1ProfilesCheckUsernameUsername<
+  TData = Awaited<ReturnType<typeof getApiV1ProfilesCheckUsernameUsername>>,
+  TError = ApiErrorResponse,
+>(
+  username: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiV1ProfilesCheckUsernameUsername>>,
+        TError,
+        TData
+      >
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiV1ProfilesCheckUsernameUsername>>,
+          TError,
+          Awaited<ReturnType<typeof getApiV1ProfilesCheckUsernameUsername>>
+        >,
+        "initialData"
+      >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+export function useGetApiV1ProfilesCheckUsernameUsername<
+  TData = Awaited<ReturnType<typeof getApiV1ProfilesCheckUsernameUsername>>,
+  TError = ApiErrorResponse,
+>(
+  username: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiV1ProfilesCheckUsernameUsername>>,
+        TError,
+        TData
+      >
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+};
+/**
+ * @summary Verificar disponibilidade de username
+ */
+
+export function useGetApiV1ProfilesCheckUsernameUsername<
+  TData = Awaited<ReturnType<typeof getApiV1ProfilesCheckUsernameUsername>>,
+  TError = ApiErrorResponse,
+>(
+  username: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<
+        Awaited<ReturnType<typeof getApiV1ProfilesCheckUsernameUsername>>,
+        TError,
+        TData
+      >
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & {
+  queryKey: DataTag<QueryKey, TData, TError>;
+} {
+  const queryOptions = getGetApiV1ProfilesCheckUsernameUsernameQueryOptions(
+    username,
+    options,
+  );
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
+    TData,
+    TError
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export type postApiV1ProfilesMeAvatarResponse200 = {
+  data: UpdateProfilePictureResponse;
+  status: 200;
+};
+
+export type postApiV1ProfilesMeAvatarResponse400 = {
+  data: ApiErrorResponse;
+  status: 400;
+};
+
+export type postApiV1ProfilesMeAvatarResponse401 = {
+  data: ApiErrorResponse;
+  status: 401;
+};
+
+export type postApiV1ProfilesMeAvatarResponse413 = {
+  data: ApiErrorResponse;
+  status: 413;
+};
+
+export type postApiV1ProfilesMeAvatarResponse429 = {
+  data: ApiErrorResponse;
+  status: 429;
+};
+
+export type postApiV1ProfilesMeAvatarResponse500 = {
+  data: ApiErrorResponse;
+  status: 500;
+};
+
+export type postApiV1ProfilesMeAvatarResponseSuccess =
+  postApiV1ProfilesMeAvatarResponse200 & {
+    headers: Headers;
+  };
+export type postApiV1ProfilesMeAvatarResponseError = (
+  | postApiV1ProfilesMeAvatarResponse400
+  | postApiV1ProfilesMeAvatarResponse401
+  | postApiV1ProfilesMeAvatarResponse413
+  | postApiV1ProfilesMeAvatarResponse429
+  | postApiV1ProfilesMeAvatarResponse500
+) & {
+  headers: Headers;
+};
+
+export type postApiV1ProfilesMeAvatarResponse =
+  | postApiV1ProfilesMeAvatarResponseSuccess
+  | postApiV1ProfilesMeAvatarResponseError;
+
+export const getPostApiV1ProfilesMeAvatarUrl = () => {
+  return `/api/v1/profiles/@me/avatar`;
+};
+
+/**
+ * Faz upload de uma nova foto de perfil. Formatos: JPEG, PNG, WEBP. Tamanho máximo: 5MB.
+ * @summary Upload de foto de perfil
+ */
+export const postApiV1ProfilesMeAvatar = async (
+  uploadProfilePictureBody?: UploadProfilePictureBody,
+  options?: RequestInit,
+): Promise<postApiV1ProfilesMeAvatarResponse> => {
+  const formData = new FormData();
+  if (uploadProfilePictureBody?.file !== undefined) {
+    formData.append(`file`, uploadProfilePictureBody.file);
+  }
+
+  const res = await fetch(getPostApiV1ProfilesMeAvatarUrl(), {
+    ...options,
+    method: "POST",
+    body: formData,
+  });
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: postApiV1ProfilesMeAvatarResponse["data"] = body
+    ? JSON.parse(body)
+    : {};
+  return {
+    data,
+    status: res.status,
+    headers: res.headers,
+  } as postApiV1ProfilesMeAvatarResponse;
+};
+
+export const getPostApiV1ProfilesMeAvatarMutationOptions = <
+  TError = ApiErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiV1ProfilesMeAvatar>>,
+    TError,
+    { data?: UploadProfilePictureBody },
+    TContext
+  >;
+  fetch?: RequestInit;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiV1ProfilesMeAvatar>>,
+  TError,
+  { data?: UploadProfilePictureBody },
+  TContext
+> => {
+  const mutationKey = ["postApiV1ProfilesMeAvatar"];
+  const { mutation: mutationOptions, fetch: fetchOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, fetch: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiV1ProfilesMeAvatar>>,
+    { data?: UploadProfilePictureBody }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return postApiV1ProfilesMeAvatar(data, fetchOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostApiV1ProfilesMeAvatarMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiV1ProfilesMeAvatar>>
+>;
+export type PostApiV1ProfilesMeAvatarMutationBody =
+  | UploadProfilePictureBody
+  | undefined;
+export type PostApiV1ProfilesMeAvatarMutationError = ApiErrorResponse;
+
+/**
+ * @summary Upload de foto de perfil
+ */
+export const usePostApiV1ProfilesMeAvatar = <
+  TError = ApiErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof postApiV1ProfilesMeAvatar>>,
+      TError,
+      { data?: UploadProfilePictureBody },
+      TContext
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof postApiV1ProfilesMeAvatar>>,
+  TError,
+  { data?: UploadProfilePictureBody },
+  TContext
+> => {
+  return useMutation(
+    getPostApiV1ProfilesMeAvatarMutationOptions(options),
+    queryClient,
+  );
+};
+export type deleteApiV1ProfilesMeAvatarResponse200 = {
+  data: DeleteAvatarResponse;
+  status: 200;
+};
+
+export type deleteApiV1ProfilesMeAvatarResponse401 = {
+  data: ApiErrorResponse;
+  status: 401;
+};
+
+export type deleteApiV1ProfilesMeAvatarResponse404 = {
+  data: ApiErrorResponse;
+  status: 404;
+};
+
+export type deleteApiV1ProfilesMeAvatarResponse429 = {
+  data: ApiErrorResponse;
+  status: 429;
+};
+
+export type deleteApiV1ProfilesMeAvatarResponse500 = {
+  data: ApiErrorResponse;
+  status: 500;
+};
+
+export type deleteApiV1ProfilesMeAvatarResponseSuccess =
+  deleteApiV1ProfilesMeAvatarResponse200 & {
+    headers: Headers;
+  };
+export type deleteApiV1ProfilesMeAvatarResponseError = (
+  | deleteApiV1ProfilesMeAvatarResponse401
+  | deleteApiV1ProfilesMeAvatarResponse404
+  | deleteApiV1ProfilesMeAvatarResponse429
+  | deleteApiV1ProfilesMeAvatarResponse500
+) & {
+  headers: Headers;
+};
+
+export type deleteApiV1ProfilesMeAvatarResponse =
+  | deleteApiV1ProfilesMeAvatarResponseSuccess
+  | deleteApiV1ProfilesMeAvatarResponseError;
+
+export const getDeleteApiV1ProfilesMeAvatarUrl = () => {
+  return `/api/v1/profiles/@me/avatar`;
+};
+
+/**
+ * Remove a foto de perfil do usuário autenticado.
+ * @summary Deletar foto de perfil
+ */
+export const deleteApiV1ProfilesMeAvatar = async (
+  options?: RequestInit,
+): Promise<deleteApiV1ProfilesMeAvatarResponse> => {
+  const res = await fetch(getDeleteApiV1ProfilesMeAvatarUrl(), {
+    ...options,
+    method: "DELETE",
+  });
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: deleteApiV1ProfilesMeAvatarResponse["data"] = body
+    ? JSON.parse(body)
+    : {};
+  return {
+    data,
+    status: res.status,
+    headers: res.headers,
+  } as deleteApiV1ProfilesMeAvatarResponse;
+};
+
+export const getDeleteApiV1ProfilesMeAvatarMutationOptions = <
+  TError = ApiErrorResponse,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteApiV1ProfilesMeAvatar>>,
+    TError,
+    void,
+    TContext
+  >;
+  fetch?: RequestInit;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteApiV1ProfilesMeAvatar>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ["deleteApiV1ProfilesMeAvatar"];
+  const { mutation: mutationOptions, fetch: fetchOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, fetch: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteApiV1ProfilesMeAvatar>>,
+    void
+  > = () => {
+    return deleteApiV1ProfilesMeAvatar(fetchOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteApiV1ProfilesMeAvatarMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteApiV1ProfilesMeAvatar>>
+>;
+
+export type DeleteApiV1ProfilesMeAvatarMutationError = ApiErrorResponse;
+
+/**
+ * @summary Deletar foto de perfil
+ */
+export const useDeleteApiV1ProfilesMeAvatar = <
+  TError = ApiErrorResponse,
+  TContext = unknown,
+>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof deleteApiV1ProfilesMeAvatar>>,
+      TError,
+      void,
+      TContext
+    >;
+    fetch?: RequestInit;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof deleteApiV1ProfilesMeAvatar>>,
+  TError,
+  void,
+  TContext
+> => {
+  return useMutation(
+    getDeleteApiV1ProfilesMeAvatarMutationOptions(options),
+    queryClient,
+  );
+};

@@ -1,10 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { getSessionCookieName } from "@/lib/auth";
+import { getSessionCookieName, isCookieSecure } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
   const cookieName = getSessionCookieName();
-  const isSecure =
-    process.env.NEXT_PUBLIC_API_URL?.startsWith("https") ?? false;
+  const isSecure = isCookieSecure();
 
   const response = NextResponse.redirect(new URL("/login", req.url));
   response.cookies.set(cookieName, "", {
