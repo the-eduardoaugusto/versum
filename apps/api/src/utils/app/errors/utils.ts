@@ -5,6 +5,19 @@ export const isValidationError = (error: unknown): boolean => {
   return error.name === "ZodError" || Array.isArray(withIssues.issues);
 };
 
+// A malformed/empty JSON request body is a client fault (400), not an internal
+// error (500). It surfaces in two shapes before the controller runs:
+//   - Hono's body validator wraps it as Error("Malformed JSON in request body")
+//   - a raw SyntaxError from the parser ("JSON Parse error: Unexpected EOF",
+//     "Unexpected end of JSON input")
+// Both must be normalized to 400 at the global error handler level.
+export const isJsonParseError = (error: unknown): boolean => {
+  if (!(error instanceof Error)) return false;
+  return /malformed json|json parse error|unexpected (end|eof|token).*json|json.*unexpected/i.test(
+    error.message,
+  );
+};
+
 const parseSerializedZodMessage = (message: string): string => {
   try {
     const parsed = JSON.parse(message) as Array<{ message?: unknown }>;

@@ -1,4 +1,6 @@
 import { logger } from "@versum/logger";
+import { ConflictError, NotFoundError } from "@/utils/app/errors/index.ts";
+import { db } from "../../../../infrastructure/db/index.ts";
 import {
   type ChapterWithContent,
   JourneyRepositoryV1,
@@ -47,9 +49,19 @@ export interface StatusResponse {
 
 export class JourneyServiceV1 {
   private readonly repository: JourneyRepositoryV1;
+  private readonly transaction: typeof db.transaction;
 
-  constructor({ repository }: { repository?: JourneyRepositoryV1 } = {}) {
+  constructor({
+    repository,
+    transaction,
+  }: {
+    repository?: JourneyRepositoryV1;
+    transaction?: typeof db.transaction;
+  } = {}) {
     this.repository = repository ?? new JourneyRepositoryV1();
+    // bind to db: db.transaction is a method that relies on `this`; storing it
+    // as a loose reference would lose the binding and crash on this.session.
+    this.transaction = transaction ?? db.transaction.bind(db);
   }
 
   private mapChapter(result: ChapterWithContent): ChapterWithContentResponse {
@@ -129,25 +141,47 @@ export class JourneyServiceV1 {
     };
   }
 
-  async markCurrentAsRead(userId: string): Promise<{ success: boolean }> {
-    const currentChapter = await this.repository.findNextChapterToRead(userId);
+  async markCurrentAsRead(
+    userId: string,
+    chapterId: string,
+  ): Promise<{ success: boolean }> {
+    return this.transaction(async (tx) => {
+      const chapterExists = await this.repository.findChapterById(
+        chapterId,
+        tx as any,
+      );
+      if (!chapterExists) {
+        throw new NotFoundError("Chapter not found");
+      }
 
-    if (!currentChapter) {
-      logger("debug", "[Journey] No chapter to mark as read");
+      const alreadyRead = await this.repository.isChapterRead(
+        userId,
+        chapterId,
+        tx as any,
+      );
+      if (alreadyRead) {
+        logger(
+          "debug",
+          `[Journey] Chapter already read, idempotent no-op: ${chapterId}`,
+        );
+        return { success: true };
+      }
+
+      const expectedChapter = await this.repository.findNextChapterToRead(
+        userId,
+        tx as any,
+      );
+      if (!expectedChapter || expectedChapter.chapter.id !== chapterId) {
+        throw new ConflictError(
+          "Chapter does not match expected current chapter",
+        );
+      }
+
+      await this.repository.markChapterAsRead({ userId, chapterId }, tx as any);
+
+      logger("debug", `[Journey] Marked chapter as read: ${chapterId}`);
       return { success: true };
-    }
-
-    logger(
-      "debug",
-      `[Journey] Marking chapter as read: ${currentChapter.chapter.id} (${currentChapter.book.name} ${currentChapter.chapter.number})`,
-    );
-
-    await this.repository.markChapterAsRead({
-      userId,
-      chapterId: currentChapter.chapter.id,
     });
-
-    return { success: true };
   }
 
   async getStatus(userId: string): Promise<StatusResponse> {
