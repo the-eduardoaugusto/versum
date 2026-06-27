@@ -4,6 +4,8 @@ section: "Docs"
 subsection: "Decisions"
 tags: [versum, decisions, adr, moc]
 up: "[[Docs/_Index]]"
+prev: "[[Docs/Apps/_Index]]"
+next: "[[Plans/_Index]]"
 related: []
 depth: 1
 ---
@@ -21,4 +23,4 @@ Decisões técnicas permanentes (ADRs) sobre a arquitetura.
 
 ---
 
-◀ [[Docs/_Index|🏠 Home]] · [[Docs/Apps/_Index|Apps]] ▶
+◀ [[Docs/Apps/_Index|Apps]] · [[Plans/_Index|Plans]] ▶

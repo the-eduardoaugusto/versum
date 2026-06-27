@@ -3,6 +3,7 @@ title: "Plans"
 section: "Plans"
 tags: [versum, plans, moc]
 up: "[[_Index|Home]]"
+prev: "[[Rules/_Index]]"
 ---
 
 🏠 [[_Index|Home]] › 🗺️ **Plans**
