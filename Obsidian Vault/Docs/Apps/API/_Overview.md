@@ -107,6 +107,7 @@ Envelopes de resposta padronizados:
 
 - [[Docs/Apps/API/Services|Services]] — módulos e serviços (auth, bible, reading, users, interactions, consent-logs)
 - [[Docs/Apps/API/Database|Database]] — schemas Drizzle, migrações, relações
+- [[Docs/Apps/API/CLI|CLI]] — ferramenta interativa: bible seed, truncate, build, deploy
 
 ---
 
