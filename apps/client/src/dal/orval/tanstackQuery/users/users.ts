@@ -385,7 +385,7 @@ export const usePatchApiV1UsersMe = <
   return useMutation(getPatchApiV1UsersMeMutationOptions(options), queryClient);
 };
 export type deleteApiV1UsersMeResponse204 = {
-  data: void;
+  data: undefined;
   status: 204;
 };
 

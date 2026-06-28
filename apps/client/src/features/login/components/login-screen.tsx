@@ -1,6 +1,5 @@
 "use client";
 
-import { Toaster } from "@/components/ui/sonner";
 import { LoginForm } from "./login-form";
 
 export function LoginScreen() {

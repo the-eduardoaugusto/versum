@@ -1,6 +1,5 @@
 "use client";
 
-import { Toaster } from "@/components/ui/sonner";
 import { OnboardingFlow } from "./onboarding-flow";
 
 export function OnboardingScreen() {
