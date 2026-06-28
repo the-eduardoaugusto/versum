@@ -21,7 +21,7 @@ export async function checkUsername(
   username: string,
 ): Promise<{ available: boolean }> {
   const res = await getApiV1ProfilesCheckUsernameUsername(username);
-  return res.data!;
+  return { available: res.data?.available ?? false };
 }
 
 export async function uploadAvatar(file: File) {
