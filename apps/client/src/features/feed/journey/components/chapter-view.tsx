@@ -39,7 +39,7 @@ function packPages(
   if (currentPage.length > 0) {
     pages.push({
       startVerse: currentPage[0].number,
-      endVerse: currentPage.at(-1)!.number,
+      endVerse: currentPage[currentPage.length - 1].number,
       verses: currentPage,
     });
   }
