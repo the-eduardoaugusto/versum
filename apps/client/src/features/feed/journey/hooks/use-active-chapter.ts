@@ -1,6 +1,26 @@
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { postApiV1ReadingsJourneyNext } from "@/dal/orval/fetch/journey/journey";
+import { exponentialDelay, retryOn5xx } from "@/lib/retry-utils";
 import type { FeedChapter } from "../types";
+
+async function saveChapterRead(
+  chapterId: string,
+  attempt = 0,
+): Promise<boolean> {
+  try {
+    await postApiV1ReadingsJourneyNext({ chapterId });
+    return true;
+  } catch (error) {
+    if (retryOn5xx(attempt, error)) {
+      await new Promise((res) => setTimeout(res, exponentialDelay(attempt)));
+      return saveChapterRead(chapterId, attempt + 1);
+    }
+    toast.error("Progresso pode não ter sido salvo");
+    console.error("Failed to mark chapter as read", error);
+    return false;
+  }
+}
 
 interface UseActiveChapterOptions {
   chapters: FeedChapter[];
@@ -51,21 +71,20 @@ export function useActiveChapter(
               if (!hasBeenActiveRef.current.has(chapterId)) return;
               if (hasBeenReadRef.current.has(chapterId)) return;
               hasBeenReadRef.current.add(chapterId);
-              postApiV1ReadingsJourneyNext({ chapterId })
-                .then(() => {
-                  // Buffer fetch must happen AFTER the POST so the server pointer
-                  // has advanced and GET /feed returns the next set of chapters.
-                  const exitedIndex = chaptersRef.current.findIndex(
-                    (c) => c.id === chapterId,
-                  );
-                  const nearEnd =
-                    exitedIndex >= 0 &&
-                    exitedIndex >= chaptersRef.current.length - 2;
-                  if (nearEnd) {
-                    fetchNextPageRef.current();
-                  }
-                })
-                .catch(() => console.error("Failed to mark chapter as read"));
+              saveChapterRead(chapterId).then((saved) => {
+                if (!saved) return;
+                // Buffer fetch must happen AFTER the POST so the server pointer
+                // has advanced and GET /feed returns the next set of chapters.
+                const exitedIndex = chaptersRef.current.findIndex(
+                  (c) => c.id === chapterId,
+                );
+                const nearEnd =
+                  exitedIndex >= 0 &&
+                  exitedIndex >= chaptersRef.current.length - 2;
+                if (nearEnd) {
+                  fetchNextPageRef.current();
+                }
+              });
             }, 500);
           }
         }

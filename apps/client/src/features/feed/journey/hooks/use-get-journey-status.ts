@@ -9,6 +9,5 @@ export function useGetApiV1JourneyStatus() {
       return response;
     },
     staleTime: 60_000,
-    retry: 2,
   });
 }
