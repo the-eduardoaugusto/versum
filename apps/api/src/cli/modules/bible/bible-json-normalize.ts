@@ -182,6 +182,52 @@ function normalizeBooks(
   );
 }
 
+import type { BibleBookEntry } from "./seed/bible-books.constants";
+
+interface RawLivroBibliaDB {
+  livro: string;
+  capitulos: {
+    capitulo: number;
+    versiculos: { numero: number; texto: string }[];
+  }[];
+}
+
+function isRawLivroBibliaDB(raw: unknown): raw is RawLivroBibliaDB {
+  if (typeof raw !== "object" || raw === null) return false;
+  const r = raw as Record<string, unknown>;
+  if (typeof r.livro !== "string" || r.livro.trim() === "") return false;
+  if (!Array.isArray(r.capitulos)) return false;
+  return true;
+}
+
+export function normalizeLivroBibliaDB(
+  raw: unknown,
+  entry: BibleBookEntry,
+  index: number,
+): NormalizedBook {
+  if (!isRawLivroBibliaDB(raw)) {
+    throw new Error(
+      `Livro "${entry.slug}": JSON inválido — esperado { livro: string, capitulos: [...] }.`,
+    );
+  }
+
+  const chapters: NormalizedChapter[] = raw.capitulos.map((cap) => ({
+    chapter: cap.capitulo,
+    verses: cap.versiculos.map((v) => ({
+      verse: v.numero,
+      text: v.texto,
+    })),
+  }));
+
+  return {
+    name: raw.livro,
+    niceName: raw.livro,
+    slug: entry.slug,
+    order: index + 1,
+    chapters,
+}
+}
+
 /**
  * Formato aceito:
  * - `{ "genesis": { "name": "...", "chapters": { "1": { "1": "..." } } } }` (formato original)
