@@ -20,12 +20,12 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
   const initials = getInitials(profile.name);
 
   return (
-    <div className="profile-header flex items-center gap-4 px-6 py-8">
+    <div className="profile-header flex flex-col items-center gap-3 px-6 pt-8 pb-4">
       <div
         className={cn(
           "relative shrink-0 rounded-full overflow-hidden",
-          "w-16 h-16 md:w-20 md:h-20",
-          "bg-muted ring-1 ring-foreground/10",
+          "w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28",
+          "bg-muted",
         )}
       >
         {profile.pictureUrl ? (
@@ -52,13 +52,18 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
         )}
       </div>
 
-      <div className="flex flex-col gap-0.5 min-w-0">
-        <h1 className="text-xl font-normal leading-tight truncate">
+      <div className="flex flex-col items-center gap-0.5 w-full min-w-0 text-center">
+        <h1 className="text-xl lg:text-2xl font-normal leading-tight w-full break-words">
           {profile.name}
         </h1>
-        <p className="text-sm text-muted-foreground truncate">
+        <p className="text-sm text-muted-foreground break-words">
           @{profile.username}
         </p>
+        {profile.bio && (
+          <p className="text-sm text-muted-foreground mt-1 w-full whitespace-pre-wrap break-words">
+            {profile.bio}
+          </p>
+        )}
       </div>
     </div>
   );
