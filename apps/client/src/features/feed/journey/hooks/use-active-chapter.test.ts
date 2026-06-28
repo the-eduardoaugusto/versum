@@ -1,7 +1,15 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook } from "@testing-library/react";
+import { createElement, type ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { FeedChapter } from "../types";
 import { useActiveChapter } from "./use-active-chapter";
+
+function createWrapper() {
+  const queryClient = new QueryClient();
+  return ({ children }: { children: ReactNode }) =>
+    createElement(QueryClientProvider, { client: queryClient }, children);
+}
 
 class MockIntersectionObserver {
   observe = vi.fn();
@@ -36,12 +44,14 @@ describe("useActiveChapter", () => {
     const ref = { current: container };
     const chapters = [createMockChapter("ch1")];
 
-    const { result } = renderHook(() =>
-      useActiveChapter(ref, {
-        chapters,
-        isAtEnd: false,
-        fetchNextPage: vi.fn(),
-      }),
+    const { result } = renderHook(
+      () =>
+        useActiveChapter(ref, {
+          chapters,
+          isAtEnd: false,
+          fetchNextPage: vi.fn(),
+        }),
+      { wrapper: createWrapper() },
     );
 
     expect(result.current.activeChapterId).toBeNull();
@@ -60,12 +70,14 @@ describe("useActiveChapter", () => {
     const chapters = [createMockChapter("ch1"), createMockChapter("ch2")];
     const fetchNextPage = vi.fn();
 
-    renderHook(() =>
-      useActiveChapter(ref, {
-        chapters,
-        isAtEnd: false,
-        fetchNextPage,
-      }),
+    renderHook(
+      () =>
+        useActiveChapter(ref, {
+          chapters,
+          isAtEnd: false,
+          fetchNextPage,
+        }),
+      { wrapper: createWrapper() },
     );
 
     expect(fetchNextPage).not.toHaveBeenCalled();
@@ -83,12 +95,14 @@ describe("useActiveChapter", () => {
     const chapters = ["ch1", "ch2", "ch3", "ch4", "ch5"].map(createMockChapter);
     const fetchNextPage = vi.fn();
 
-    renderHook(() =>
-      useActiveChapter(ref, {
-        chapters,
-        isAtEnd: false,
-        fetchNextPage,
-      }),
+    renderHook(
+      () =>
+        useActiveChapter(ref, {
+          chapters,
+          isAtEnd: false,
+          fetchNextPage,
+        }),
+      { wrapper: createWrapper() },
     );
 
     expect(fetchNextPage).not.toHaveBeenCalled();
