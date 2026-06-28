@@ -1,9 +1,10 @@
-import { eq, sql } from "drizzle-orm";
+import { count, eq, sql } from "drizzle-orm";
 import { db as drizzle } from "../../../../infrastructure/db/index.ts";
 import {
   bibleBooks,
   bibleChapters,
   bibleVerses,
+  discoveryReadings,
 } from "../../../../infrastructure/db/schema.ts";
 
 export class DiscoveryRepositoryV1 {
@@ -52,7 +53,26 @@ export class DiscoveryRepositoryV1 {
       );
   }
 
-  async getReadVersesCount(_userId: string): Promise<number> {
-    return 0;
+  async insertReadVerses(
+    userId: string,
+    verseIds: string[],
+  ): Promise<void> {
+    if (verseIds.length === 0) return;
+
+    const values = verseIds.map((verseId) => ({
+      userId,
+      verseId,
+    }));
+
+    await this.db.insert(discoveryReadings).values(values);
+  }
+
+  async getReadVersesCount(userId: string): Promise<number> {
+    const [result] = await this.db
+      .select({ count: count() })
+      .from(discoveryReadings)
+      .where(eq(discoveryReadings.userId, userId));
+
+    return result?.count ?? 0;
   }
 }
