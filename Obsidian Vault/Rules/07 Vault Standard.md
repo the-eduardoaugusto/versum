@@ -217,7 +217,7 @@ Obsidian Vault/
 ```
 
 **Regras:**
-- Máximo 2 níveis de profundidade
+- Máximo 3 níveis de profundidade
 - Use PascalCase para nomes
 - Evite espaços extras em nomes
 - Use números de prefixo para sequências (`01`, `02`, etc)

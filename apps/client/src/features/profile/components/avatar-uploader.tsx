@@ -3,7 +3,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { validateAvatarFile } from "../api/profile-edit.api";
 
 function getInitials(name: string): string {
@@ -59,50 +58,54 @@ export function AvatarUploader({
   const shown = preview ?? pictureUrl ?? undefined;
 
   return (
-    <div className="flex items-center gap-4">
-      <Avatar size="lg" className="size-16">
+    <div className="flex flex-col items-center gap-2">
+      <Avatar className="size-26">
         {shown ? (
-          <AvatarImage src={shown} alt={name} />
+          <AvatarImage
+            src={shown}
+            alt={name}
+            className="w-full h-full object-cover aspect-square"
+          />
         ) : (
-          <AvatarFallback>{getInitials(name)}</AvatarFallback>
+          <AvatarFallback className="w-full h-full object-cover aspect-square">
+            {getInitials(name)}
+          </AvatarFallback>
         )}
       </Avatar>
 
-      <div className="flex flex-col gap-2">
-        <input
-          ref={inputRef}
-          id={inputId}
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          className="sr-only"
-          onChange={handleChange}
-        />
-        <div className="flex gap-2">
-          <Button
+      <input
+        ref={inputRef}
+        id={inputId}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        className="sr-only"
+        onChange={handleChange}
+      />
+
+      <div className="flex gap-3">
+        <button
+          type="button"
+          disabled={isUploading}
+          onClick={() => inputRef.current?.click()}
+          className="text-sm font-medium text-primary disabled:opacity-40"
+        >
+          {isUploading ? "Enviando..." : "Trocar foto"}
+        </button>
+        {pictureUrl && !preview && (
+          <button
             type="button"
-            size="sm"
-            variant="outline"
             disabled={isUploading}
-            onClick={() => inputRef.current?.click()}
+            onClick={onRemove}
+            className="text-sm text-muted-foreground disabled:opacity-40"
           >
-            {isUploading ? "Enviando..." : "Trocar foto"}
-          </Button>
-          {pictureUrl && !preview && (
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              disabled={isUploading}
-              onClick={onRemove}
-            >
-              Remover
-            </Button>
-          )}
-        </div>
-        <p className="text-xs text-muted-foreground">
-          JPEG, PNG ou WEBP. Máx 5 MB.
-        </p>
+            Remover
+          </button>
+        )}
       </div>
+
+      <p className="text-xs text-muted-foreground">
+        JPEG, PNG ou WEBP. Máx 5 MB.
+      </p>
     </div>
   );
 }
