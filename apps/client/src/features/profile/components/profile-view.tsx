@@ -1,9 +1,9 @@
 "use client";
 
 import { useGSAP } from "@gsap/react";
+import { PencilSimpleIcon } from "@phosphor-icons/react";
 import { gsap } from "gsap";
 import { useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
 import type { FullProfile } from "@/dal/orval/fetch/schemas/fullProfile";
 import type { JourneyStatusResponseData } from "@/dal/orval/fetch/schemas/journeyStatusResponseData";
 import { JourneyProgressSection } from "./journey-progress-section";
@@ -42,6 +42,7 @@ export function ProfileView({ profile, journey }: ProfileViewProps) {
 
       gsap.from(".profile-header", {
         y: 16,
+        scale: 0.96,
         opacity: 0,
         duration: 0.4,
         ease: "power2.out",
@@ -95,21 +96,18 @@ export function ProfileView({ profile, journey }: ProfileViewProps) {
   return (
     <div
       ref={containerRef}
-      className="invisible flex flex-col min-h-full max-w-screen"
+      className="invisible relative flex flex-col min-h-full max-w-screen"
     >
-      <div className="flex items-start justify-between">
-        <ProfileHeader profile={profile} />
-        <div className="px-6 py-8">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => setIsEditing(true)}
-          >
-            Editar
-          </Button>
-        </div>
-      </div>
+      <button
+        type="button"
+        onClick={() => setIsEditing(true)}
+        aria-label="Editar perfil"
+        className="absolute top-4 right-4 p-2 rounded-full text-foreground/50 hover:text-foreground transition-colors"
+      >
+        <PencilSimpleIcon size={20} />
+      </button>
+
+      <ProfileHeader profile={profile} />
 
       {journey ? (
         <JourneyProgressSection journey={journey} />
