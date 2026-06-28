@@ -9,12 +9,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { FullProfile } from "@/dal/orval/fetch/schemas/fullProfile";
 import { usePatchApiV1ProfilesMe } from "@/dal/orval/tanstackQuery/profiles/profiles";
-import { getGetApiV1ProfilesMeQueryKey } from "../hooks/use-current-profile";
 import {
   checkUsername,
   deleteAvatar,
   uploadAvatar,
 } from "../api/profile-edit.api";
+import { getGetApiV1ProfilesMeQueryKey } from "../hooks/use-current-profile";
 import { AvatarUploader } from "./avatar-uploader";
 
 const USERNAME_REGEX = /^[a-zA-Z0-9_]+$/;

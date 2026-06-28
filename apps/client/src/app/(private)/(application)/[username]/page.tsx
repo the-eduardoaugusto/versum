@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { getCachedJourneyStatus, getCachedProfileMe } from "@/dal/profiles/get-cached-profile";
+import {
+  getCachedJourneyStatus,
+  getCachedProfileMe,
+} from "@/dal/profiles/get-cached-profile";
 import { ProfileSkeleton, ProfileView } from "@/features/profile";
 
 async function ProfileContent() {
