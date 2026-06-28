@@ -252,7 +252,7 @@ Cada verso tem:
 - Fetch automático de 4 capítulos por página (`buffer-size=4`)
 - Máx de 3 páginas na memória (`maxPages: 3`)
 - Cache por 60 segundos (`staleTime: 60_000`)
-- Retry automático 2x se falhar
+- Retry herdado do `QueryClient` global: apenas erros 5xx, backoff exponencial 1s/2s/4s (máx 3 tentativas, cap 30s)
 
 **Retorna:**
 ```typescript
@@ -269,19 +269,30 @@ Cada verso tem:
 }
 ```
 
+**Nota:** O retry **não** é configurado diretamente no hook. Ele herda do `QueryClient` (`react-query-provider.tsx`) via `retry: retryOn5xx` e `retryDelay: exponentialDelay` definidos em `src/lib/retry-utils.ts`. Erros 4xx (401, 403, 409) **nunca** são retentados.
+
 ### 6.2 `useActiveChapter()` - Rastreamento de Visibilidade
 
 **O que faz:**
 - Usa `IntersectionObserver` para saber qual capítulo está visível
-- Quando capítulo sai de tela (após 500ms debounce), marca como lido
-- Se está perto do final, faz fetch da próxima página
+- Quando capítulo sai de tela (após 500ms debounce), enfileira o save
+- Saves são processados **em série** via `saveQueueRef` + `isSavingRef` — nunca duas POSTs simultâneas para o mesmo usuário
+- Retry automático na função `saveChapterRead()`: até 3 tentativas para erros 5xx com backoff exponencial
+- Se todas as tentativas falharem: toast `"Progresso pode não ter sido salvo"` (não bloqueia o usuário)
+- Se a resposta for 409 (ponteiro do servidor fora de sincronia): invalida `["journey-feed"]` para resincronizar, sem toast
+- Buffer fetch (`fetchNextPage`) só é chamado se o save foi bem-sucedido
 
 **Fluxo:**
 ```
 Usuário rola → capítulo entra em foco → activeChapterId muda
             → capítulo sai de foco → aguarda 500ms
-            → chama POST /api/v1/readings/journey/next
-            → se perto do fim, faz fetchNextPage()
+            → chapterId entra na saveQueueRef
+            → processQueue() serializa saves (isSavingRef)
+            → saveChapterRead() chama POST /api/v1/readings/journey/next
+                ├─ 200 → saved=true → se near-end, fetchNextPage()
+                ├─ 409 → invalida feed query, saved=false
+                ├─ 5xx → retry (até 3x, backoff 1s/2s/4s)
+                └─ 5xx esgotado → toast + console.error, saved=false
 ```
 
 **Config do IntersectionObserver:**
@@ -342,17 +353,22 @@ Usuario vê o capítulo por > 0.5 segundos
     ↓
 Capítulo sai de tela (ou rola rápido)
     ↓
-Debounce 500ms ativa → POST /api/v1/readings/journey/next
+Debounce 500ms → chapterId entra na saveQueueRef
     ↓
-Capítulo marcado como lido no servidor
+processQueue() (serializado — uma POST por vez)
     ↓
-useJourneyProgress() invalida cache journey-status
-    ↓
-Se perto do fim da página → fetchNextPage()
-    ↓
-TanStack Query faz novo GET /feed
-    ↓
-Novos capítulos adicionados ao chapters array
+saveChapterRead() POST /api/v1/readings/journey/next
+    ├─ 200 OK → saved=true
+    │     ↓
+    │   Se perto do fim → fetchNextPage()
+    │   TanStack Query faz GET /feed
+    │   Novos capítulos adicionados ao chapters array
+    │
+    ├─ 5xx → retry (1s/2s/4s, até 3x)
+    │   └─ se esgotado → toast "Progresso pode não ter sido salvo"
+    │
+    └─ 409 → ponteiro do servidor fora de sincronia
+          → invalida ["journey-feed"] → feed resincroniza
 ```
 
 ### Cenário 3: Usuário navegando página dentro de capítulo
@@ -398,24 +414,31 @@ Capítulo seguinte fica visível
 
 **Benefício:** Scroll suave, sem virtualização complexa.
 
-### 8.2 IntersectionObserver com Debounce
+### 8.2 IntersectionObserver com Debounce + Fila Serializada
 
-**Problema:** Marcação de capítulo como lido a cada pixel de mudança.
+**Problema:** Marcação de capítulo como lido a cada pixel de mudança. E dois capítulos saindo da viewport quase simultaneamente podem disparar duas POSTs paralelas, causando 409 do servidor (que só aceita um capítulo por vez em ordem).
 
-**Solução:**
+**Solução — debounce + fila:**
 ```javascript
-const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+// Debounce para não marcar ao rolar rápido
+debounceRef.current = setTimeout(() => {
+  saveQueueRef.current.push(chapterId);
+  processQueue(); // serializa — só uma POST ativa por vez
+}, 500);
 
-if (entry.isIntersecting) {
-  setActiveChapterId(chapterId);
-} else {
-  debounceRef.current = setTimeout(() => {
-    markChapterAsRead();
-  }, 500);  // Aguarda 500ms antes de marcar
+// Fila: processa um capítulo por vez
+async function processQueue() {
+  if (isSavingRef.current) return;  // já tem uma POST em curso
+  isSavingRef.current = true;
+  while (saveQueueRef.current.length > 0) {
+    const chapterId = saveQueueRef.current.shift();
+    await saveChapterRead(chapterId, queryClient);
+  }
+  isSavingRef.current = false;
 }
 ```
 
-**Benefício:** Apenas marca quando usuário realmente saiu do capítulo (não só passou rápido).
+**Benefício:** Apenas marca quando usuário realmente saiu do capítulo, e nunca com duas requisições simultâneas que causariam 409.
 
 ### 8.3 Buffer do Backend
 
@@ -480,18 +503,27 @@ const [prefersReducedMotion] = useState(() =>
        │   setActiveChapterId(id)
        │
        └─→ Capítulo sai após 500ms
+           chapterId entra na saveQueue (serializado)
            POST /api/v1/readings/journey/next
            (background, não bloqueia UI)
            │
-           └─→ Se perto do fim: fetchNextPage()
-               GET /feed com página seguinte
-               chapters array cresce
+           ├─→ 200 → se near-end: fetchNextPage()
+           │         GET /feed com página seguinte
+           │         chapters array cresce
+           │
+           ├─→ 5xx → retry 3x com backoff exponencial
+           │         se esgotado: toast (UI permanece READY)
+           │
+           └─→ 409 → invalida ["journey-feed"] → resincroniza
 
 ┌─────────────┐
-│  ERROR      │  isError=true, error=Error
+│  ERROR      │  isError=true (falha no GET /feed após retries)
 └──────┬──────┘
        │ (usuário clica "Tentar novamente")
        └─→ refetch() → volta para LOADING
+
+Nota: falha no POST (save) nunca leva ao estado ERROR do feed.
+O ERROR é exclusivo do GET /feed após esgotar os retries 5xx.
 ```
 
 ---
