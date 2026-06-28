@@ -133,7 +133,6 @@ export function useJourneyFeed() {
     },
     maxPages: 3,
     staleTime: 60_000,
-    retry: 2,
   });
 
   const progress = toProgress(query.data?.pages?.[0]?.data?.progress);
