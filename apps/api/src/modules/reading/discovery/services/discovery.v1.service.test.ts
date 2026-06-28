@@ -35,6 +35,7 @@ describe("DiscoveryServiceV1", () => {
     getRandomVersesForChapter: vi.fn<() => Promise<typeof mockVerses>>(),
     findChapterById: vi.fn<() => Promise<typeof mockChapter | null>>(),
     getVersesByIds: vi.fn<() => Promise<unknown[]>>(),
+    insertReadVerses: vi.fn<() => Promise<void>>(),
     getReadVersesCount: vi.fn<() => Promise<number>>(),
   });
 
@@ -135,7 +136,7 @@ describe("DiscoveryServiceV1", () => {
   describe("markVersesAsRead", () => {
     it("should call repository with correct params", async () => {
       const mockRepository = createMockRepository();
-      mockRepository.getVersesByIds.mockResolvedValue([]);
+      mockRepository.insertReadVerses.mockResolvedValue(undefined);
       service = new DiscoveryServiceV1({
         repository: mockRepository as unknown as DiscoveryRepositoryV1,
       });
@@ -145,7 +146,25 @@ describe("DiscoveryServiceV1", () => {
 
       await service.markVersesAsRead({ userId, verseIds });
 
-      expect(mockRepository.getVersesByIds).toHaveBeenCalledWith(verseIds);
+      expect(mockRepository.insertReadVerses).toHaveBeenCalledWith(
+        userId,
+        verseIds,
+      );
+    });
+
+    it("should handle empty verse ids", async () => {
+      const mockRepository = createMockRepository();
+      mockRepository.insertReadVerses.mockResolvedValue(undefined);
+      service = new DiscoveryServiceV1({
+        repository: mockRepository as unknown as DiscoveryRepositoryV1,
+      });
+
+      await service.markVersesAsRead({ userId: "user-123", verseIds: [] });
+
+      expect(mockRepository.insertReadVerses).toHaveBeenCalledWith(
+        "user-123",
+        [],
+      );
     });
   });
 
