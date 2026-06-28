@@ -88,7 +88,12 @@ export function ProfileView({ profile, journey }: ProfileViewProps) {
   if (isEditing) {
     return (
       <div ref={containerRef} className="flex flex-col min-h-full">
-        <ProfileEditForm profile={profile} onDone={() => setIsEditing(false)} />
+        <div className="max-w-sm mx-auto w-full">
+          <ProfileEditForm
+            profile={profile}
+            onDone={() => setIsEditing(false)}
+          />
+        </div>
       </div>
     );
   }
@@ -96,7 +101,7 @@ export function ProfileView({ profile, journey }: ProfileViewProps) {
   return (
     <div
       ref={containerRef}
-      className="invisible relative flex flex-col min-h-full max-w-screen"
+      className="invisible relative flex flex-col min-h-full"
     >
       <button
         type="button"
@@ -107,17 +112,19 @@ export function ProfileView({ profile, journey }: ProfileViewProps) {
         <PencilSimpleIcon size={20} />
       </button>
 
-      <ProfileHeader profile={profile} />
+      <div className="max-w-sm mx-auto w-full">
+        <ProfileHeader profile={profile} />
 
-      {journey ? (
-        <JourneyProgressSection journey={journey} />
-      ) : (
-        <div className="px-6 pb-6">
-          <p className="text-sm text-muted-foreground">
-            Inicie sua jornada de leitura para ver seu progresso aqui.
-          </p>
-        </div>
-      )}
+        {journey ? (
+          <JourneyProgressSection journey={journey} />
+        ) : (
+          <div className="px-6 pb-6">
+            <p className="text-sm text-muted-foreground">
+              Inicie sua jornada de leitura para ver seu progresso aqui.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
