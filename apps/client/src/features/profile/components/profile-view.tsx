@@ -16,7 +16,10 @@ interface ProfileViewProps {
   journey: JourneyStatusResponseData | null;
 }
 
-export function ProfileView({ profile: profileProp, journey }: ProfileViewProps) {
+export function ProfileView({
+  profile: profileProp,
+  journey,
+}: ProfileViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [prefersReducedMotion] = useState(() =>
@@ -34,9 +37,21 @@ export function ProfileView({ profile: profileProp, journey }: ProfileViewProps)
       const reveal = () => containerRef.current?.classList.remove("invisible");
 
       if (prefersReducedMotion) {
-        if (journey) {
+        if (!isEditing && journey) {
           gsap.set(".progress-fill", { width: `${journey.percentComplete}%` });
         }
+        reveal();
+        return;
+      }
+
+      if (isEditing) {
+        gsap.from(".profile-edit", {
+          y: 12,
+          opacity: 0,
+          duration: 0.35,
+          ease: "power2.out",
+          clearProps: "transform,opacity",
+        });
         reveal();
         return;
       }
@@ -88,8 +103,8 @@ export function ProfileView({ profile: profileProp, journey }: ProfileViewProps)
 
   if (isEditing) {
     return (
-      <div ref={containerRef} className="flex flex-col min-h-full">
-        <div className="max-w-sm mx-auto w-full">
+      <div ref={containerRef} className="invisible flex flex-col min-h-full">
+        <div className="max-w-2xl mx-auto w-full profile-edit">
           <ProfileEditForm
             profile={profile ?? profileProp}
             onDone={() => setIsEditing(false)}
@@ -113,7 +128,7 @@ export function ProfileView({ profile: profileProp, journey }: ProfileViewProps)
         <PencilSimpleIcon size={20} />
       </button>
 
-      <div className="max-w-sm mx-auto w-full">
+      <div className="max-w-2xl mx-auto w-full">
         <ProfileHeader profile={profile ?? profileProp} />
 
         {journey ? (
