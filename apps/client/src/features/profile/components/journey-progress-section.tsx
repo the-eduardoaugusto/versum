@@ -8,8 +8,8 @@ export function JourneyProgressSection({
   journey,
 }: JourneyProgressSectionProps) {
   const stats = [
-    { value: journey.chaptersRead, label: "Lidos" },
-    { value: journey.chaptersRemaining, label: "Restantes" },
+    { value: journey.chaptersRead, label: "Cap. lidos" },
+    { value: journey.chaptersRemaining, label: "Cap. restantes" },
     { value: `${journey.percentComplete}%`, label: "Progresso" },
   ] as const;
 
