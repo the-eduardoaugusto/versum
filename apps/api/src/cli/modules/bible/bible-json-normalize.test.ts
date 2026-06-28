@@ -89,10 +89,17 @@ describe("normalizeLivroBibliaDB", () => {
     ).toThrow();
   });
 
-  it("throws if capitulos is not an array", () => {
+  it("throws if capitulos is not an array or is empty", () => {
     expect(() =>
       normalizeLivroBibliaDB(
         { livro: "Gênesis", capitulos: {} },
+        { slug: "gn", testament: "OLD" },
+        0,
+      ),
+    ).toThrow();
+    expect(() =>
+      normalizeLivroBibliaDB(
+        { livro: "Gênesis", capitulos: [] },
         { slug: "gn", testament: "OLD" },
         0,
       ),

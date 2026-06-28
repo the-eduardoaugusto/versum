@@ -196,7 +196,7 @@ function isRawLivroBibliaDB(raw: unknown): raw is RawLivroBibliaDB {
   if (typeof raw !== "object" || raw === null) return false;
   const r = raw as Record<string, unknown>;
   if (typeof r.livro !== "string" || r.livro.trim() === "") return false;
-  if (!Array.isArray(r.capitulos)) return false;
+  if (!Array.isArray(r.capitulos) || r.capitulos.length === 0) return false;
   return true;
 }
 
@@ -225,7 +225,7 @@ export function normalizeLivroBibliaDB(
     slug: entry.slug,
     order: index + 1,
     chapters,
-}
+  };
 }
 
 /**
