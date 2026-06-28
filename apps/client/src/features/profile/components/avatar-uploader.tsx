@@ -59,11 +59,17 @@ export function AvatarUploader({
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <Avatar size="lg" className="size-20">
+      <Avatar className="size-26">
         {shown ? (
-          <AvatarImage src={shown} alt={name} />
+          <AvatarImage
+            src={shown}
+            alt={name}
+            className="w-full h-full object-cover aspect-square"
+          />
         ) : (
-          <AvatarFallback>{getInitials(name)}</AvatarFallback>
+          <AvatarFallback className="w-full h-full object-cover aspect-square">
+            {getInitials(name)}
+          </AvatarFallback>
         )}
       </Avatar>
 
