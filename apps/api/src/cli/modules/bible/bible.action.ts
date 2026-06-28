@@ -2,7 +2,7 @@ import { logger } from "@versum/logger";
 import prompts from "prompts";
 import { initCli } from "../../index";
 import { type SeedBibleOptions, seedBibleFromRemote } from "./seed/seed.action";
-import { seedOptionsPromptMenu } from "./seed/seed.menus";
+import { confirmSeedPromptMenu, seedOptionsPromptMenu } from "./seed/seed.menus";
 
 export const bibleMenu = async () =>
   await prompts({
@@ -20,6 +20,13 @@ export async function bibleAction() {
 
   switch (menuResult.bible) {
     case "seed": {
+      const { confirm } = await confirmSeedPromptMenu();
+
+      if (!confirm) {
+        logger("info", "Seed cancelado.");
+        return await bibleAction();
+      }
+
       const { options } = await seedOptionsPromptMenu();
 
       const seedOptions: SeedBibleOptions = {
