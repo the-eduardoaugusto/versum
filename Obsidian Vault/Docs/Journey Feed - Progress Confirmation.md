@@ -128,11 +128,21 @@ A **idempotência vir antes** da checagem de "esperado" é o que neutraliza a co
 │  IntersectionObserver detecta capítulo saindo da viewport        │
 │  (use-active-chapter.ts) ── debounce 500ms ──┐                   │
 │                                              ▼                   │
-│  postApiV1ReadingsJourneyNext({ chapterId }) (orval fetch)       │
+│  saveQueueRef.push(chapterId)                                    │
+│  processQueue() — serializado, uma POST por vez                  │
 │                                              │                   │
-│  use-journey-progress.ts (mutation TanStack Query):              │
-│   • onSuccess → invalida ["journey-status"] + ["journey-feed"]   │
-│   • onError 409 → invalida ["journey-feed"] (refetch força sync) │
+│  saveChapterRead(chapterId, queryClient):                        │
+│   • tenta POST (orval fetch)                                     │
+│   • 5xx → retry até 3x (backoff 1s/2s/4s, lib retry-utils.ts)   │
+│   • 5xx esgotado → toast.error("Progresso pode não ter sido      │
+│     salvo") + console.error, retorna false                       │
+│   • 409 → invalidateQueries(["journey-feed"]) + retorna false    │
+│   • 200 → retorna true → se near-end: fetchNextPage()            │
+│                                              │                   │
+│  Retry global do QueryClient (GET /feed apenas):                 │
+│   • retry: retryOn5xx (src/lib/retry-utils.ts)                   │
+│   • retryDelay: exponentialDelay                                 │
+│   • erros 4xx nunca são retentados                               │
 └──────────────────────────────────────────────┼──────────────────┘
                                                 ▼  POST {chapterId}
 ┌─ API (apps/api) ────────────────────────────────────────────────┐
@@ -206,12 +216,26 @@ async markCurrentAsRead(userId: string, chapterId: string) {
 > [!important] O gatilho real **não** é um botão
 > A confirmação de leitura é disparada por **scroll**, não por clique. Quem chama `POST /next` é o `useActiveChapter`, via `IntersectionObserver`, quando um capítulo **sai** da viewport (com debounce de 500ms e guards `hasBeenActive`/`hasBeenRead`/`isAtEnd`).
 
-`use-active-chapter.ts` usa o fetcher gerado pelo orval, enviando o id do capítulo que saiu de vista:
+`use-active-chapter.ts` serializa as confirmações via `saveQueueRef` (array) + `isSavingRef` (lock) para evitar POSTs concorrentes que causariam 409. A função `saveChapterRead()` cuida de retry e erros:
 
 ```ts
-postApiV1ReadingsJourneyNext({ chapterId })
-  .then(() => { /* se near-end, fetchNextPage() para o buffer */ })
-  .catch(() => console.error("Failed to mark chapter as read"));
+async function saveChapterRead(chapterId, queryClient, attempt = 0): Promise<boolean> {
+  try {
+    await postApiV1ReadingsJourneyNext({ chapterId });
+    return true;
+  } catch (error) {
+    if (error instanceof ApiError && error.response.status === 409) {
+      queryClient.invalidateQueries({ queryKey: ["journey-feed"] });
+      return false;  // sem toast — é um evento de resync
+    }
+    if (retryOn5xx(attempt, error)) {
+      await sleep(exponentialDelay(attempt));
+      return saveChapterRead(chapterId, queryClient, attempt + 1);
+    }
+    toast.error("Progresso pode não ter sido salvo");
+    return false;
+  }
+}
 ```
 
 `use-journey-progress.ts` (a mutation TanStack Query, usada onde há feedback de UI) cuida da invalidação de cache:
@@ -221,7 +245,8 @@ postApiV1ReadingsJourneyNext({ chapterId })
 | `onSuccess` | invalida `["journey-status"]` **e** `["journey-feed"]` |
 | `onError` 409 | invalida `["journey-feed"]` → força refetch do estado correto |
 
-A invalidação de `["journey-feed"]` no sucesso é o que faz o feed buscar o novo buffer e re-renderizar — exatamente o "aceita que já marcou e busca o novo feed" esperado.
+> [!note] Retry global para GET /feed
+> `react-query-provider.tsx` configura `retry: retryOn5xx` e `retryDelay: exponentialDelay` no `QueryClient`. Isso protege o fetch do feed contra instabilidades 5xx — até 3 tentativas com backoff. Erros 4xx nunca são retentados. Os utilitários vivem em `src/lib/retry-utils.ts`.
 
 ---
 
@@ -243,6 +268,22 @@ Só o `chapterId` que casa com o "esperado" calculado do estado committed naquel
 - se não bate → `409`, forçando refetch.
 
 Como dois IDs diferentes não podem ambos casar com um único "esperado" determinístico, **não existe** janela que corrompa o invariante sequencial. Isolamento `READ COMMITTED` é suficiente: cada statement lê o committed mais recente, e o pior caso é um `409` transitório resolvido por retry/refetch.
+
+### Dois capítulos saindo da viewport quase ao mesmo tempo (mesmo dispositivo)
+
+> [!example] Cenário real observado
+> Usuário rola rapidamente: capítulo A e B saem da viewport dentro da janela de debounce. O `IntersectionObserver` dispara para os dois. Sem serialização, duas POSTs seriam enviadas em paralelo — B chegaria ao servidor antes do ponteiro ter avançado com A, causando `409`.
+
+**Solução no client (`use-active-chapter.ts`):**
+
+```text
+A sai → push("A") → processQueue() → isSaving=true → POST A → 200 OK
+B sai → push("B") → processQueue() → isSaving=true, skip
+                     (quando POST A terminar)
+                   → processa B → POST B → 200 OK
+```
+
+O `saveQueueRef` garante que só uma POST está em curso a qualquer momento. O `409` que poderia acontecer em paralelo simplesmente não ocorre. Se por algum motivo um `409` chegar (ex.: resync de multi-dispositivo interrompendo a fila), o client invalida o feed e re-renderiza com o estado correto do servidor.
 
 ---
 
