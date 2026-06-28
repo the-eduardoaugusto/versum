@@ -19,7 +19,7 @@ export function JourneyProgressSection({
         Jornada
       </h2>
 
-      <div className="bg-muted/50 rounded-2xl px-5 py-4 max-w-sm">
+      <div className="bg-muted/50 rounded-2xl px-5 py-4">
         <div className="grid grid-cols-3 gap-2 mb-5">
           {stats.map(({ value, label }) => (
             <div
