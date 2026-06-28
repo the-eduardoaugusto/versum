@@ -4,9 +4,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function ProfileSkeleton() {
   return (
-    <div className="max-w-sm mx-auto w-full">
+    <div className="max-w-2xl mx-auto w-full">
       <div className="flex flex-col items-center gap-3 px-6 pt-8 pb-4">
-        <Skeleton className="w-20 h-20 md:w-24 md:h-24 rounded-full shrink-0" />
+        <Skeleton className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 rounded-full shrink-0" />
         <div className="flex flex-col items-center gap-1.5">
           <Skeleton className="h-5 w-32 rounded" />
           <Skeleton className="h-4 w-20 rounded" />

@@ -24,7 +24,7 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
       <div
         className={cn(
           "relative shrink-0 rounded-full overflow-hidden",
-          "w-20 h-20 md:w-24 md:h-24",
+          "w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28",
           "bg-muted",
         )}
       >
@@ -53,7 +53,7 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
       </div>
 
       <div className="flex flex-col items-center gap-0.5 w-full min-w-0 text-center">
-        <h1 className="text-xl font-normal leading-tight w-full break-words">
+        <h1 className="text-xl lg:text-2xl font-normal leading-tight w-full break-words">
           {profile.name}
         </h1>
         <p className="text-sm text-muted-foreground break-words">
