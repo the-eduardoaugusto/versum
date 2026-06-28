@@ -89,9 +89,10 @@ Envelopes de resposta padronizados:
 ```typescript
 {
   success: boolean
-  message?: string
-  code?: string
-  data: T
+  message: string     // obrigatório
+  code: string        // obrigatório
+  data?: T
+  pagination?: { ... }
 }
 ```
 
