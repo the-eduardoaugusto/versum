@@ -102,8 +102,8 @@ All API responses now share a unified envelope with `success`, `message`, and `c
 | `BadRequestError` | nome da classe (`BadRequestError`) |
 | `NotFoundError` | `NotFoundError` |
 | `UnauthorizedError` | `UnauthorizedError` |
-| `ForbiddenError` | `ForbiddenError` |
 | `ConflictError` | `ConflictError` |
+| `RateLimitError` | `RateLimitError` |
 | `InternalServerError` | `InternalServerError` |
 | Zod validation | `VALIDATION_ERROR` |
 | Payload too large | `PAYLOAD_TOO_LARGE` |

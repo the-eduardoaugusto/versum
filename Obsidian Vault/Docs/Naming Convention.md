@@ -70,12 +70,6 @@ View Models MUST use **camelCase** for all properties. They are responsible for 
 ### Correct (pagination.view-model.ts)
 
 ```typescript
-export interface PaginationInput {
-  page: number;
-  limit: number;
-  totalItems: number;
-}
-
 export class PaginationViewModel {
   readonly currentPage: number;
   readonly totalPages: number;
