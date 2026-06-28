@@ -1,12 +1,8 @@
 import { logger } from "@versum/logger";
 import prompts from "prompts";
 import { initCli } from "../../index";
-import { type SeedBibleOptions, seedBibleFromJson } from "./seed/seed.action";
-import {
-  confirmSeedPromptMenu,
-  seedBibleJsonPathPrompt,
-  seedOptionsPromptMenu,
-} from "./seed/seed.menus";
+import { type SeedBibleOptions, seedBibleFromRemote } from "./seed/seed.action";
+import { seedOptionsPromptMenu } from "./seed/seed.menus";
 
 export const bibleMenu = async () =>
   await prompts({
@@ -24,38 +20,6 @@ export async function bibleAction() {
 
   switch (menuResult.bible) {
     case "seed": {
-      const { bible_json_path } = await seedBibleJsonPathPrompt();
-
-      if (!bible_json_path) {
-        console.clear();
-        await bibleAction();
-        return;
-      }
-
-      const lower = bible_json_path.toLowerCase();
-
-      if (lower === "exit") {
-        logger({ color: "red", icon: "", level: "info" }, "Saindo...");
-        process.exit(0);
-      }
-
-      if (lower === "list-files") {
-        logger("info", "Voltando para listar arquivos...");
-        return await bibleAction();
-      }
-
-      if (lower === "back") {
-        console.clear();
-        return await bibleAction();
-      }
-
-      const { confirm } = await confirmSeedPromptMenu(bible_json_path);
-
-      if (!confirm) {
-        logger("info", "Seed cancelado.");
-        return await bibleAction();
-      }
-
       const { options } = await seedOptionsPromptMenu();
 
       const seedOptions: SeedBibleOptions = {
@@ -64,7 +28,7 @@ export async function bibleAction() {
         insertVerses: options.includes("verses"),
       };
 
-      await seedBibleFromJson(bible_json_path, seedOptions);
+      await seedBibleFromRemote(seedOptions);
 
       logger("info", "Pressione Enter para continuar...");
       await prompts({ type: "text", name: "continue", message: "" });
