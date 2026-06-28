@@ -53,13 +53,13 @@ export class DiscoveryServiceV1 {
   }
 
   async markVersesAsRead({
-    userId: _userId,
+    userId,
     verseIds,
   }: {
     userId: string;
     verseIds: string[];
   }): Promise<void> {
-    const _verses = await this.repository.getVersesByIds(verseIds);
+    await this.repository.insertReadVerses(userId, verseIds);
   }
 
   async getStats(userId: string): Promise<DiscoveryStats> {
