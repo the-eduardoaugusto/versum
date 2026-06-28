@@ -28,13 +28,16 @@ apps/api/src/
 │   │   └── services/        # Lógica de negócio
 │   ├── bible/
 │   ├── consent-logs/
-│   ├── interactions/
 │   ├── reading/
+│   │   ├── routes.ts         # Roteador que monta discovery + journey
+│   │   ├── discovery/        # Modo Descoberta (versículos aleatórios)
+│   │   └── journey/          # Modo Jornada (leitura sequencial)
 │   └── users/
 ├── view-models/              # Response DTOs
 ├── middlewares/               # Hono middlewares
 └── infrastructure/
     ├── db/                   # DB config + schema central
+    ├── cloudinary/           # Upload de imagens
     ├── redis/                # Redis client
     └── resend/               # Email provider
 ```
@@ -67,7 +70,15 @@ apps/api/src/
 import { SuccessViewModel } from "@/view-models/default/success.view-model";
 import { PaginationViewModel } from "@/view-models/default/pagination.view-model";
 
-return c.json(SuccessViewModel.create(data, PaginationViewModel.create({ ... })), 200);
+return c.json(
+  SuccessViewModel.create({
+    data: profile,
+    pagination: PaginationViewModel.create({ ... }),
+    message: "Perfil atualizado",
+    code: "PROFILE_UPDATED",
+  }),
+  200,
+);
 ```
 
 NUNCA retorne objetos soltos:
@@ -77,8 +88,8 @@ return c.json({ profile }, 200);
 return c.json({ message: "ok" }, 200);
 
 // ✅ CORRETO
-return c.json(SuccessViewModel.create(profile), 200);
-return c.json(SuccessViewModel.create(undefined, undefined, "ok"), 200);
+return c.json(SuccessViewModel.create({ data: profile, message: "Perfil atualizado", code: "PROFILE_UPDATED" }), 200);
+return c.json(SuccessViewModel.create({ message: "Operação concluída", code: "OK" }), 200);
 ```
 
 ## Error Handling
@@ -86,12 +97,20 @@ return c.json(SuccessViewModel.create(undefined, undefined, "ok"), 200);
 Use as classes de erro em `utils/app/errors/`:
 
 ```typescript
-import { BadRequestError, NotFoundError, UnauthorizedError } from "@/utils/app/errors";
+import {
+  BadRequestError,
+  NotFoundError,
+  UnauthorizedError,
+  ConflictError,
+  RateLimitError,
+} from "@/utils/app/errors";
 
 // Dentro do controller/service:
 throw new NotFoundError("Profile not found");
 throw new BadRequestError("Invalid email");
 throw new UnauthorizedError("Session expired");
+throw new ConflictError("Chapter does not match expected current chapter");
+throw new RateLimitError("Too many requests");
 ```
 
 Os erros são automaticamente capturados pelo error handler.
@@ -109,6 +128,39 @@ Update `apps/client/openapi.yaml` whenever you add/modify endpoints:
 - **Dentro do módulo:** path relativo SEM extensão `.ts`
 - **Fora do módulo:** `@/` alias (ex: `import { App } from "@/utils/app"`)
 - **View Models:** `@/view-models/default/success.view-model`
+
+## Setup Utilities
+
+### `utils/app/setups/`
+
+Bootstrap da aplicação, executado em ordem na inicialização:
+
+| Arquivo | Função |
+|---------|--------|
+| `setup-plugins.ts` | CORS + registro do security scheme `cookieAuth` no OpenAPI |
+| `setup-middlewares.ts` | Middlewares globais: rate-limiter + debug requests |
+| `setup-routes.ts` | Registro de rotas `/api/v1/...`, `/openapi.json` e `/docs` (Scalar UI) |
+| `setup-listeners.ts` | Error handler global + conexão Redis |
+| `setup-cron.ts` | Job diário (03:00) para purge de magic links e sessões expiradas |
+
+### `utils/pagination/`
+
+```typescript
+import { parsePagination } from "@/utils/pagination";
+
+// Valida e parseia query params page/limit
+// Default: page=1, limit=10, max limit=50
+const { page, limit } = parsePagination(c.req.query());
+```
+
+### `utils/app/schemas/`
+
+```typescript
+import { createSuccessResponseSchema } from "@/utils/app/schemas/success-response";
+
+// Gera schema OpenAPI de resposta de sucesso com data e pagination opcionais
+const myResponseSchema = createSuccessResponseSchema("MyResponse", myDataSchema, includePagination);
+```
 
 ## Testes
 
