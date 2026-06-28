@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "@tanstack/react-form";
-import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { useId, useRef, useState } from "react";
 import { toast } from "sonner";
 import { FieldError } from "@/components/ui/field";
@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { FullProfile } from "@/dal/orval/fetch/schemas/fullProfile";
 import { usePatchApiV1ProfilesMe } from "@/dal/orval/tanstackQuery/profiles/profiles";
+import { getGetApiV1ProfilesMeQueryKey } from "../hooks/use-current-profile";
 import {
   checkUsername,
   deleteAvatar,
@@ -27,7 +28,7 @@ interface ProfileEditFormProps {
 }
 
 export function ProfileEditForm({ profile, onDone }: ProfileEditFormProps) {
-  const router = useRouter();
+  const queryClient = useQueryClient();
   const { mutateAsync: patchProfile } = usePatchApiV1ProfilesMe();
 
   const [avatarUploading, setAvatarUploading] = useState(false);
@@ -83,7 +84,9 @@ export function ProfileEditForm({ profile, onDone }: ProfileEditFormProps) {
           },
         });
         toast.success("Perfil atualizado.", { id: toastId });
-        router.refresh();
+        await queryClient.invalidateQueries({
+          queryKey: getGetApiV1ProfilesMeQueryKey(),
+        });
         onDone();
       } catch (error) {
         const message =
@@ -101,7 +104,9 @@ export function ProfileEditForm({ profile, onDone }: ProfileEditFormProps) {
     try {
       await uploadAvatar(file);
       toast.success("Foto atualizada.", { id: toastId });
-      router.refresh();
+      await queryClient.invalidateQueries({
+        queryKey: getGetApiV1ProfilesMeQueryKey(),
+      });
     } catch {
       toast.error("Não foi possível enviar a foto.", { id: toastId });
     } finally {
@@ -115,7 +120,9 @@ export function ProfileEditForm({ profile, onDone }: ProfileEditFormProps) {
     try {
       await deleteAvatar();
       toast.success("Foto removida.", { id: toastId });
-      router.refresh();
+      await queryClient.invalidateQueries({
+        queryKey: getGetApiV1ProfilesMeQueryKey(),
+      });
     } catch {
       toast.error("Não foi possível remover a foto.", { id: toastId });
     } finally {

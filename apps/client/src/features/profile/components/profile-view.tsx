@@ -6,6 +6,7 @@ import { gsap } from "gsap";
 import { useRef, useState } from "react";
 import type { FullProfile } from "@/dal/orval/fetch/schemas/fullProfile";
 import type { JourneyStatusResponseData } from "@/dal/orval/fetch/schemas/journeyStatusResponseData";
+import { useCurrentProfile } from "../hooks/use-current-profile";
 import { JourneyProgressSection } from "./journey-progress-section";
 import { ProfileEditForm } from "./profile-edit-form";
 import { ProfileHeader } from "./profile-header";
@@ -15,7 +16,7 @@ interface ProfileViewProps {
   journey: JourneyStatusResponseData | null;
 }
 
-export function ProfileView({ profile, journey }: ProfileViewProps) {
+export function ProfileView({ profile: profileProp, journey }: ProfileViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [prefersReducedMotion] = useState(() =>
@@ -26,10 +27,10 @@ export function ProfileView({ profile, journey }: ProfileViewProps) {
 
   const [isEditing, setIsEditing] = useState(false);
 
+  const { profile } = useCurrentProfile(profileProp);
+
   useGSAP(
     () => {
-      // Reveal only after GSAP has applied the initial hidden state, so the
-      // SSR-rendered content never flashes before the animation runs.
       const reveal = () => containerRef.current?.classList.remove("invisible");
 
       if (prefersReducedMotion) {
@@ -90,7 +91,7 @@ export function ProfileView({ profile, journey }: ProfileViewProps) {
       <div ref={containerRef} className="flex flex-col min-h-full">
         <div className="max-w-sm mx-auto w-full">
           <ProfileEditForm
-            profile={profile}
+            profile={profile ?? profileProp}
             onDone={() => setIsEditing(false)}
           />
         </div>
@@ -113,7 +114,7 @@ export function ProfileView({ profile, journey }: ProfileViewProps) {
       </button>
 
       <div className="max-w-sm mx-auto w-full">
-        <ProfileHeader profile={profile} />
+        <ProfileHeader profile={profile ?? profileProp} />
 
         {journey ? (
           <JourneyProgressSection journey={journey} />

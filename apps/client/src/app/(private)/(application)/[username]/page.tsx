@@ -1,33 +1,19 @@
-import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { getApiV1ReadingsJourneyStatus } from "@/dal/orval/fetch/journey/journey";
-import { getApiV1ProfilesMe } from "@/dal/orval/fetch/profiles/profiles";
+import { getCachedJourneyStatus, getCachedProfileMe } from "@/dal/profiles/get-cached-profile";
 import { ProfileSkeleton, ProfileView } from "@/features/profile";
 
 async function ProfileContent() {
-  const reqHeaders = await headers();
-  const fetchOptions = { headers: new Headers(reqHeaders) };
-
-  const [profileResult, journeyResult] = await Promise.allSettled([
-    getApiV1ProfilesMe(fetchOptions),
-    getApiV1ReadingsJourneyStatus(fetchOptions),
+  const [profile, journey] = await Promise.all([
+    getCachedProfileMe(),
+    getCachedJourneyStatus(),
   ]);
-
-  const profile =
-    profileResult.status === "fulfilled"
-      ? profileResult.value?.data
-      : undefined;
-  const journey =
-    journeyResult.status === "fulfilled"
-      ? journeyResult.value?.data
-      : undefined;
 
   if (!profile) {
     return "Profile not found!";
   }
 
-  return <ProfileView profile={profile} journey={journey ?? null} />;
+  return <ProfileView profile={profile} journey={journey} />;
 }
 
 interface ProfilePageProps {
