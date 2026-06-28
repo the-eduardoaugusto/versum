@@ -56,7 +56,7 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
         <h1 className="text-xl font-normal leading-tight">{profile.name}</h1>
         <p className="text-sm text-muted-foreground">@{profile.username}</p>
         {profile.bio && (
-          <p className="text-sm text-muted-foreground mt-1 max-w-xs">
+          <p className="text-sm text-muted-foreground mt-1 max-w-xs whitespace-pre-wrap">
             {profile.bio}
           </p>
         )}

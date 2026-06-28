@@ -277,7 +277,7 @@ export function ProfileEditForm({ profile, onDone }: ProfileEditFormProps) {
                 onChange={(e) => field.handleChange(e.target.value)}
                 maxLength={BIO_MAX}
                 aria-invalid={field.state.meta.errors.length > 0}
-                className="border-none bg-transparent focus-visible:ring-0 shadow-none p-0 text-sm resize-none"
+                className="border-none bg-transparent focus-visible:ring-0 shadow-none p-0 text-sm resize-none min-h-0"
               />
               <p className="text-right text-xs text-muted-foreground mt-0.5">
                 {field.state.value.length}/{BIO_MAX}
