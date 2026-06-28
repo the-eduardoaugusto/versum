@@ -23,8 +23,6 @@ export function SearchInput({ placeholder, className, ref }: SearchInputProps) {
     activeSuggestion,
     matchedPart,
     onKeyDown,
-    onSubmit,
-    stage,
     isLoadingVerses,
     completeWith,
     onHoverSuggestion,
