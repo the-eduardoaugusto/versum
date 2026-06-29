@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowElbowDownLeftIcon } from "@phosphor-icons/react";
+import { ArrowElbowDownLeft } from "@phosphor-icons/react";
 
 interface AutocompleteHintProps {
   visible: boolean;
@@ -14,7 +14,7 @@ export function AutocompleteHint({ visible, isMobile }: AutocompleteHintProps) {
     <div className="mt-1.5 flex items-center gap-1 text-xs text-muted-foreground">
       {isMobile ? (
         <>
-          <ArrowElbowDownLeftIcon size={12} weight="regular" />
+          <ArrowElbowDownLeft size={12} weight="regular" />
           <span>Enter para completar</span>
         </>
       ) : (
