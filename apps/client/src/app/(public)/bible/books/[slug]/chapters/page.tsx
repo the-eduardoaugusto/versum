@@ -2,7 +2,10 @@
 
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { getApiV1PublicBibleBooksDynamicId } from "@/dal/orval/fetch/bíblia/bíblia";
+import {
+  getApiV1PublicBibleBooks,
+  getApiV1PublicBibleBooksDynamicId,
+} from "@/dal/orval/fetch/bíblia/bíblia";
 import { useChapters } from "@/features/bible/chapters/hooks/use-fetch-chapters";
 import { BibleItemLink } from "@/features/bible/shared/components/bible-item-link";
 import {
@@ -10,6 +13,24 @@ import {
   BreadcrumbJsonLd,
 } from "@/features/bible/shared/components/seo-structured-data";
 import { generateChapterMetadata } from "@/features/bible/shared/utils/seo-metadata";
+
+export const revalidate = 86400; // 24 hours
+
+export async function generateStaticParams() {
+  const firstRes = await getApiV1PublicBibleBooks();
+  let allBooks = firstRes.data ?? [];
+
+  if (firstRes.pagination?.hasNextPage) {
+    const pagePromises = [];
+    for (let page = 2; page <= (firstRes.pagination.totalPages ?? 1); page++) {
+      pagePromises.push(getApiV1PublicBibleBooks({ page: page.toString() }));
+    }
+    const results = await Promise.all(pagePromises);
+    allBooks = allBooks.concat(results.flatMap((r) => r.data ?? []));
+  }
+
+  return allBooks.map((book) => ({ slug: book.slug }));
+}
 
 interface ChaptersPageProps {
   params: Promise<{ slug: string }>;

@@ -9,6 +9,13 @@ import {
 import { generateVerseMetadata } from "@/features/bible/shared/utils/seo-metadata";
 import { useVerses } from "@/features/bible/verses/hooks/use-fetch-verses";
 
+export const revalidate = 604800; // 7 days
+
+export async function generateStaticParams() {
+  // Return empty — pages are generated on first visit (on-demand ISR)
+  return [];
+}
+
 interface VersesPageProps {
   params: Promise<{ slug: string; chapterNumber: string }>;
 }
