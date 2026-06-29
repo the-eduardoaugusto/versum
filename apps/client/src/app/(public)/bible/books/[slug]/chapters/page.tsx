@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { getApiV1PublicBibleBooksDynamicId } from "@/dal/orval/fetch/bíblia/bíblia";
 import { useChapters } from "@/features/bible/chapters/hooks/use-fetch-chapters";
+import { BibleBreadcrumb } from "@/features/bible/shared/components/bible-breadcrumb";
 import { BibleItemLink } from "@/features/bible/shared/components/bible-item-link";
 import {
   BookJsonLd,
@@ -57,6 +58,12 @@ async function ChaptersContent({ params }: ChaptersPageProps) {
         url={`${BASE_URL}/bible/books/${slug}/chapters`}
       />
       <div className="w-full max-w-4xl mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-8">
+        <BibleBreadcrumb
+          items={[
+            { label: "Bíblia", href: "/bible/books" },
+            { label: bookName },
+          ]}
+        />
         <div className="space-y-2 mb-8">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-instrument-serif capitalize leading-tight">
             {bookName}

@@ -2,6 +2,7 @@
 
 import { Suspense } from "react";
 import { getApiV1PublicBibleBooksDynamicId } from "@/dal/orval/fetch/bíblia/bíblia";
+import { BibleBreadcrumb } from "@/features/bible/shared/components/bible-breadcrumb";
 import {
   BreadcrumbJsonLd,
   WebPageJsonLd,
@@ -59,6 +60,13 @@ async function VersesContent({ params }: VersesPageProps) {
         url={`${BASE_URL}/bible/books/${slug}/chapters/${chapterNumber}`}
       />
       <div className="w-full max-w-2xl mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-8">
+        <BibleBreadcrumb
+          items={[
+            { label: "Bíblia", href: "/bible/books" },
+            { label: bookName, href: `/bible/books/${slug}/chapters` },
+            { label: `Capítulo ${chapterNumber}` },
+          ]}
+        />
         <div className="space-y-1 mb-8">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-instrument-serif capitalize leading-tight">
             {bookName}
