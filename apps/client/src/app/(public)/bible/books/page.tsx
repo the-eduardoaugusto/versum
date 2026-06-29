@@ -22,8 +22,10 @@ export default async function BibleBooksPage() {
     <>
       <BreadcrumbJsonLd items={breadcrumbItems} />
       <WebPageJsonLd
-        title={metadata.title || "Livros da Bíblia"}
-        description={metadata.description || "Acesse todos os livros da Bíblia"}
+        title={"Livros da Bíblia - Leia Online | Versum"}
+        description={
+          "Acesse todos os livros da Bíblia online. Novo e Antigo Testamento com versículos completos. Leitura gratuita e sem limitações."
+        }
         url={`${BASE_URL}/bible/books`}
       />
       <div className="max-w-screen h-full max-h-auto md:max-h-svh flex flex-wrap gap-2 justify-center">
