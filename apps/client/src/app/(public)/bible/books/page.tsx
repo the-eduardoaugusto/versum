@@ -1,7 +1,10 @@
-import { useBooks } from "@/features/bible/books/hooks/use-fetch-books";
 import { Testament } from "@/features/bible/books/components/testament";
+import { useBooks } from "@/features/bible/books/hooks/use-fetch-books";
+import {
+  BreadcrumbJsonLd,
+  WebPageJsonLd,
+} from "@/features/bible/shared/components/seo-structured-data";
 import { generateBooksMetadata } from "@/features/bible/shared/utils/seo-metadata";
-import { BreadcrumbJsonLd, WebPageJsonLd } from "@/features/bible/shared/components/seo-structured-data";
 
 export const metadata = generateBooksMetadata();
 
