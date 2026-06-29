@@ -56,16 +56,21 @@ async function ChaptersContent({ params }: ChaptersPageProps) {
         author="Bíblia Sagrada"
         url={`${BASE_URL}/bible/books/${slug}/chapters`}
       />
-      <div className="w-full">
-        <h1 className="text-4xl font-instrument-serif mb-6 capitalize">
-          {bookName}
-        </h1>
-        <p className="text-gray-600 mb-8">
-          Leia todos os capítulos do livro de {bookName} online na Versum.
-        </p>
-        <ul className="grid grid-cols-2 md:grid-cols-4 gap-2">
+      <div className="w-full max-w-4xl mx-auto px-4 md:px-6 lg:px-8 pb-8">
+        <div className="space-y-2 mb-8">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-instrument-serif capitalize leading-tight">
+            {bookName}
+          </h1>
+          <p className="text-sm md:text-base text-muted-foreground">
+            Leia todos os capítulos do livro de {bookName} online na Versum.
+          </p>
+        </div>
+        <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
           {chapters.map((chapter) => (
-            <li key={chapter.id} className="break-inside-avoid py-1">
+            <li
+              key={chapter.id}
+              className="break-inside-avoid rounded-lg px-3 py-2 hover:bg-accent/10 transition-all duration-200"
+            >
               <BibleItemLink
                 item={{
                   id: chapter.id,

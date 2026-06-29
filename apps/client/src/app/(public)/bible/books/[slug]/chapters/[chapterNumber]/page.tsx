@@ -58,16 +58,25 @@ async function VersesContent({ params }: VersesPageProps) {
         description={`Leia ${bookName} capítulo ${chapterNumber} da Bíblia. Versículos completos com tradução clara.`}
         url={`${BASE_URL}/bible/books/${slug}/chapters/${chapterNumber}`}
       />
-      <div className="w-full max-w-4xl">
-        <h1 className="text-4xl font-instrument-serif mb-2 capitalize">
-          {bookName}
-        </h1>
-        <h2 className="text-2xl text-accent mb-6">Capítulo {chapterNumber}</h2>
-        <ol className="space-y-4">
+      <div className="w-full max-w-2xl mx-auto px-4 md:px-6 lg:px-8 pb-8">
+        <div className="space-y-1 mb-8">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-instrument-serif capitalize leading-tight">
+            {bookName}
+          </h1>
+          <h2 className="text-lg md:text-xl text-accent-foreground font-medium">
+            Capítulo {chapterNumber}
+          </h2>
+        </div>
+        <ol className="space-y-1">
           {verses.map((verse) => (
-            <li key={verse.id} className="border-l-2 border-accent pl-4">
-              <span className="font-semibold text-accent">{verse.number}</span>{" "}
-              {verse.text}
+            <li
+              key={verse.id}
+              className="flex gap-3 px-4 py-3 rounded-lg hover:bg-accent/10 transition-all duration-200 group"
+            >
+              <span className="text-accent-foreground font-semibold text-sm tabular-nums min-w-[1.5rem] pt-0.5 select-none">
+                {verse.number}
+              </span>
+              <span className="text-base leading-relaxed">{verse.text}</span>
             </li>
           ))}
         </ol>

@@ -15,6 +15,7 @@ interface BibleItemLinkProps {
 
 export function BibleItemLink({ item, href }: BibleItemLinkProps) {
   const linkRef = useRef<HTMLAnchorElement>(null);
+  const textRef = useRef<HTMLSpanElement>(null);
   const currentArrowRef = useRef<SVGSVGElement>(null);
   const newArrowRef = useRef<SVGSVGElement>(null);
 
@@ -22,45 +23,68 @@ export function BibleItemLink({ item, href }: BibleItemLinkProps) {
     const link = linkRef.current;
     if (!link) return;
 
+    // Set initial state via GSAP so it's correct from the start
+    gsap.set(newArrowRef.current, { x: -16, opacity: 0 });
+
     const handleMouseEnter = () => {
       const currentArrow = currentArrowRef.current;
       const newArrow = newArrowRef.current;
+      const text = textRef.current;
 
-      if (!currentArrow || !newArrow) return;
+      if (!currentArrow || !newArrow || !text) return;
 
-      gsap.to(currentArrow, {
-        x: 20,
-        opacity: 0,
-        duration: 0.3,
-        ease: "power3.easeOut",
-      });
-
+      // New arrow slides in from left
       gsap.to(newArrow, {
         x: 0,
         opacity: 1,
         duration: 0.3,
-        ease: "power3.easeOut",
+        ease: "power3.out",
+      });
+
+      // Text shifts right — pushed by incoming arrow
+      gsap.to(text, {
+        x: 6,
+        duration: 0.3,
+        ease: "power3.out",
+      });
+
+      // Current arrow exits right
+      gsap.to(currentArrow, {
+        x: 20,
+        opacity: 0,
+        duration: 0.3,
+        ease: "power3.out",
       });
     };
 
     const handleMouseLeave = () => {
       const currentArrow = currentArrowRef.current;
       const newArrow = newArrowRef.current;
+      const text = textRef.current;
 
-      if (!currentArrow || !newArrow) return;
+      if (!currentArrow || !newArrow || !text) return;
 
+      // New arrow retreats left
+      gsap.to(newArrow, {
+        x: -16,
+        opacity: 0,
+        duration: 0.3,
+        ease: "power3.out",
+      });
+
+      // Text returns to original position
+      gsap.to(text, {
+        x: 0,
+        duration: 0.3,
+        ease: "power3.out",
+      });
+
+      // Current arrow returns
       gsap.to(currentArrow, {
         x: 0,
         opacity: 1,
         duration: 0.3,
-        ease: "power3.easeOut",
-      });
-
-      gsap.to(newArrow, {
-        x: -20,
-        opacity: 0,
-        duration: 0.3,
-        ease: "power3.easeOut",
+        ease: "power3.out",
       });
     };
 
@@ -77,23 +101,23 @@ export function BibleItemLink({ item, href }: BibleItemLinkProps) {
     <Link
       ref={linkRef}
       href={href}
-      className="text-md hover:text-accent-foreground transition-colors inline-flex items-center gap-1"
+      className="text-md hover:text-accent-foreground transition-colors inline-flex items-center gap-1 relative"
     >
-      <span className="break-inside-avoid overflow-hidden">
-        {item.niceName}
-      </span>
-
-      {/* Current arrow (visible at rest) */}
-      <ArrowRightIcon
-        ref={currentArrowRef}
-        className="inline size-4 flex-shrink-0"
-      />
-
-      {/* New arrow (off-screen, appears on hover) */}
+      {/* New arrow — absolute, slides in from left on hover */}
       <ArrowRightIcon
         ref={newArrowRef}
         className="absolute inline size-4 flex-shrink-0"
-        style={{ x: -20, opacity: 0 }}
+      />
+
+      {/* Text — shifts right when new arrow pushes in */}
+      <span ref={textRef} className="break-inside-avoid">
+        {item.niceName}
+      </span>
+
+      {/* Current arrow — visible at rest, exits right on hover */}
+      <ArrowRightIcon
+        ref={currentArrowRef}
+        className="inline size-4 flex-shrink-0"
       />
     </Link>
   );
