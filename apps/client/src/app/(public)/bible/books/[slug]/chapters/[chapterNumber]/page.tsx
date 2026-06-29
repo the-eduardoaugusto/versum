@@ -58,7 +58,7 @@ async function VersesContent({ params }: VersesPageProps) {
         description={`Leia ${bookName} capítulo ${chapterNumber} da Bíblia. Versículos completos com tradução clara.`}
         url={`${BASE_URL}/bible/books/${slug}/chapters/${chapterNumber}`}
       />
-      <div className="w-full max-w-2xl mx-auto px-4 md:px-6 lg:px-8 pb-8">
+      <div className="w-full max-w-2xl mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-8">
         <div className="space-y-1 mb-8">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-instrument-serif capitalize leading-tight">
             {bookName}

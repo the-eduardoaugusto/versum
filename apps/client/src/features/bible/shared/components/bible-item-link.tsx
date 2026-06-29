@@ -15,33 +15,36 @@ interface BibleItemLinkProps {
 
 export function BibleItemLink({ item, href }: BibleItemLinkProps) {
   const linkRef = useRef<HTMLAnchorElement>(null);
-  const textRef = useRef<HTMLSpanElement>(null);
-  const currentArrowRef = useRef<SVGSVGElement>(null);
-  const newArrowRef = useRef<SVGSVGElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const currentArrowRef = useRef<HTMLDivElement>(null);
+  const newArrowRef = useRef<HTMLDivElement>(null);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
 
   useEffect(() => {
     const link = linkRef.current;
     if (!link) return;
 
-    // Set initial state
+    // Set initial state: new arrow hidden to the left
     gsap.set(newArrowRef.current, { x: -16, opacity: 0 });
 
     const handleMouseEnter = () => {
-      // Kill any in-progress animation before starting new one
       tlRef.current?.kill();
 
       tlRef.current = gsap
         .timeline()
         .to(
+          containerRef.current,
+          { x: 8, duration: 0.3, ease: "power3.out" },
+          0,
+        )
+        .to(
           newArrowRef.current,
           { x: 0, opacity: 1, duration: 0.3, ease: "power3.out" },
           0,
         )
-        .to(textRef.current, { x: 6, duration: 0.3, ease: "power3.out" }, 0)
         .to(
           currentArrowRef.current,
-          { x: 20, opacity: 0, duration: 0.3, ease: "power3.out" },
+          { x: 16, opacity: 0, duration: 0.3, ease: "power3.out" },
           0,
         );
     };
@@ -52,11 +55,15 @@ export function BibleItemLink({ item, href }: BibleItemLinkProps) {
       tlRef.current = gsap
         .timeline()
         .to(
+          containerRef.current,
+          { x: 0, duration: 0.3, ease: "power3.out" },
+          0,
+        )
+        .to(
           newArrowRef.current,
           { x: -16, opacity: 0, duration: 0.3, ease: "power3.out" },
           0,
         )
-        .to(textRef.current, { x: 0, duration: 0.3, ease: "power3.out" }, 0)
         .to(
           currentArrowRef.current,
           { x: 0, opacity: 1, duration: 0.3, ease: "power3.out" },
@@ -78,24 +85,22 @@ export function BibleItemLink({ item, href }: BibleItemLinkProps) {
     <Link
       ref={linkRef}
       href={href}
-      className="text-md hover:text-accent-foreground transition-colors inline-flex items-center gap-1 relative"
+      className="text-md hover:text-accent-foreground transition-colors inline-flex items-center relative"
     >
-      {/* New arrow — absolute, slides in from left on hover */}
-      <ArrowRightIcon
-        ref={newArrowRef}
-        className="absolute inline size-4 flex-shrink-0"
-      />
+      {/* Container: arrows + text animate together as one unit */}
+      <div ref={containerRef} className="flex items-center gap-1">
+        {/* New arrow — absolute within container, slides in from left on hover */}
+        <div ref={newArrowRef} className="absolute left-0 inline-flex">
+          <ArrowRightIcon className="size-4 flex-shrink-0" />
+        </div>
 
-      {/* Text — shifts right when new arrow pushes in */}
-      <span ref={textRef} className="break-inside-avoid">
-        {item.niceName}
-      </span>
+        {/* Current arrow — visible at rest, exits right on hover */}
+        <div ref={currentArrowRef} className="inline-flex">
+          <ArrowRightIcon className="size-4 flex-shrink-0" />
+        </div>
 
-      {/* Current arrow — visible at rest, exits right on hover */}
-      <ArrowRightIcon
-        ref={currentArrowRef}
-        className="inline size-4 flex-shrink-0"
-      />
+        <span className="break-inside-avoid">{item.niceName}</span>
+      </div>
     </Link>
   );
 }
