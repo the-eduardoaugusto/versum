@@ -1,5 +1,8 @@
 // apps/client/src/app/(public)/bible/books/[slug]/chapters/page.tsx
 
+import type { Metadata } from "next";
+import { Suspense } from "react";
+import { getApiV1PublicBibleBooksDynamicId } from "@/dal/orval/fetch/bíblia/bíblia";
 import { useChapters } from "@/features/bible/chapters/hooks/use-fetch-chapters";
 import { BibleItemLink } from "@/features/bible/shared/components/bible-item-link";
 import {
@@ -14,18 +17,26 @@ interface ChaptersPageProps {
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://versum.com.br";
 
-export async function generateMetadata({ params }: ChaptersPageProps) {
+export async function generateMetadata({
+  params,
+}: ChaptersPageProps): Promise<Metadata> {
   const { slug } = await params;
+  const bookRes = await getApiV1PublicBibleBooksDynamicId(slug);
+  const bookName = bookRes.data?.niceName ?? slug;
   return generateChapterMetadata({
-    bookName: slug,
+    bookName,
     bookSlug: slug,
     chapterNumber: 1,
   });
 }
 
-export default async function ChaptersPage({ params }: ChaptersPageProps) {
+async function ChaptersContent({ params }: ChaptersPageProps) {
   const { slug } = await params;
-  const chapters = await useChapters(slug);
+  const [bookRes, chapters] = await Promise.all([
+    getApiV1PublicBibleBooksDynamicId(slug),
+    useChapters(slug),
+  ]);
+  const bookName = bookRes.data?.niceName ?? slug;
 
   if (!chapters || chapters.length === 0) {
     return <div>Nenhum capítulo encontrado</div>;
@@ -34,23 +45,23 @@ export default async function ChaptersPage({ params }: ChaptersPageProps) {
   const breadcrumbItems = [
     { name: "Home", url: BASE_URL },
     { name: "Bíblia", url: `${BASE_URL}/bible/books` },
-    { name: slug, url: `${BASE_URL}/bible/books/${slug}/chapters` },
+    { name: bookName, url: `${BASE_URL}/bible/books/${slug}/chapters` },
   ];
 
   return (
     <>
       <BreadcrumbJsonLd items={breadcrumbItems} />
       <BookJsonLd
-        name={slug}
+        name={bookName}
         author="Bíblia Sagrada"
         url={`${BASE_URL}/bible/books/${slug}/chapters`}
       />
       <div className="w-full">
         <h1 className="text-4xl font-instrument-serif mb-6 capitalize">
-          {slug}
+          {bookName}
         </h1>
         <p className="text-gray-600 mb-8">
-          Leia todos os capítulos do livro de {slug} online na Versum.
+          Leia todos os capítulos do livro de {bookName} online na Versum.
         </p>
         <ul className="grid grid-cols-2 md:grid-cols-4 gap-2">
           {chapters.map((chapter) => (
@@ -67,5 +78,13 @@ export default async function ChaptersPage({ params }: ChaptersPageProps) {
         </ul>
       </div>
     </>
+  );
+}
+
+export default function ChaptersPage(props: ChaptersPageProps) {
+  return (
+    <Suspense fallback={<div>Carregando...</div>}>
+      <ChaptersContent {...props} />
+    </Suspense>
   );
 }

@@ -13,7 +13,10 @@ export function Testament({ title, books }: TestamentProps) {
       <ul className="md:columns-2 py-2">
         {books.map((book) => (
           <li key={book.id} className="break-inside-avoid py-1">
-            <BibleItemLink item={book} href={`/bible/books/${book.slug}`} />
+            <BibleItemLink
+              item={book}
+              href={`/bible/books/${book.slug}/chapters`}
+            />
           </li>
         ))}
       </ul>
