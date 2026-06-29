@@ -11,8 +11,6 @@ import {
 } from "@/features/bible/shared/components/seo-structured-data";
 import { generateChapterMetadata } from "@/features/bible/shared/utils/seo-metadata";
 
-export const revalidate = 86400; // 24 hours
-
 interface ChaptersPageProps {
   params: Promise<{ slug: string }>;
 }
