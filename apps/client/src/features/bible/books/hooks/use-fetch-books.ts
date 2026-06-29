@@ -16,7 +16,11 @@ export const useBooks = cache(async () => {
   if (firstReq.pagination?.hasNextPage) {
     const promises: Promise<GetBooksResponse>[] = [];
 
-    for (let pageInt = 2; pageInt <= firstReq.pagination.totalPages; pageInt++) {
+    for (
+      let pageInt = 2;
+      pageInt <= firstReq.pagination.totalPages;
+      pageInt++
+    ) {
       console.log(`Fetching page ${pageInt}...`);
       promises.push(getApiV1PublicBibleBooks({ page: pageInt.toString() }));
     }
