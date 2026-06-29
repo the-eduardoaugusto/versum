@@ -2,18 +2,38 @@
 
 import { cacheLife, cacheTag } from "next/cache";
 import { cache } from "react";
+import { getApiV1PublicBibleBooksDynamicIdChapters } from "@/dal/orval/fetch/bíblia/bíblia";
 import type { Chapter } from "@/dal/orval/fetch/schemas";
 
-// TODO: Verify actual API endpoint structure after implementation
-// This is a placeholder pending chapters endpoint confirmation
 export const useChapters = cache(
   async (bookSlug: string): Promise<Chapter[]> => {
     "use cache";
     cacheLife("max");
     cacheTag(`bible:chapters:${bookSlug}`);
 
-    console.log(`Fetching chapters for book: ${bookSlug}`);
-    // API call will go here
-    return [];
+    const firstReq = await getApiV1PublicBibleBooksDynamicIdChapters(bookSlug);
+    let allChapters = firstReq.data ?? [];
+
+    if (!firstReq.pagination?.hasNextPage) {
+      return allChapters;
+    }
+
+    const promises = [];
+    for (
+      let pageInt = 2;
+      pageInt <= firstReq.pagination.totalPages;
+      pageInt++
+    ) {
+      promises.push(
+        getApiV1PublicBibleBooksDynamicIdChapters(bookSlug, {
+          page: pageInt.toString(),
+        }),
+      );
+    }
+
+    const results = await Promise.all(promises);
+    allChapters = allChapters.concat(results.flatMap((r) => r.data ?? []));
+
+    return allChapters;
   },
 );
