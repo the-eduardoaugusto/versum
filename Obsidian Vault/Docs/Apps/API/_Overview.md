@@ -4,7 +4,7 @@ section: "Docs"
 subsection: "Apps"
 tags: [versum, app, api, backend]
 up: "[[Docs/Apps/_Index]]"
-related: ["[[Docs/Guides/API Development]]", "[[Docs/Guides/Naming Convention]]", "[[Rules/02 Scalability]]"]
+related: ["[[Docs/API Development]]", "[[Docs/Naming Convention]]", "[[Rules/02 Scalability]]"]
 depth: 1
 ---
 
@@ -89,9 +89,10 @@ Envelopes de resposta padronizados:
 ```typescript
 {
   success: boolean
-  message?: string
-  code?: string
-  data: T
+  message: string     // obrigatório
+  code: string        // obrigatório
+  data?: T
+  pagination?: { ... }
 }
 ```
 
@@ -107,6 +108,7 @@ Envelopes de resposta padronizados:
 
 - [[Docs/Apps/API/Services|Services]] — módulos e serviços (auth, bible, reading, users, interactions, consent-logs)
 - [[Docs/Apps/API/Database|Database]] — schemas Drizzle, migrações, relações
+- [[Docs/Apps/API/CLI|CLI]] — ferramenta interativa: bible seed, truncate, build, deploy
 
 ---
 

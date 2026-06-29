@@ -22,8 +22,11 @@ export class JourneyRepositoryV1 {
 
   async findNextChapterToRead(
     userId: string,
+    tx?: typeof this.db,
   ): Promise<ChapterWithContent | null> {
-    const lastRead = await this.db
+    const client = tx ?? this.db;
+
+    const lastRead = await client
       .select({ chapterId: journeyReadings.chapterId })
       .from(journeyReadings)
       .where(eq(journeyReadings.userId, userId))
@@ -31,7 +34,7 @@ export class JourneyRepositoryV1 {
       .limit(1);
 
     if (lastRead.length === 0 || !lastRead[0]?.chapterId) {
-      const [firstChapter] = await this.db
+      const [firstChapter] = await client
         .select({
           chapter: bibleChapters,
           book: bibleBooks,
@@ -50,14 +53,18 @@ export class JourneyRepositoryV1 {
 
     const nextChapter = await this.findNextChapterSequential(
       lastRead[0].chapterId,
+      tx,
     );
     return nextChapter;
   }
 
   private async findNextChapterSequential(
     currentChapterId: string,
+    tx?: typeof this.db,
   ): Promise<ChapterWithContent | null> {
-    const current = await this.db
+    const client = tx ?? this.db;
+
+    const current = await client
       .select({
         chapter: bibleChapters,
         book: bibleBooks,
@@ -71,7 +78,7 @@ export class JourneyRepositoryV1 {
 
     const { chapter: currentChapter, book: currentBook } = current[0];
 
-    const [nextChapter] = await this.db
+    const [nextChapter] = await client
       .select({
         chapter: bibleChapters,
         book: bibleBooks,
@@ -149,14 +156,19 @@ export class JourneyRepositoryV1 {
     return { chapter, book, verses };
   }
 
-  async markChapterAsRead({
-    userId,
-    chapterId,
-  }: {
-    userId: string;
-    chapterId: string;
-  }): Promise<void> {
-    await this.db
+  async markChapterAsRead(
+    {
+      userId,
+      chapterId,
+    }: {
+      userId: string;
+      chapterId: string;
+    },
+    tx?: typeof this.db,
+  ): Promise<void> {
+    const client = tx ?? this.db;
+
+    await client
       .insert(journeyReadings)
       .values({
         userId,
@@ -188,8 +200,14 @@ export class JourneyRepositoryV1 {
     return result?.count ?? 0;
   }
 
-  async isChapterRead(userId: string, chapterId: string): Promise<boolean> {
-    const [result] = await this.db
+  async isChapterRead(
+    userId: string,
+    chapterId: string,
+    tx?: typeof this.db,
+  ): Promise<boolean> {
+    const client = tx ?? this.db;
+
+    const [result] = await client
       .select({ count: count() })
       .from(journeyReadings)
       .where(
@@ -200,5 +218,20 @@ export class JourneyRepositoryV1 {
       );
 
     return (result?.count ?? 0) > 0;
+  }
+
+  async findChapterById(
+    chapterId: string,
+    tx?: typeof this.db,
+  ): Promise<boolean> {
+    const client = tx ?? this.db;
+
+    const [result] = await client
+      .select({ id: bibleChapters.id })
+      .from(bibleChapters)
+      .where(eq(bibleChapters.id, chapterId))
+      .limit(1);
+
+    return result !== undefined;
   }
 }

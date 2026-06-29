@@ -10,6 +10,7 @@ import { ActionButton } from "@/components/shared/action-button";
 import { FieldError } from "@/components/shared/field-error";
 import type { StepTransitionHandle } from "@/components/shared/step-transition";
 import { StepTransition } from "@/components/shared/step-transition";
+import { FormInput } from "@/components/ui/form-input";
 import { getApiV1ProfilesUsername } from "@/dal/orval/fetch/profiles/profiles";
 import { usePostApiV1ProfilesMe } from "@/dal/orval/tanstackQuery/profiles/profiles";
 import { cn } from "@/lib/utils";
@@ -74,7 +75,6 @@ export function FormStepView({
   onBack,
   isFirstFormStep,
   isLastFormStep,
-  onError,
 }: FormStepViewProps) {
   const transitionRef = useRef<StepTransitionHandle>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -235,7 +235,7 @@ export function FormStepView({
           >
             {(field) => (
               <div>
-                <input
+                <FormInput
                   id={`field-${step.field}`}
                   type={step.inputType}
                   placeholder={step.placeholder}
@@ -247,11 +247,6 @@ export function FormStepView({
                   onBlur={field.handleBlur}
                   autoComplete="off"
                   className={cn(
-                    "w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm",
-                    "text-neutral-900 placeholder-neutral-400 outline-none ring-0",
-                    "transition focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10",
-                    "dark:border-neutral-700 dark:bg-neutral-800 dark:text-white",
-                    "dark:placeholder-neutral-500 dark:focus:border-white dark:focus:ring-white/10",
                     apiError && "border-red-500 dark:border-red-400",
                   )}
                 />

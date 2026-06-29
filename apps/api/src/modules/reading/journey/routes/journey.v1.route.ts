@@ -6,6 +6,7 @@ import { JourneyControllerV1 } from "../controllers/journey.v1.controller.ts";
 import {
   feedQuerySchema,
   feedResponseSchema,
+  markChapterAsReadRequestSchema,
   nextProgressResponseSchema,
   statusResponseSchema,
 } from "../schemas/journey.v1.schema.ts";
@@ -55,8 +56,18 @@ export class JourneyRoutesV1 {
       path: "/next",
       tags: ["Journey"],
       summary: "Avançar progresso",
-      description: "Salva o capítulo atual como lido e avança para o próximo.",
+      description:
+        "Confirma a leitura de um capítulo específico e avança o progresso. Idempotente.",
       security: [{ cookieAuth: [] }],
+      request: {
+        body: {
+          content: {
+            "application/json": {
+              schema: markChapterAsReadRequestSchema,
+            },
+          },
+        },
+      },
       responses: {
         200: {
           content: {
@@ -64,9 +75,9 @@ export class JourneyRoutesV1 {
               schema: nextProgressResponseSchema,
             },
           },
-          description: "Progresso salvo com sucesso",
+          description: "Progresso salvo com sucesso (ou no-op idempotente)",
         },
-        ...createErrorResponses([401, 500]),
+        ...createErrorResponses([400, 401, 404, 409, 500]),
       },
     });
 

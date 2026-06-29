@@ -4,7 +4,7 @@ section: "Docs"
 subsection: "Apps"
 tags: [versum, api, database, postgresql, drizzle]
 up: "[[Docs/Apps/API/_Overview]]"
-related: ["[[Docs/Apps/API/Services]]", "[[Docs/Guides/Naming Convention]]"]
+related: ["[[Docs/Apps/API/Services]]", "[[Docs/Naming Convention]]"]
 depth: 2
 ---
 
@@ -21,13 +21,15 @@ Schemas PostgreSQL, migrações e camada ORM com Drizzle.
 ## Estrutura
 
 ```
-apps/api/src/db/
-├── schema/
-│   ├── users.ts       # Tabela users
-│   ├── chapters.ts    # Tabela chapters
-│   └── ...
-├── migrations/        # Arquivos de migração
-└── index.ts           # Conexão + queries
+apps/api/src/infrastructure/db/
+├── schema.ts           # Central — re-exporta todos os schemas dos módulos
+├── migrations/         # Arquivos de migração
+└── index.ts            # Conexão + queries
+
+apps/api/src/modules/<feature>/db/  # Schemas Drizzle por feature
+├── <feature>.table.ts
+├── <feature>.relations.ts
+└── ...
 ```
 
 ## Convenções

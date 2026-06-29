@@ -2,7 +2,7 @@
 
 # Landing Page — Specific Context
 
-Stack: Next.js 16 (Pages Router)
+Stack: Next.js 16 (App Router)
 
 - Lightweight: minimal JS
 - Components: own folder (`<name>/component.tsx`)
