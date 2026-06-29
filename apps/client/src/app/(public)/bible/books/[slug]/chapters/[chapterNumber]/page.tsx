@@ -15,6 +15,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://versum.com.br";
 
 export async function generateMetadata({ params }: VersesPageProps) {
   const { slug, chapterNumber } = await params;
+  // TODO: Replace slug with actual book name from useBook(slug) when API is ready
   return generateVerseMetadata({
     bookName: slug,
     bookSlug: slug,
@@ -45,7 +46,7 @@ export default async function VersesPage({ params }: VersesPageProps) {
     <>
       <BreadcrumbJsonLd items={breadcrumbItems} />
       <WebPageJsonLd
-        title={`${slug} ${chapterNumber} - Versum`}
+        title={`${slug} ${chapterNumber} - Versículos | Versum`}
         description={`Leia ${slug} capítulo ${chapterNumber} da Bíblia. Versículos completos com tradução clara.`}
         url={`${BASE_URL}/bible/books/${slug}/chapters/${chapterNumber}`}
       />
