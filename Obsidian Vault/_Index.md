@@ -20,9 +20,9 @@ Aplicativo de leitura bíblica em formato de feed, com foco em constância e ref
 | Seção | Conteúdo |
 |:--|:--|
 | 📄 [[PRD]] | Visão de produto, features, dados, métricas |
-| 📚 [[Docs/_Index\|Docs]] | Guias de desenvolvimento e arquitetura |
-| 📐 [[Rules/_Index\|Rules]] | Regras de código e boas práticas |
-| 🗺️ [[Plans/_Index\|Plans]] | Planos de implementação |
+| 📚 [[Docs/_Index|Docs]] | Guias de desenvolvimento e arquitetura |
+| 📐 [[Rules/_Index|Rules]] | Regras de código e boas práticas |
+| 🗺️ [[Plans/_Index|Plans]] | Planos de implementação |
 
 ---
 
@@ -31,14 +31,14 @@ Aplicativo de leitura bíblica em formato de feed, com foco em constância e ref
 Cada nota tem paginação (◀ anterior · próximo ▶) seguindo esta trilha:
 
 1. [[PRD]]
-2. [[Naming Convention]]
-3. [[API Development]]
-4. [[API Response Standardization]]
-5. [[Git Flow]]
-6. [[LGPD Implementation]]
-7. [[Incident Response Plan]]
-8. [[01 Security]] · [[02 Scalability]] · [[03 Modularization]] · [[04 General Practices]] · [[05 Tooling]] · [[06 Frontend Animations]]
-9. [[LGPD Compliance]] → [[LGPD Compliance - Next Phases]]
+2. [[Docs/Naming Convention]]
+3. [[Docs/API Development]]
+4. [[Docs/API Response Standardization]]
+5. [[Docs/Git Flow]]
+6. [[Docs/LGPD Implementation]]
+7. [[Docs/Decisions/Incident Response Plan]]
+8. [[Rules/01 Security]] · [[Rules/02 Scalability]] · [[Rules/03 Modularization]] · [[Rules/04 General Practices]] · [[Rules/05 Tooling]] · [[Rules/06 Frontend Animations]]
+9. [[Plans/Compliance/LGPD Compliance]] → [[Plans/Compliance/LGPD Compliance - Next Phases]]
 
 ---
 

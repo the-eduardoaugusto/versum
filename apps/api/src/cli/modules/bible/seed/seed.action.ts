@@ -6,10 +6,9 @@ import { db } from "../../../../infrastructure/db/index.ts";
 import { bibleBooks } from "../../../../modules/bible/db/books.table.ts";
 import { bibleChapters } from "../../../../modules/bible/db/chapters.table.ts";
 import { bibleVerses } from "../../../../modules/bible/db/verses.table.ts";
-import {
-  type NormalizedBook,
-  normalizeBibleJsonForSeed,
-} from "../bible-json-normalize.ts";
+import type { NormalizedBook } from "../bible-json-normalize.ts";
+import { fetchAllBibleBooks, integrityCheck } from "./bible-fetcher.ts";
+import { BIBLE_BOOKS } from "./bible-books.constants.ts";
 
 type ExistingBook = InferSelectModel<typeof bibleBooks>;
 
@@ -49,11 +48,7 @@ async function updateDiscordMessage() {
     title: `Logs do seed ${startTime.toISOString()}`,
     description: `**Logs:**\n\`\`\`\n${truncatedLogs}\n\`\`\``,
     fields: [
-      {
-        name: "Começou em:",
-        value: formatDate(startTime),
-        inline: true,
-      },
+      { name: "Começou em:", value: formatDate(startTime), inline: true },
       {
         name: "Terminou em:",
         value: endTime ? formatDate(endTime) : "Em andamento",
@@ -76,7 +71,6 @@ async function updateDiscordMessage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ embeds: [embed] }),
       });
-
       const data = (await response.json()) as { id: string };
       messageId = data.id;
     } else {
@@ -217,10 +211,7 @@ export interface SeedBibleOptions {
   insertVerses: boolean;
 }
 
-export async function seedBibleFromJson(
-  jsonPath: string,
-  options: SeedBibleOptions,
-) {
+export async function seedBibleFromRemote(options: SeedBibleOptions) {
   startTime = new Date();
   logs = [];
   endTime = null;
@@ -231,29 +222,37 @@ export async function seedBibleFromJson(
   await addLog("🔥 SEED INICIADO");
 
   try {
-    const bibleJson = await Bun.file(jsonPath).text();
+    console.log(`⬇️  Baixando ${BIBLE_BOOKS.length} livros do GitHub...`);
+    await addLog(`⬇️  Baixando ${BIBLE_BOOKS.length} livros do GitHub...`);
+
+    const { books, errors } = await fetchAllBibleBooks();
+
+    const allResults = [
+      ...books.map((b) => ({ ok: true as const, book: b.book, testament: b.testament })),
+      ...errors.map((e) => ({ ok: false as const, slug: e.slug, reason: e.reason })),
+    ];
+
+    const { passed, errors: integrityErrors } = integrityCheck(allResults);
+
+    if (!passed) {
+      hasError = true;
+      endTime = new Date();
+      const errorMsg = `❌ INTEGRITY CHECK FALHOU:\n${integrityErrors.join("\n")}`;
+      console.error(errorMsg);
+      await addLog(errorMsg);
+      logger("error", "Seed abortado: integrity check falhou.");
+      return;
+    }
+
+    await addLog(`✅ Integrity OK — ${books.length} livros recebidos`);
+
     const existingBooks = await db.select().from(bibleBooks);
-    const bible = normalizeBibleJsonForSeed(
-      JSON.parse(bibleJson),
-      existingBooks,
-    );
 
-    await addLog(`✅ JSON OK - Total de livros: ${bible.books.length}`);
-
-    const counters = {
-      books: 0,
-      chapters: 0,
-      verses: 0,
-    };
+    const counters = { books: 0, chapters: 0, verses: 0 };
 
     await addLog("📜 Processando livros...");
 
-    const oldTestamentCount = 46;
-
-    for (const book of bible.books) {
-      const index = bible.books.indexOf(book);
-      const testament: "OLD" | "NEW" =
-        index < oldTestamentCount ? "OLD" : "NEW";
+    for (const { book, testament } of books) {
       await processBook(book, testament, existingBooks, options, counters);
     }
 

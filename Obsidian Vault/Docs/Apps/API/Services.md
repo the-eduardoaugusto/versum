@@ -4,7 +4,7 @@ section: "Docs"
 subsection: "Apps"
 tags: [versum, api, services]
 up: "[[Docs/Apps/API/_Overview]]"
-related: ["[[Docs/Apps/API/Database]]", "[[Docs/Guides/API Development]]"]
+related: ["[[Docs/Apps/API/Database]]", "[[Docs/API Development]]"]
 depth: 2
 ---
 
@@ -76,7 +76,6 @@ createSession(userId: string): Promise<Session>
 getFeed(userId: string, bufferSize: number): Promise<JourneyFeed>
 markChapterAsRead(userId: string, chapterId: string): Promise<void>
 getProgress(userId: string): Promise<ProgressData>
-confirmProgressMilestone(userId: string): Promise<Milestone>
 ```
 
 ---
@@ -103,17 +102,19 @@ deleteAccount(userId: string): Promise<void>
 
 ---
 
-## 5. Interactions Service
+## 5. Interactions (Schema Only)
 
-**Gerencia:** Engajamento e comportamento do usuário
+**Status:** ⏳ DB tables criadas, serviço ainda não implementado.
 
-**Localização:** `apps/api/src/modules/interactions/`
+**Localização:** `apps/api/src/modules/interactions/db/`
 
-**Responsabilidades:**
-- Rastrear tempo gasto lendo
-- Registrar eventos (scroll, pause, resume)
-- Métricas de engajamento
-- Recomendações baseadas em padrões
+**Tabelas:**
+| Tabela | Finalidade |
+|:--|:--|
+| `likes` | Curtidas em versículos |
+| `marks` | Anotações/marcações em versículos |
+| `journey_readings` | Histórico de leitura da Jornada |
+| `discovery_readings` | Histórico de leitura do Discovery |
 
 ---
 

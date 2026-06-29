@@ -214,7 +214,8 @@ Regras:
 | Email | **Resend** |
 | Cache | Redis (opcional) |
 | UI | Tailwind CSS v4 + shadcn/ui + phosphor-icons |
-| Animações | GSAP + SplitText + Lenis |
+| Animações (client) | GSAP + SplitText |
+| Animações (landing-page) | GSAP + Lenis + Three.js |
 | Seed bíblico | JSON normalizado em `src/assets/json/bible.json` |
 
 ---

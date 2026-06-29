@@ -119,6 +119,13 @@ export const feedResponseSchema = createSuccessResponseSchema(
   feedResponseDataSchema,
 );
 
+export const markChapterAsReadRequestSchema = z.object({
+  chapterId: z.string().uuid().openapi({
+    example: "550e8400-e29b-41d4-a716-446655440000",
+    description: "ID do capítulo que o cliente está confirmando como lido",
+  }),
+});
+
 export const nextProgressResponseSchema = createSuccessResponseSchema(
   "JourneyNextProgressResponse",
   z.object({ success: z.boolean() }),

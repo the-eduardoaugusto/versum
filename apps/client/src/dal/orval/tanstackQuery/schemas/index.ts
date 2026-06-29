@@ -70,6 +70,7 @@ export * from "./journeyStatusResponseData";
 export * from "./logoutResponse";
 export * from "./paginationViewModel";
 export * from "./postApiV1ReadingsDiscoveryBody";
+export * from "./postApiV1ReadingsJourneyNextBody";
 export * from "./recordConsentBody";
 export * from "./sendMagicLinkBody";
 export * from "./sendMagicLinkResponse";

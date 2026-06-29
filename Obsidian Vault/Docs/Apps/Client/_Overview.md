@@ -4,7 +4,7 @@ section: "Docs"
 subsection: "Apps"
 tags: [versum, app, client, frontend]
 up: "[[Docs/Apps/_Index]]"
-related: ["[[Docs/Guides/API Development]]", "[[Rules/06 Frontend Animations]]"]
+related: ["[[Docs/API Development]]", "[[Rules/06 Frontend Animations]]"]
 depth: 1
 ---
 
@@ -26,12 +26,22 @@ Frontend — responsável por UI, state management e interação com API.
 ```
 apps/client/
 ├── src/
-│   ├── app/           # App Router pages
-│   ├── components/    # Componentes React
-│   ├── hooks/         # Custom hooks
-│   ├── lib/           # Utilities
-│   └── styles/        # Global styles
-├── public/            # Assets estáticos
+│   ├── app/                  # App Router pages (private, auth, api, privacy)
+│   ├── components/
+│   │   ├── provider/         # React Query + Theme providers
+│   │   ├── shared/           # AppNavbar, ActionButton, StepTransition, etc.
+│   │   └── ui/               # shadcn/ui (avatar, button, card, input, etc.)
+│   ├── dal/                  # Data access layer
+│   │   ├── auth/             # Session cache
+│   │   ├── orval/            # Orval-generated (fetch, TanStack Query, Zod)
+│   │   └── profiles/         # Profile cache
+│   ├── features/             # Feature modules
+│   │   ├── feed/journey/     # Journey feed (components, hooks, contexts)
+│   │   ├── login/            # Magic link login
+│   │   ├── onboarding/       # Onboarding flow (consent, form steps)
+│   │   └── profile/          # Profile edit
+│   └── lib/                  # Utilities (api-fetcher, auth, utils)
+├── public/                   # Assets estáticos
 └── package.json
 ```
 
@@ -39,10 +49,12 @@ apps/client/
 
 | Feature | Localização | Descrição |
 |:--|:--|:--|
-| **Feed/Journey** | `features/feed/journey/` | [[Docs/Apps/Client/Journey Feed Features\|Feed infinito de leitura bíblica com scroll snap]] |
+| **Feed/Journey** | `features/feed/journey/` | [[Docs/Apps/Client/Journey Feed Features|Feed infinito de leitura bíblica com scroll snap]] |
+| **Feed/Discovery** | `features/feed/discovery/` | Leitura aleatória de versículos (modo Descoberta) |
 | **Login** | `features/login/` | Autenticação via magic link |
 | **Onboarding** | `features/onboarding/` | Fluxo de boas-vindas e setup inicial |
 | **Profile** | `features/profile/` | Edição de perfil, avatar, preferências |
+| **Search** | `features/search/` | Busca de livros, capítulos e versículos |
 
 ## Padrões
 

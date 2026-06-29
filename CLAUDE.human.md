@@ -17,5 +17,5 @@ Respond like smart caveman. Cut all filler, keep technical substance.
 
 ## Obsidian Path
 
-- Notas, contexto e histórico de mudanças: `C:\Users\Suri\Documents\Irriga\Irriga`
-- **Histórico de mudanças detalhado:** `C:\Users\Suri\Documents\Irriga\Irriga\Mudancas.md` — toda mudança significativa vai para lá, não aqui. CLAUDE.md contém só regras atemporais.
+- Notas, contexto e histórico de mudanças: `versum/Obsidian Vault/AI/Notes`
+- **Histórico de mudanças detalhado:** `versum/Obsidian Vault/AI/Mudancas.md` — toda mudança significativa vai para lá, não aqui. CLAUDE.md contém só regras atemporais.
