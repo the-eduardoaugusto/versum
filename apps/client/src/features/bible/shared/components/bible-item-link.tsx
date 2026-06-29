@@ -18,74 +18,50 @@ export function BibleItemLink({ item, href }: BibleItemLinkProps) {
   const textRef = useRef<HTMLSpanElement>(null);
   const currentArrowRef = useRef<SVGSVGElement>(null);
   const newArrowRef = useRef<SVGSVGElement>(null);
+  const tlRef = useRef<gsap.core.Timeline | null>(null);
 
   useEffect(() => {
     const link = linkRef.current;
     if (!link) return;
 
-    // Set initial state via GSAP so it's correct from the start
+    // Set initial state
     gsap.set(newArrowRef.current, { x: -16, opacity: 0 });
 
     const handleMouseEnter = () => {
-      const currentArrow = currentArrowRef.current;
-      const newArrow = newArrowRef.current;
-      const text = textRef.current;
+      // Kill any in-progress animation before starting new one
+      tlRef.current?.kill();
 
-      if (!currentArrow || !newArrow || !text) return;
-
-      // New arrow slides in from left
-      gsap.to(newArrow, {
-        x: 0,
-        opacity: 1,
-        duration: 0.3,
-        ease: "power3.out",
-      });
-
-      // Text shifts right — pushed by incoming arrow
-      gsap.to(text, {
-        x: 6,
-        duration: 0.3,
-        ease: "power3.out",
-      });
-
-      // Current arrow exits right
-      gsap.to(currentArrow, {
-        x: 20,
-        opacity: 0,
-        duration: 0.3,
-        ease: "power3.out",
-      });
+      tlRef.current = gsap
+        .timeline()
+        .to(
+          newArrowRef.current,
+          { x: 0, opacity: 1, duration: 0.3, ease: "power3.out" },
+          0,
+        )
+        .to(textRef.current, { x: 6, duration: 0.3, ease: "power3.out" }, 0)
+        .to(
+          currentArrowRef.current,
+          { x: 20, opacity: 0, duration: 0.3, ease: "power3.out" },
+          0,
+        );
     };
 
     const handleMouseLeave = () => {
-      const currentArrow = currentArrowRef.current;
-      const newArrow = newArrowRef.current;
-      const text = textRef.current;
+      tlRef.current?.kill();
 
-      if (!currentArrow || !newArrow || !text) return;
-
-      // New arrow retreats left
-      gsap.to(newArrow, {
-        x: -16,
-        opacity: 0,
-        duration: 0.3,
-        ease: "power3.out",
-      });
-
-      // Text returns to original position
-      gsap.to(text, {
-        x: 0,
-        duration: 0.3,
-        ease: "power3.out",
-      });
-
-      // Current arrow returns
-      gsap.to(currentArrow, {
-        x: 0,
-        opacity: 1,
-        duration: 0.3,
-        ease: "power3.out",
-      });
+      tlRef.current = gsap
+        .timeline()
+        .to(
+          newArrowRef.current,
+          { x: -16, opacity: 0, duration: 0.3, ease: "power3.out" },
+          0,
+        )
+        .to(textRef.current, { x: 0, duration: 0.3, ease: "power3.out" }, 0)
+        .to(
+          currentArrowRef.current,
+          { x: 0, opacity: 1, duration: 0.3, ease: "power3.out" },
+          0,
+        );
     };
 
     link.addEventListener("mouseenter", handleMouseEnter);
@@ -94,6 +70,7 @@ export function BibleItemLink({ item, href }: BibleItemLinkProps) {
     return () => {
       link.removeEventListener("mouseenter", handleMouseEnter);
       link.removeEventListener("mouseleave", handleMouseLeave);
+      tlRef.current?.kill();
     };
   }, []);
 

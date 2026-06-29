@@ -28,9 +28,19 @@ export default async function BibleBooksPage() {
         }
         url={`${BASE_URL}/bible/books`}
       />
-      <div className="max-w-screen h-full max-h-auto md:max-h-svh flex flex-wrap gap-2 justify-center">
-        <Testament title="Novo Testamento" books={newTestament} />
-        <Testament title="Antigo Testamento" books={oldTestament} />
+      <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-8 py-6 md:py-8">
+        <div className="mb-8">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-instrument-serif">
+            Bíblia
+          </h1>
+          <p className="text-sm md:text-base text-muted-foreground mt-2">
+            Leia todos os livros da Bíblia online na Versum.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Testament title="Novo Testamento" books={newTestament} />
+          <Testament title="Antigo Testamento" books={oldTestament} />
+        </div>
       </div>
     </>
   );
