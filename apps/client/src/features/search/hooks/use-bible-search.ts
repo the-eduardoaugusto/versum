@@ -7,9 +7,7 @@ import type { Suggestion } from "../types";
 import { parseReference } from "../utils/bible-reference-parser";
 import { matchBooks } from "../utils/book-matcher";
 import { generateChapterSuggestions } from "../utils/chapter-suggestions";
-import { generateVerseSuggestions } from "../utils/verse-suggestions";
 import { useBooksQuery } from "./use-books-query";
-import { useChapterQuery } from "./use-chapter-query";
 
 export function useBibleSearch() {
   const router = useRouter();
@@ -33,18 +31,6 @@ export function useBibleSearch() {
     return parseReference(inputValue, books);
   }, [inputValue, books]);
 
-  const chapterQueryEnabled = parsedInput.stage === "verse";
-  const chapterSlug =
-    parsedInput.stage === "verse" ? parsedInput.book.slug : "";
-  const chapterNumber =
-    parsedInput.stage === "verse" ? parsedInput.chapterNumber : 0;
-
-  const { chapter, isLoading: isLoadingVerses } = useChapterQuery(
-    chapterSlug,
-    chapterNumber,
-    chapterQueryEnabled,
-  );
-
   const suggestions = useMemo((): Suggestion[] => {
     if (justCompleted || parsedInput.stage === "idle") return [];
 
@@ -65,24 +51,12 @@ export function useBibleSearch() {
         type: "chapter" as const,
         number: n,
         label: `${parsedInput.book.niceName} ${n}`,
-        value: `${parsedInput.book.niceName} ${n}:`,
-      }));
-    }
-
-    if (parsedInput.stage === "verse" && chapter?.totalVerses) {
-      return generateVerseSuggestions(
-        chapter.totalVerses,
-        parsedInput.versePartial,
-      ).map((n) => ({
-        type: "verse" as const,
-        number: n,
-        label: `${parsedInput.book.niceName} ${parsedInput.chapterNumber}:${n}`,
-        value: `${parsedInput.book.niceName} ${parsedInput.chapterNumber}:${n}`,
+        value: `${parsedInput.book.niceName} ${n}`,
       }));
     }
 
     return [];
-  }, [parsedInput, books, chapter, justCompleted]);
+  }, [parsedInput, books, justCompleted]);
 
   const completeWith = useCallback((suggestion: Suggestion) => {
     setInputValue(suggestion.value);
@@ -98,22 +72,6 @@ export function useBibleSearch() {
 
   const onSubmit = useCallback(() => {
     if (!books.length) return;
-
-    if (parsedInput.stage === "verse") {
-      // const verse = parsedInput.versePartial
-      //   ? parseInt(parsedInput.versePartial, 10)
-      //   : null;
-      // if (verse && verse > 0) {
-      //   router.push(
-      //     `/bible/books/${parsedInput.book.slug}/chapters/${parsedInput.chapterNumber}/`,
-      //   );
-      //   return;
-      // }
-      router.push(
-        `/bible/books/${parsedInput.book.slug}/chapters/${parsedInput.chapterNumber}`,
-      );
-      return;
-    }
 
     if (parsedInput.stage === "chapter") {
       const n = parseInt(parsedInput.chapterPartial, 10);
@@ -180,7 +138,6 @@ export function useBibleSearch() {
   const matchedPart = useMemo(() => {
     if (parsedInput.stage === "book") return parsedInput.partial;
     if (parsedInput.stage === "chapter") return parsedInput.chapterPartial;
-    if (parsedInput.stage === "verse") return parsedInput.versePartial;
     return "";
   }, [parsedInput]);
 
@@ -197,7 +154,6 @@ export function useBibleSearch() {
     onKeyDown,
     onSubmit,
     stage: parsedInput.stage,
-    isLoadingVerses: isLoadingVerses && chapterQueryEnabled,
     completeWith,
     onHoverSuggestion,
     isMobile,

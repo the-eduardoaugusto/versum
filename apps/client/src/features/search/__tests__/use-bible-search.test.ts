@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook } from "@testing-library/react";
 import { createElement } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { Book, Chapter } from "@/dal/orval/zod/schemas";
+import type { Book } from "@/dal/orval/zod/schemas";
 import { useBibleSearch } from "../hooks/use-bible-search";
 
 const mockPush = vi.fn();
@@ -10,13 +10,9 @@ vi.mock("next/navigation", () => ({ useRouter: () => ({ push: mockPush }) }));
 
 vi.mock("@/dal/orval/tanstackQuery/bíblia/bíblia", () => ({
   useGetApiV1PublicBibleBooks: vi.fn(),
-  useGetApiV1PublicBibleBooksDynamicIdChaptersNumber: vi.fn(),
 }));
 
-import {
-  useGetApiV1PublicBibleBooks,
-  useGetApiV1PublicBibleBooksDynamicIdChaptersNumber,
-} from "@/dal/orval/tanstackQuery/bíblia/bíblia";
+import { useGetApiV1PublicBibleBooks } from "@/dal/orval/tanstackQuery/bíblia/bíblia";
 
 const makeBook = (overrides: Partial<Book> = {}): Book => ({
   id: "1",
@@ -26,14 +22,6 @@ const makeBook = (overrides: Partial<Book> = {}): Book => ({
   niceName: "Gênesis",
   testament: "OLD",
   totalChapters: 50,
-  ...overrides,
-});
-
-const makeChapter = (overrides: Partial<Chapter> = {}): Chapter => ({
-  id: "c1",
-  bookId: "1",
-  number: 1,
-  totalVerses: 31,
   ...overrides,
 });
 
@@ -64,17 +52,6 @@ describe("useBibleSearch", () => {
       },
       isLoading: false,
     } as ReturnType<typeof useGetApiV1PublicBibleBooks>);
-
-    vi.mocked(
-      useGetApiV1PublicBibleBooksDynamicIdChaptersNumber,
-    ).mockReturnValue({
-      data: {
-        status: 200,
-        data: { data: makeChapter(), success: true },
-        headers: new Headers(),
-      },
-      isLoading: false,
-    } as ReturnType<typeof useGetApiV1PublicBibleBooksDynamicIdChaptersNumber>);
 
     Object.defineProperty(window, "matchMedia", {
       writable: true,
@@ -120,12 +97,12 @@ describe("useBibleSearch", () => {
     );
   });
 
-  it("shows verse suggestions when colon is present", () => {
+  it("shows chapter suggestions when colon is present (verse part ignored)", () => {
     const { result } = renderHook(() => useBibleSearch(), { wrapper });
 
     act(() => result.current.onInputChange("Gênesis 1:"));
 
-    expect(result.current.stage).toBe("verse");
+    expect(result.current.stage).toBe("chapter");
     expect(result.current.suggestions.length).toBeGreaterThan(0);
   });
 
@@ -186,7 +163,7 @@ describe("useBibleSearch", () => {
     expect(mockPush).toHaveBeenCalledWith("/bible/books/gn/chapters/1");
   });
 
-  it("navigates to verse on submit with full reference", () => {
+  it("navigates to chapter on submit with full reference (verse part ignored)", () => {
     const { result } = renderHook(() => useBibleSearch(), { wrapper });
 
     act(() => result.current.onInputChange("Gênesis 1:10"));

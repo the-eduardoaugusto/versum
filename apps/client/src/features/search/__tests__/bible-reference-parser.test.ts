@@ -68,42 +68,39 @@ describe("parseReference", () => {
     if (result.stage === "chapter") expect(result.book.slug).toBe("gn");
   });
 
-  it("returns verse stage when colon is present", () => {
+  it("returns chapter stage when colon is present (ignores verse part)", () => {
     const result = parseReference("Gênesis 1:", BOOKS);
-    expect(result.stage).toBe("verse");
-    if (result.stage === "verse") {
+    expect(result.stage).toBe("chapter");
+    if (result.stage === "chapter") {
       expect(result.book.slug).toBe("gn");
-      expect(result.chapterNumber).toBe(1);
-      expect(result.versePartial).toBe("");
+      expect(result.chapterPartial).toBe("1");
     }
   });
 
-  it("returns verse stage with verse partial", () => {
+  it("returns chapter stage with verse partial (ignores verse part)", () => {
     const result = parseReference("Gênesis 1:10", BOOKS);
-    expect(result.stage).toBe("verse");
-    if (result.stage === "verse") {
-      expect(result.chapterNumber).toBe(1);
-      expect(result.versePartial).toBe("10");
+    expect(result.stage).toBe("chapter");
+    if (result.stage === "chapter") {
+      expect(result.book.slug).toBe("gn");
+      expect(result.chapterPartial).toBe("1");
     }
   });
 
-  it("handles Apocalipse 22:21 (last verse of Bible)", () => {
+  it("handles Apocalipse 22:21 — resolves to chapter stage", () => {
     const result = parseReference("Apocalipse 22:21", BOOKS);
-    expect(result.stage).toBe("verse");
-    if (result.stage === "verse") {
+    expect(result.stage).toBe("chapter");
+    if (result.stage === "chapter") {
       expect(result.book.slug).toBe("ap");
-      expect(result.chapterNumber).toBe(22);
-      expect(result.versePartial).toBe("21");
+      expect(result.chapterPartial).toBe("22");
     }
   });
 
-  it("handles numbered books like 1 João", () => {
+  it("handles numbered books like 1 João with colon — resolves to chapter stage", () => {
     const result = parseReference("1 João 3:5", BOOKS);
-    expect(result.stage).toBe("verse");
-    if (result.stage === "verse") {
+    expect(result.stage).toBe("chapter");
+    if (result.stage === "chapter") {
       expect(result.book.slug).toBe("1jo");
-      expect(result.chapterNumber).toBe(3);
-      expect(result.versePartial).toBe("5");
+      expect(result.chapterPartial).toBe("3");
     }
   });
 
