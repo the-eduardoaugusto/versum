@@ -105,4 +105,41 @@ describe("normalizeLivroBibliaDB", () => {
       ),
     ).toThrow();
   });
+
+  it("strips [N] prefix from verse text", () => {
+    const rawWithPrefix = {
+      livro: "Gênesis",
+      capitulos: [
+        {
+          capitulo: 1,
+          versiculos: [
+            { numero: 1, texto: "[1] No princípio criou Deus o céu e a terra. " },
+            { numero: 2, texto: "[2] A terra era sem forma e vazia." },
+          ],
+        },
+      ],
+    };
+    const result = normalizeLivroBibliaDB(
+      rawWithPrefix,
+      { slug: "gn", testament: "OLD" },
+      0,
+    );
+    expect(result.chapters[0]!.verses[0]!.text).toBe(
+      "No princípio criou Deus o céu e a terra. ",
+    );
+    expect(result.chapters[0]!.verses[1]!.text).toBe(
+      "A terra era sem forma e vazia.",
+    );
+  });
+
+  it("leaves verse text unchanged when no [N] prefix present", () => {
+    const result = normalizeLivroBibliaDB(
+      rawGn,
+      { slug: "gn", testament: "OLD" },
+      0,
+    );
+    expect(result.chapters[0]!.verses[0]!.text).toBe(
+      "No princípio criou Deus os céus e a terra.",
+    );
+  });
 });
