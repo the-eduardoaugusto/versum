@@ -3,7 +3,7 @@ title: "01 Security"
 section: Rules
 tags: [versum, rules]
 up: "[[Rules/_Index|Rules]]"
-prev: "[[Profile Edit System - Implementation Plan]]"
+prev: "[[Docs/Decisions/Incident Response Plan]]"
 next: "[[02 Scalability]]"
 ---
 
