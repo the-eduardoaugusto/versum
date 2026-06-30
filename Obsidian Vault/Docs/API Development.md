@@ -29,8 +29,7 @@ apps/api/src/
 │   ├── bible/
 │   ├── consent-logs/
 │   ├── reading/
-│   │   ├── routes.ts         # Roteador que monta discovery + journey
-│   │   ├── discovery/        # Modo Descoberta (versículos aleatórios)
+│   │   ├── routes.ts         # Roteador que monta journey
 │   │   └── journey/          # Modo Jornada (leitura sequencial)
 │   └── users/
 ├── view-models/              # Response DTOs
