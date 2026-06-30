@@ -85,7 +85,7 @@ export const getPostApiV1ProfilesMeUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/profiles/@me`
+  return `/api/v1/profiles/@me`
 }
 
 /**
@@ -196,7 +196,7 @@ export const getGetApiV1ProfilesMeUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/profiles/@me`
+  return `/api/v1/profiles/@me`
 }
 
 /**
@@ -227,7 +227,7 @@ export const getApiV1ProfilesMe = async ( options?: RequestInit): Promise<getApi
 
 export const getGetApiV1ProfilesMeQueryKey = () => {
     return [
-    `https://api.versum.eduardoaugusto.work/api/v1/profiles/@me`
+    `/api/v1/profiles/@me`
     ] as const;
     }
 
@@ -348,7 +348,7 @@ export const getPatchApiV1ProfilesMeUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/profiles/@me`
+  return `/api/v1/profiles/@me`
 }
 
 /**
@@ -454,7 +454,7 @@ export const getGetApiV1ProfilesUsernameUrl = (username: string,) => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/profiles/${username}`
+  return `/api/v1/profiles/${username}`
 }
 
 /**
@@ -485,7 +485,7 @@ export const getApiV1ProfilesUsername = async (username: string, options?: Reque
 
 export const getGetApiV1ProfilesUsernameQueryKey = (username: string,) => {
     return [
-    `https://api.versum.eduardoaugusto.work/api/v1/profiles/${username}`
+    `/api/v1/profiles/${username}`
     ] as const;
     }
 
@@ -596,7 +596,7 @@ export const getGetApiV1ProfilesCheckUsernameUsernameUrl = (username: string,) =
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/profiles/check-username/${username}`
+  return `/api/v1/profiles/check-username/${username}`
 }
 
 /**
@@ -627,7 +627,7 @@ export const getApiV1ProfilesCheckUsernameUsername = async (username: string, op
 
 export const getGetApiV1ProfilesCheckUsernameUsernameQueryKey = (username: string,) => {
     return [
-    `https://api.versum.eduardoaugusto.work/api/v1/profiles/check-username/${username}`
+    `/api/v1/profiles/check-username/${username}`
     ] as const;
     }
 
@@ -743,7 +743,7 @@ export const getPostApiV1ProfilesMeAvatarUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/profiles/@me/avatar`
+  return `/api/v1/profiles/@me/avatar`
 }
 
 /**
@@ -858,7 +858,7 @@ export const getDeleteApiV1ProfilesMeAvatarUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/profiles/@me/avatar`
+  return `/api/v1/profiles/@me/avatar`
 }
 
 /**
