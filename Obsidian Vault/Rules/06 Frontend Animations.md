@@ -4,7 +4,7 @@ section: Rules
 tags: [versum, rules]
 up: "[[Rules/_Index|Rules]]"
 prev: "[[05 Tooling]]"
-next: "[[LGPD Compliance]]"
+next: "[[07 Vault Standard]]"
 ---
 
 🏠 [[_Index|Home]] › 📐 [[Rules/_Index|Rules]] › **06 Frontend Animations**

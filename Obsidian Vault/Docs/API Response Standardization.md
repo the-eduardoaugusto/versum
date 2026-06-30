@@ -60,10 +60,8 @@ All API responses now share a unified envelope with `success`, `message`, and `c
 | `src/modules/bible/controllers/bible.v1.controller.ts` | Atualizado |
 | `src/modules/users/controllers/users.v1.controller.ts` | Atualizado |
 | `src/modules/users/controllers/profile.v1.controller.ts` | Atualizado |
-| `src/modules/reading/discovery/controllers/discovery.v1.controller.ts` | Atualizado |
 | `src/modules/reading/journey/controllers/journey.v1.controller.ts` | Atualizado |
 | `src/modules/consent-logs/controllers/consent-log.v1.controller.ts` | Atualizado |
-| `src/modules/reading/discovery/schemas/discovery.v1.schema.ts` | `markVersesResponseSchema` data schema ajustado para `z.undefined()` |
 
 ## Success Codes por Endpoint
 
@@ -86,9 +84,6 @@ All API responses now share a unified envelope with `success`, `message`, and `c
 | GET /bible/books/:id/chapters/:n | `CHAPTER_RETRIEVED` |
 | GET /bible/books/:id/chapters/:n/verses | `VERSES_RETRIEVED` |
 | GET /bible/books/:id/chapters/:n/verses/:v | `VERSE_RETRIEVED` |
-| GET /discovery/verses | `VERSES_RETRIEVED` |
-| POST /discovery/verses/read | `VERSES_MARKED_AS_READ` |
-| GET /discovery/stats | `STATS_RETRIEVED` |
 | GET /journey/feed | `FEED_RETRIEVED` |
 | POST /journey/read | `MARKED_AS_READ` |
 | GET /journey/status | `STATUS_RETRIEVED` |
