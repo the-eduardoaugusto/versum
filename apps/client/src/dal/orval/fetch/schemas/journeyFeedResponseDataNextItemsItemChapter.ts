@@ -9,13 +9,13 @@ export type JourneyFeedResponseDataNextItemsItemChapter = {
   /** ID do capítulo */
   id: string;
   /**
-   * Número do capítulo
-   * @exclusiveMinimum 0
-   */
+     * Número do capítulo
+     * @exclusiveMinimum 0
+     */
   number: number;
   /**
-   * Total de versículos
-   * @exclusiveMinimum 0
-   */
+     * Total de versículos
+     * @exclusiveMinimum 0
+     */
   totalVerses: number;
 };

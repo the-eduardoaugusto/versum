@@ -8,12 +8,12 @@
 /**
  * Finalidade do consentimento
  */
-export type ConsentItemPurpose =
-  (typeof ConsentItemPurpose)[keyof typeof ConsentItemPurpose];
+export type ConsentItemPurpose = typeof ConsentItemPurpose[keyof typeof ConsentItemPurpose];
+
 
 export const ConsentItemPurpose = {
-  profile_content: "profile_content",
-  annotations: "annotations",
-  likes: "likes",
-  terms: "terms",
+  profile_content: 'profile_content',
+  annotations: 'annotations',
+  likes: 'likes',
+  terms: 'terms',
 } as const;

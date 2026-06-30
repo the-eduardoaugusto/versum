@@ -1,7 +1,7 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, Suspense, useState } from "react";
 import { exponentialDelay, retryOn5xx } from "@/lib/retry-utils";
 
 export function ReactQueryProvider({ children }: { children: ReactNode }) {
@@ -20,6 +20,8 @@ export function ReactQueryProvider({ children }: { children: ReactNode }) {
   );
 
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
+    </QueryClientProvider>
   );
 }

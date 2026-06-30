@@ -1,8 +1,10 @@
 import { defineConfig } from "orval";
 
-const openApiUrl = new URL(
+const apiUrl = new URL(
   process.env.NEXT_PUBLIC_API_URL || "https://localhost:4002/",
 );
+
+const openApiUrl = new URL(apiUrl);
 openApiUrl.pathname = "/openapi.json";
 
 export default defineConfig({
@@ -13,6 +15,7 @@ export default defineConfig({
       target: "./src/dal/orval/tanstackQuery/",
       schemas: "./src/dal/orval/tanstackQuery/schemas",
       client: "react-query",
+      baseUrl: apiUrl.toString(),
     },
   },
   fetch: {
@@ -22,6 +25,7 @@ export default defineConfig({
       target: "./src/dal/orval/fetch/",
       schemas: "./src/dal/orval/fetch/schemas",
       client: "fetch",
+      baseUrl: apiUrl.toString(),
       override: {
         mutator: {
           path: "./src/lib/api-fetcher.ts",
@@ -36,6 +40,7 @@ export default defineConfig({
   zod: {
     input: openApiUrl.toString(),
     output: {
+      baseUrl: apiUrl.toString(),
       mode: "tags-split",
       target: "./src/dal/orval/zod/",
       schemas: "./src/dal/orval/zod/schemas",
