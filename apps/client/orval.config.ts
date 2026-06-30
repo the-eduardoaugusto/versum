@@ -15,7 +15,7 @@ export default defineConfig({
       target: "./src/dal/orval/tanstackQuery/",
       schemas: "./src/dal/orval/tanstackQuery/schemas",
       client: "react-query",
-      baseUrl: apiUrl.toString(),
+      baseUrl: "/",
     },
   },
   fetch: {

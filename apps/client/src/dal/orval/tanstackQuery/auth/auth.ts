@@ -70,7 +70,7 @@ export const getPostApiV1AuthMagicLinkUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/auth/magic-link`
+  return `/api/v1/auth/magic-link`
 }
 
 /**
@@ -188,7 +188,7 @@ export const getGetApiV1AuthMagicLinkUrl = (params: GetApiV1AuthMagicLinkParams,
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `https://api.versum.eduardoaugusto.work/api/v1/auth/magic-link?${stringifiedParams}` : `https://api.versum.eduardoaugusto.work/api/v1/auth/magic-link`
+  return stringifiedParams.length > 0 ? `/api/v1/auth/magic-link?${stringifiedParams}` : `/api/v1/auth/magic-link`
 }
 
 /**
@@ -219,7 +219,7 @@ export const getApiV1AuthMagicLink = async (params: GetApiV1AuthMagicLinkParams,
 
 export const getGetApiV1AuthMagicLinkQueryKey = (params?: GetApiV1AuthMagicLinkParams,) => {
     return [
-    `https://api.versum.eduardoaugusto.work/api/v1/auth/magic-link`, ...(params ? [params] : [])
+    `/api/v1/auth/magic-link`, ...(params ? [params] : [])
     ] as const;
     }
 
@@ -325,7 +325,7 @@ export const getPostApiV1AuthLogoutUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/auth/logout`
+  return `/api/v1/auth/logout`
 }
 
 /**
