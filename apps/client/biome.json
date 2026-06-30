@@ -8,6 +8,14 @@
   "files": {
     "ignoreUnknown": true
   },
+  "overrides": [
+    {
+      "includes": ["src/dal/orval/**"],
+      "formatter": { "enabled": false },
+      "linter": { "enabled": false },
+      "assist": { "enabled": false }
+    }
+  ],
   "css": {
     "parser": {
       "tailwindDirectives": true

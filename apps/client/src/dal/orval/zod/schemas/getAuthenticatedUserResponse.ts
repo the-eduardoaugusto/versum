@@ -4,7 +4,7 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import type { AuthenticatedUserData } from "./authenticatedUserData";
+import type { AuthenticatedUserData } from './authenticatedUserData';
 
 /**
  * Resposta de sucesso para GetAuthenticatedUserResponse

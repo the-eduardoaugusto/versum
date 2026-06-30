@@ -4,18 +4,18 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import type { JourneyFeedResponseDataCurrent } from "./journeyFeedResponseDataCurrent";
-import type { JourneyFeedResponseDataNextItemsItem } from "./journeyFeedResponseDataNextItemsItem";
-import type { JourneyFeedResponseDataProgress } from "./journeyFeedResponseDataProgress";
+import type { JourneyFeedResponseDataCurrent } from './journeyFeedResponseDataCurrent';
+import type { JourneyFeedResponseDataNextItemsItem } from './journeyFeedResponseDataNextItemsItem';
+import type { JourneyFeedResponseDataProgress } from './journeyFeedResponseDataProgress';
 
 /**
  * Dados da resposta
  */
 export type JourneyFeedResponseData = {
   /**
-   * Próximo capítulo a ler
-   * @nullable
-   */
+     * Próximo capítulo a ler
+     * @nullable
+     */
   current: JourneyFeedResponseDataCurrent;
   /** Capítulos para pre-fetch */
   nextItems: JourneyFeedResponseDataNextItemsItem[];

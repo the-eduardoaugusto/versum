@@ -4,7 +4,7 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import type { FullProfile } from "./fullProfile";
+import type { FullProfile } from './fullProfile';
 
 /**
  * Resposta de sucesso para UpdateAuthenticatedProfileResponse

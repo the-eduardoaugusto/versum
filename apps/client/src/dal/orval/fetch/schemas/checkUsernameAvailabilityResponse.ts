@@ -4,7 +4,7 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import type { CheckUsernameAvailabilityResponseData } from "./checkUsernameAvailabilityResponseData";
+import type { CheckUsernameAvailabilityResponseData } from './checkUsernameAvailabilityResponseData';
 
 /**
  * Resposta de sucesso para CheckUsernameAvailabilityResponse

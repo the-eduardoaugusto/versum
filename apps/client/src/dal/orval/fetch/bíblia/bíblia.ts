@@ -4,13 +4,6 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-
-import getApiV1PublicBibleBooksMutator from "../../../../lib/api-fetcher";
-import getApiV1PublicBibleBooksDynamicIdMutator from "../../../../lib/api-fetcher";
-import getApiV1PublicBibleBooksDynamicIdChaptersMutator from "../../../../lib/api-fetcher";
-import getApiV1PublicBibleBooksDynamicIdChaptersNumberMutator from "../../../../lib/api-fetcher";
-import getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesMutator from "../../../../lib/api-fetcher";
-import getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseMutator from "../../../../lib/api-fetcher";
 import type {
   GetApiV1PublicBibleBooksDynamicIdChaptersNumberVersesParams,
   GetApiV1PublicBibleBooksDynamicIdChaptersParams,
@@ -20,195 +13,190 @@ import type {
   GetChapterResponse,
   GetChaptersResponse,
   GetVerseResponse,
-  GetVersesResponse,
-} from "../schemas";
+  GetVersesResponse
+} from '../schemas';
 
-export const getGetApiV1PublicBibleBooksUrl = (
-  params?: GetApiV1PublicBibleBooksParams,
-) => {
+import getApiV1PublicBibleBooksMutator from '../../../../lib/api-fetcher';
+import getApiV1PublicBibleBooksDynamicIdMutator from '../../../../lib/api-fetcher';
+import getApiV1PublicBibleBooksDynamicIdChaptersMutator from '../../../../lib/api-fetcher';
+import getApiV1PublicBibleBooksDynamicIdChaptersNumberMutator from '../../../../lib/api-fetcher';
+import getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesMutator from '../../../../lib/api-fetcher';
+import getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseMutator from '../../../../lib/api-fetcher';
+
+export const getGetApiV1PublicBibleBooksUrl = (params?: GetApiV1PublicBibleBooksParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
+
     if (value !== undefined) {
-      normalizedParams.append(key, value === null ? "null" : value.toString());
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
     }
   });
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0
-    ? `/api/v1/public/bible/books?${stringifiedParams}`
-    : `/api/v1/public/bible/books`;
-};
+  return stringifiedParams.length > 0 ? `https://api.versum.eduardoaugusto.work/api/v1/public/bible/books?${stringifiedParams}` : `https://api.versum.eduardoaugusto.work/api/v1/public/bible/books`
+}
 
 /**
  * Retorna uma lista paginada de todos os livros da Bíblia, com informações como nome, slug, testamento e número de capítulos.
  * @summary Listar livros da Bíblia
  */
-export const getApiV1PublicBibleBooks = async (
-  params?: GetApiV1PublicBibleBooksParams,
-  options?: RequestInit,
-): Promise<GetBooksResponse> => {
-  return getApiV1PublicBibleBooksMutator<GetBooksResponse>(
-    getGetApiV1PublicBibleBooksUrl(params),
-    {
-      ...options,
-      method: "GET",
-    },
-  );
-};
+export const getApiV1PublicBibleBooks = async (params?: GetApiV1PublicBibleBooksParams, options?: RequestInit): Promise<GetBooksResponse> => {
 
-export const getGetApiV1PublicBibleBooksDynamicIdUrl = (dynamicId: string) => {
-  return `/api/v1/public/bible/books/${dynamicId}`;
-};
+  return getApiV1PublicBibleBooksMutator<GetBooksResponse>(getGetApiV1PublicBibleBooksUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+export const getGetApiV1PublicBibleBooksDynamicIdUrl = (dynamicId: string,) => {
+
+
+
+
+  return `https://api.versum.eduardoaugusto.work/api/v1/public/bible/books/${dynamicId}`
+}
 
 /**
  * Retorna um livro específico da Bíblia baseado em seu slug (ex: 'genesis') ou nome (ex: 'Gênesis').
  * @summary Obter livro por slug ou nome
  */
-export const getApiV1PublicBibleBooksDynamicId = async (
-  dynamicId: string,
-  options?: RequestInit,
-): Promise<GetBookByDynamicIdResponse> => {
-  return getApiV1PublicBibleBooksDynamicIdMutator<GetBookByDynamicIdResponse>(
-    getGetApiV1PublicBibleBooksDynamicIdUrl(dynamicId),
-    {
-      ...options,
-      method: "GET",
-    },
-  );
-};
+export const getApiV1PublicBibleBooksDynamicId = async (dynamicId: string, options?: RequestInit): Promise<GetBookByDynamicIdResponse> => {
 
-export const getGetApiV1PublicBibleBooksDynamicIdChaptersUrl = (
-  dynamicId: string,
-  params?: GetApiV1PublicBibleBooksDynamicIdChaptersParams,
-) => {
+  return getApiV1PublicBibleBooksDynamicIdMutator<GetBookByDynamicIdResponse>(getGetApiV1PublicBibleBooksDynamicIdUrl(dynamicId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+export const getGetApiV1PublicBibleBooksDynamicIdChaptersUrl = (dynamicId: string,
+    params?: GetApiV1PublicBibleBooksDynamicIdChaptersParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
+
     if (value !== undefined) {
-      normalizedParams.append(key, value === null ? "null" : value.toString());
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
     }
   });
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0
-    ? `/api/v1/public/bible/books/${dynamicId}/chapters?${stringifiedParams}`
-    : `/api/v1/public/bible/books/${dynamicId}/chapters`;
-};
+  return stringifiedParams.length > 0 ? `https://api.versum.eduardoaugusto.work/api/v1/public/bible/books/${dynamicId}/chapters?${stringifiedParams}` : `https://api.versum.eduardoaugusto.work/api/v1/public/bible/books/${dynamicId}/chapters`
+}
 
 /**
  * Retorna uma lista paginada de todos os capítulos de um livro específico da Bíblia.
  * @summary Listar capítulos de um livro
  */
-export const getApiV1PublicBibleBooksDynamicIdChapters = async (
-  dynamicId: string,
-  params?: GetApiV1PublicBibleBooksDynamicIdChaptersParams,
-  options?: RequestInit,
-): Promise<GetChaptersResponse> => {
-  return getApiV1PublicBibleBooksDynamicIdChaptersMutator<GetChaptersResponse>(
-    getGetApiV1PublicBibleBooksDynamicIdChaptersUrl(dynamicId, params),
-    {
-      ...options,
-      method: "GET",
-    },
-  );
-};
+export const getApiV1PublicBibleBooksDynamicIdChapters = async (dynamicId: string,
+    params?: GetApiV1PublicBibleBooksDynamicIdChaptersParams, options?: RequestInit): Promise<GetChaptersResponse> => {
 
-export const getGetApiV1PublicBibleBooksDynamicIdChaptersNumberUrl = (
-  dynamicId: string,
-  number: string,
-) => {
-  return `/api/v1/public/bible/books/${dynamicId}/chapters/${number}`;
-};
+  return getApiV1PublicBibleBooksDynamicIdChaptersMutator<GetChaptersResponse>(getGetApiV1PublicBibleBooksDynamicIdChaptersUrl(dynamicId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+export const getGetApiV1PublicBibleBooksDynamicIdChaptersNumberUrl = (dynamicId: string,
+    number: string,) => {
+
+
+
+
+  return `https://api.versum.eduardoaugusto.work/api/v1/public/bible/books/${dynamicId}/chapters/${number}`
+}
 
 /**
  * Retorna um capítulo específico de um livro da Bíblia, identificado pelo slug/nome do livro e número do capítulo.
  * @summary Obter capítulo por número
  */
-export const getApiV1PublicBibleBooksDynamicIdChaptersNumber = async (
-  dynamicId: string,
-  number: string,
-  options?: RequestInit,
-): Promise<GetChapterResponse> => {
-  return getApiV1PublicBibleBooksDynamicIdChaptersNumberMutator<GetChapterResponse>(
-    getGetApiV1PublicBibleBooksDynamicIdChaptersNumberUrl(dynamicId, number),
-    {
-      ...options,
-      method: "GET",
-    },
-  );
-};
+export const getApiV1PublicBibleBooksDynamicIdChaptersNumber = async (dynamicId: string,
+    number: string, options?: RequestInit): Promise<GetChapterResponse> => {
 
-export const getGetApiV1PublicBibleBooksDynamicIdChaptersNumberVersesUrl = (
-  dynamicId: string,
-  number: string,
-  params?: GetApiV1PublicBibleBooksDynamicIdChaptersNumberVersesParams,
-) => {
+  return getApiV1PublicBibleBooksDynamicIdChaptersNumberMutator<GetChapterResponse>(getGetApiV1PublicBibleBooksDynamicIdChaptersNumberUrl(dynamicId,number),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+export const getGetApiV1PublicBibleBooksDynamicIdChaptersNumberVersesUrl = (dynamicId: string,
+    number: string,
+    params?: GetApiV1PublicBibleBooksDynamicIdChaptersNumberVersesParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
+
     if (value !== undefined) {
-      normalizedParams.append(key, value === null ? "null" : value.toString());
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
     }
   });
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0
-    ? `/api/v1/public/bible/books/${dynamicId}/chapters/${number}/verses?${stringifiedParams}`
-    : `/api/v1/public/bible/books/${dynamicId}/chapters/${number}/verses`;
-};
+  return stringifiedParams.length > 0 ? `https://api.versum.eduardoaugusto.work/api/v1/public/bible/books/${dynamicId}/chapters/${number}/verses?${stringifiedParams}` : `https://api.versum.eduardoaugusto.work/api/v1/public/bible/books/${dynamicId}/chapters/${number}/verses`
+}
 
 /**
  * Retorna uma lista paginada de todos os versículos de um capítulo específico da Bíblia.
  * @summary Listar versículos de um capítulo
  */
-export const getApiV1PublicBibleBooksDynamicIdChaptersNumberVerses = async (
-  dynamicId: string,
-  number: string,
-  params?: GetApiV1PublicBibleBooksDynamicIdChaptersNumberVersesParams,
-  options?: RequestInit,
-): Promise<GetVersesResponse> => {
-  return getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesMutator<GetVersesResponse>(
-    getGetApiV1PublicBibleBooksDynamicIdChaptersNumberVersesUrl(
-      dynamicId,
-      number,
-      params,
-    ),
-    {
-      ...options,
-      method: "GET",
-    },
-  );
-};
+export const getApiV1PublicBibleBooksDynamicIdChaptersNumberVerses = async (dynamicId: string,
+    number: string,
+    params?: GetApiV1PublicBibleBooksDynamicIdChaptersNumberVersesParams, options?: RequestInit): Promise<GetVersesResponse> => {
 
-export const getGetApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseUrl =
-  (dynamicId: string, number: string, verse: string) => {
-    return `/api/v1/public/bible/books/${dynamicId}/chapters/${number}/verses/${verse}`;
-  };
+  return getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesMutator<GetVersesResponse>(getGetApiV1PublicBibleBooksDynamicIdChaptersNumberVersesUrl(dynamicId,number,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+export const getGetApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseUrl = (dynamicId: string,
+    number: string,
+    verse: string,) => {
+
+
+
+
+  return `https://api.versum.eduardoaugusto.work/api/v1/public/bible/books/${dynamicId}/chapters/${number}/verses/${verse}`
+}
 
 /**
  * Retorna um versículo específico de um capítulo da Bíblia, identificado pelo slug/nome do livro, número do capítulo e número do versículo.
  * @summary Obter versículo por número
  */
-export const getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerse =
-  async (
-    dynamicId: string,
+export const getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerse = async (dynamicId: string,
     number: string,
-    verse: string,
-    options?: RequestInit,
-  ): Promise<GetVerseResponse> => {
-    return getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseMutator<GetVerseResponse>(
-      getGetApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseUrl(
-        dynamicId,
-        number,
-        verse,
-      ),
-      {
-        ...options,
-        method: "GET",
-      },
-    );
-  };
+    verse: string, options?: RequestInit): Promise<GetVerseResponse> => {
+
+  return getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseMutator<GetVerseResponse>(getGetApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseUrl(dynamicId,number,verse),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+

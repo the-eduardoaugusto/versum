@@ -4,50 +4,41 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import * as zod from "zod";
+import * as zod from 'zod';
+
 
 /**
  * Envia um link mágico para autenticação via e-mail.
  * @summary Enviar magic link
  */
-export const PostApiV1AuthMagicLinkBody = zod
-  .object({
-    email: zod.email().describe("E-mail do usuário"),
-  })
-  .describe("Payload para solicitar um magic link");
+export const PostApiV1AuthMagicLinkBody = zod.object({
+  "email": zod.email().describe('E-mail do usuário')
+}).describe('Payload para solicitar um magic link')
 
 export const postApiV1AuthMagicLinkResponseSuccessDefault = true;
 
-export const PostApiV1AuthMagicLinkResponse = zod
-  .object({
-    success: zod
-      .boolean()
-      .default(postApiV1AuthMagicLinkResponseSuccessDefault)
-      .describe("Indica se a requisição foi bem-sucedida"),
-    message: zod.string().optional().describe("Mensagem legível para humanos"),
-  })
-  .describe("Solicitação de magic link aceita");
+export const PostApiV1AuthMagicLinkResponse = zod.object({
+  "success": zod.boolean().default(postApiV1AuthMagicLinkResponseSuccessDefault).describe('Indica se a requisição foi bem-sucedida'),
+  "message": zod.string().optional().describe('Mensagem legível para humanos')
+}).describe('Solicitação de magic link aceita')
 
 /**
  * Cria uma sessão a partir de um token de magic link.
  * @summary Autenticar com magic link
  */
 
+
+
 export const GetApiV1AuthMagicLinkQueryParams = zod.object({
-  token: zod.string().min(1).describe("Token do magic link (public_id.token)"),
-});
+  "token": zod.string().min(1).describe('Token do magic link (public_id.token)')
+})
 
 export const getApiV1AuthMagicLinkResponseSuccessDefault = true;
 
-export const GetApiV1AuthMagicLinkResponse = zod
-  .object({
-    success: zod
-      .boolean()
-      .default(getApiV1AuthMagicLinkResponseSuccessDefault)
-      .describe("Indica se a requisição foi bem-sucedida"),
-    message: zod.string().optional().describe("Mensagem legível para humanos"),
-  })
-  .describe("Sessão criada");
+export const GetApiV1AuthMagicLinkResponse = zod.object({
+  "success": zod.boolean().default(getApiV1AuthMagicLinkResponseSuccessDefault).describe('Indica se a requisição foi bem-sucedida'),
+  "message": zod.string().optional().describe('Mensagem legível para humanos')
+}).describe('Sessão criada')
 
 /**
  * Encerra a sessão atual baseada no cookie de sessão.
@@ -55,12 +46,8 @@ export const GetApiV1AuthMagicLinkResponse = zod
  */
 export const postApiV1AuthLogoutResponseSuccessDefault = true;
 
-export const PostApiV1AuthLogoutResponse = zod
-  .object({
-    success: zod
-      .boolean()
-      .default(postApiV1AuthLogoutResponseSuccessDefault)
-      .describe("Indica se a requisição foi bem-sucedida"),
-    message: zod.string().optional().describe("Mensagem legível para humanos"),
-  })
-  .describe("Sessão encerrada com sucesso");
+export const PostApiV1AuthLogoutResponse = zod.object({
+  "success": zod.boolean().default(postApiV1AuthLogoutResponseSuccessDefault).describe('Indica se a requisição foi bem-sucedida'),
+  "message": zod.string().optional().describe('Mensagem legível para humanos')
+}).describe('Sessão encerrada com sucesso')
+

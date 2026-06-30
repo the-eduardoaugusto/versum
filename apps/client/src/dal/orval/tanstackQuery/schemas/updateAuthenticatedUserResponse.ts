@@ -4,7 +4,7 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import type { UpdatedUserData } from "./updatedUserData";
+import type { UpdatedUserData } from './updatedUserData';
 
 /**
  * Resposta de sucesso para UpdateAuthenticatedUserResponse

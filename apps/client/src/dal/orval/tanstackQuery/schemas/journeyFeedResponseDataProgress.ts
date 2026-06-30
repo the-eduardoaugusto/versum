@@ -7,25 +7,25 @@
 
 export type JourneyFeedResponseDataProgress = {
   /**
-   * Capítulos lidos
-   * @minimum 0
-   */
+     * Capítulos lidos
+     * @minimum 0
+     */
   chaptersRead: number;
   /**
-   * Capítulos restantes
-   * @minimum 0
-   */
+     * Capítulos restantes
+     * @minimum 0
+     */
   chaptersRemaining: number;
   /**
-   * Total de capítulos
-   * @exclusiveMinimum 0
-   */
+     * Total de capítulos
+     * @exclusiveMinimum 0
+     */
   totalChapters: number;
   /**
-   * Porcentagem concluída
-   * @minimum 0
-   * @maximum 100
-   */
+     * Porcentagem concluída
+     * @minimum 0
+     * @maximum 100
+     */
   percentComplete: number;
   /** Se chegou ao fim da Bíblia */
   isAtEnd: boolean;
