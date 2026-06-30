@@ -100,15 +100,15 @@ export function useBibleSearch() {
     if (!books.length) return;
 
     if (parsedInput.stage === "verse") {
-      const verse = parsedInput.versePartial
-        ? parseInt(parsedInput.versePartial, 10)
-        : null;
-      if (verse && verse > 0) {
-        router.push(
-          `/bible/books/${parsedInput.book.slug}/chapters/${parsedInput.chapterNumber}/verses/${verse}`,
-        );
-        return;
-      }
+      // const verse = parsedInput.versePartial
+      //   ? parseInt(parsedInput.versePartial, 10)
+      //   : null;
+      // if (verse && verse > 0) {
+      //   router.push(
+      //     `/bible/books/${parsedInput.book.slug}/chapters/${parsedInput.chapterNumber}/`,
+      //   );
+      //   return;
+      // }
       router.push(
         `/bible/books/${parsedInput.book.slug}/chapters/${parsedInput.chapterNumber}`,
       );
@@ -121,14 +121,14 @@ export function useBibleSearch() {
         router.push(`/bible/books/${parsedInput.book.slug}/chapters/${n}`);
         return;
       }
-      router.push(`/bible/books/${parsedInput.book.slug}`);
+      router.push(`/bible/books/${parsedInput.book.slug}/chapters/`);
       return;
     }
 
     if (parsedInput.stage === "book") {
       const matches = matchBooks(parsedInput.partial, books);
       if (matches.length > 0) {
-        router.push(`/bible/books/${matches[0].slug}`);
+        router.push(`/bible/books/${matches[0].slug}/chapters/`);
       }
     }
   }, [parsedInput, books, router]);
