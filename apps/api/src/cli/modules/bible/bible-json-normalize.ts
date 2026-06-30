@@ -200,6 +200,11 @@ function isRawLivroBibliaDB(raw: unknown): raw is RawLivroBibliaDB {
   return true;
 }
 
+// Strips "[N] " prefix that some seed JSON files include at the start of verse text.
+function stripVerseNumberPrefix(text: string): string {
+  return text.replace(/^\[\d+\]\s*/, "");
+}
+
 export function normalizeLivroBibliaDB(
   raw: unknown,
   entry: BibleBookEntry,
@@ -215,7 +220,7 @@ export function normalizeLivroBibliaDB(
     chapter: cap.capitulo,
     verses: cap.versiculos.map((v) => ({
       verse: v.numero,
-      text: v.texto,
+      text: stripVerseNumberPrefix(v.texto),
     })),
   }));
 
