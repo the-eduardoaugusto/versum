@@ -72,7 +72,7 @@ export const getPostApiV1ConsentUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/consent`
+  return `/api/v1/consent`
 }
 
 /**
@@ -178,7 +178,7 @@ export const getGetApiV1ConsentUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/consent`
+  return `/api/v1/consent`
 }
 
 /**
@@ -209,7 +209,7 @@ export const getApiV1Consent = async ( options?: RequestInit): Promise<getApiV1C
 
 export const getGetApiV1ConsentQueryKey = () => {
     return [
-    `https://api.versum.eduardoaugusto.work/api/v1/consent`
+    `/api/v1/consent`
     ] as const;
     }
 
