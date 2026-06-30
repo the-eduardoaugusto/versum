@@ -72,7 +72,7 @@ export const getGetApiV1ReadingsJourneyFeedUrl = (params?: GetApiV1ReadingsJourn
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `https://api.versum.eduardoaugusto.work/api/v1/readings/journey/feed?${stringifiedParams}` : `https://api.versum.eduardoaugusto.work/api/v1/readings/journey/feed`
+  return stringifiedParams.length > 0 ? `/api/v1/readings/journey/feed?${stringifiedParams}` : `/api/v1/readings/journey/feed`
 }
 
 /**
@@ -103,7 +103,7 @@ export const getApiV1ReadingsJourneyFeed = async (params?: GetApiV1ReadingsJourn
 
 export const getGetApiV1ReadingsJourneyFeedQueryKey = (params?: GetApiV1ReadingsJourneyFeedParams,) => {
     return [
-    `https://api.versum.eduardoaugusto.work/api/v1/readings/journey/feed`, ...(params ? [params] : [])
+    `/api/v1/readings/journey/feed`, ...(params ? [params] : [])
     ] as const;
     }
 
@@ -219,7 +219,7 @@ export const getPostApiV1ReadingsJourneyNextUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/readings/journey/next`
+  return `/api/v1/readings/journey/next`
 }
 
 /**
@@ -320,7 +320,7 @@ export const getGetApiV1ReadingsJourneyStatusUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/readings/journey/status`
+  return `/api/v1/readings/journey/status`
 }
 
 /**
@@ -351,7 +351,7 @@ export const getApiV1ReadingsJourneyStatus = async ( options?: RequestInit): Pro
 
 export const getGetApiV1ReadingsJourneyStatusQueryKey = () => {
     return [
-    `https://api.versum.eduardoaugusto.work/api/v1/readings/journey/status`
+    `/api/v1/readings/journey/status`
     ] as const;
     }
 
