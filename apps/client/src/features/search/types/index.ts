@@ -1,12 +1,11 @@
 import type { Book } from "@/dal/orval/zod/schemas";
 
-export type SearchStage = "idle" | "book" | "chapter" | "verse";
+export type SearchStage = "idle" | "book" | "chapter";
 
 export type ParsedInput =
   | { stage: "idle" }
   | { stage: "book"; partial: string }
-  | { stage: "chapter"; book: Book; chapterPartial: string }
-  | { stage: "verse"; book: Book; chapterNumber: number; versePartial: string };
+  | { stage: "chapter"; book: Book; chapterPartial: string };
 
 export type BookSuggestion = {
   type: "book";
@@ -22,11 +21,4 @@ export type ChapterSuggestion = {
   value: string;
 };
 
-export type VerseSuggestion = {
-  type: "verse";
-  number: number;
-  label: string;
-  value: string;
-};
-
-export type Suggestion = BookSuggestion | ChapterSuggestion | VerseSuggestion;
+export type Suggestion = BookSuggestion | ChapterSuggestion;

@@ -23,13 +23,12 @@ export function SearchInput({ placeholder, className, ref }: SearchInputProps) {
     activeSuggestion,
     matchedPart,
     onKeyDown,
-    isLoadingVerses,
     completeWith,
     onHoverSuggestion,
     isMobile,
   } = useBibleSearch();
 
-  const showList = suggestions.length > 0 || isLoadingVerses;
+  const showList = suggestions.length > 0;
   const activeDescendant =
     activeSuggestion >= 0
       ? `${LISTBOX_ID}-option-${activeSuggestion}`
@@ -58,14 +57,11 @@ export function SearchInput({ placeholder, className, ref }: SearchInputProps) {
         suggestions={suggestions}
         activeSuggestion={activeSuggestion}
         matchedPart={matchedPart}
-        isLoading={isLoadingVerses}
+        isLoading={false}
         onSelect={completeWith}
         onActiveChange={onHoverSuggestion}
       />
-      <AutocompleteHint
-        visible={showList && !isLoadingVerses}
-        isMobile={isMobile}
-      />
+      <AutocompleteHint visible={showList} isMobile={isMobile} />
     </div>
   );
 }
