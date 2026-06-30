@@ -8,7 +8,7 @@ import { AuthServiceV1 } from "../modules/auth/services/auth.v1.service.ts";
 import { UnauthorizedError } from "../utils/app/errors/index.ts";
 
 const isSecure = Bun.env.COOKIE_SECURE === "true";
-const cookieName = isSecure ? "__Host-session" : "session";
+const cookieName = !isSecure ? "session" : "__Host-session";
 
 export class AuthMiddleware {
   private readonly service: AuthServiceV1;
