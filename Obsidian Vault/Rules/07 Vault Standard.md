@@ -183,37 +183,60 @@ Ou com opções de navegação:
 Obsidian Vault/
 ├── _Index.md                    # Home
 ├── PRD.md                       # Product Requirements
-├── AGENTS.md                    # Stack & Rules
 ├── Docs/
 │   ├── _Index.md                # Índice geral de docs
-│   ├── Guides/                  # Convenções e padrões
-│   │   ├── _Index.md
-│   │   ├── Naming Convention.md
-│   │   └── Git Flow.md
+│   ├── Naming Convention.md     # Convenções de nomenclatura
+│   ├── API Development.md       # Padrões de API
+│   ├── API Response Standardization.md  # Envelope de resposta
+│   ├── Git Flow.md              # Fluxo de trabalho git
+│   ├── LGPD Implementation.md   # Implementação LGPD
+│   ├── Journey Feed Client Architecture.md  # Arquitetura do feed
+│   ├── Journey Feed Data Flow Examples.md   # Exemplos de fluxo
+│   ├── Guides/                  # Índice de guias (links)
+│   │   └── _Index.md
 │   ├── Apps/                    # Documentação por app
 │   │   ├── _Index.md
+│   │   ├── API/
+│   │   │   ├── _Overview.md
+│   │   │   ├── CLI.md
+│   │   │   ├── Database.md
+│   │   │   └── Services.md
 │   │   ├── Client/
 │   │   │   ├── _Overview.md
 │   │   │   ├── Components.md
-│   │   │   └── Journey Feed Features.md
-│   │   ├── API/
+│   │   │   ├── Implementation Notes.md
+│   │   │   ├── Journey Feed Features.md
+│   │   │   └── State Management.md
+│   │   ├── Landing Page/
 │   │   │   └── _Overview.md
 │   │   └── Packages/
-│   ├── Decisions/               # ADRs (Architecture Decision Records)
-│   │   ├── _Index.md
-│   │   └── 01 Security.md
-│   ├── Journey Feed Client Architecture.md  # Docs específicas
-│   └── Journey Feed Data Flow Examples.md
+│   │       └── Logger/
+│   │           └── _Overview.md
+│   └── Decisions/               # ADRs (Architecture Decision Records)
+│       ├── _Index.md
+│       ├── Incident Response Plan.md
+│       └── Journey Feed - Progress Confirmation.md
 ├── Plans/
 │   ├── _Index.md
 │   ├── Feature Plans/
-│   └── Roadmap.md
+│   │   └── Profile Edit System/
+│   │       ├── Design.md
+│   │       └── Implementation Plan.md
+│   ├── Compliance/
+│   │   ├── _Index.md
+│   │   ├── LGPD Compliance.md
+│   │   └── LGPD Compliance - Next Phases.md
+│   ├── Vault Refactoring - Design.md
+│   └── Vault Refactoring - Implementation Plan.md
 └── Rules/
     ├── _Index.md
-    ├── 01 ...
-    ├── 02 ...
+    ├── 01 Security.md
+    ├── 02 Scalability.md
     ├── 03 Modularization.md
-    └── 04 Vault Standard.md
+    ├── 04 General Practices.md
+    ├── 05 Tooling.md
+    ├── 06 Frontend Animations.md
+    └── 07 Vault Standard.md
 ```
 
 **Regras:**

@@ -50,7 +50,6 @@ apps/client/
 | Feature | Localização | Descrição |
 |:--|:--|:--|
 | **Feed/Journey** | `features/feed/journey/` | [[Docs/Apps/Client/Journey Feed Features|Feed infinito de leitura bíblica com scroll snap]] |
-| **Feed/Discovery** | `features/feed/discovery/` | Leitura aleatória de versículos (modo Descoberta) |
 | **Login** | `features/login/` | Autenticação via magic link |
 | **Onboarding** | `features/onboarding/` | Fluxo de boas-vindas e setup inicial |
 | **Profile** | `features/profile/` | Edição de perfil, avatar, preferências |
