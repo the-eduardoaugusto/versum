@@ -74,7 +74,7 @@ export const getGetApiV1UsersMeUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/users/@me`
+  return `/api/v1/users/@me`
 }
 
 /**
@@ -105,7 +105,7 @@ export const getApiV1UsersMe = async ( options?: RequestInit): Promise<getApiV1U
 
 export const getGetApiV1UsersMeQueryKey = () => {
     return [
-    `https://api.versum.eduardoaugusto.work/api/v1/users/@me`
+    `/api/v1/users/@me`
     ] as const;
     }
 
@@ -226,7 +226,7 @@ export const getPatchApiV1UsersMeUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/users/@me`
+  return `/api/v1/users/@me`
 }
 
 /**
@@ -337,7 +337,7 @@ export const getDeleteApiV1UsersMeUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/users/@me`
+  return `/api/v1/users/@me`
 }
 
 /**
@@ -448,7 +448,7 @@ export const getGetApiV1UsersMeExportUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/users/@me/export`
+  return `/api/v1/users/@me/export`
 }
 
 /**
@@ -479,7 +479,7 @@ export const getApiV1UsersMeExport = async ( options?: RequestInit): Promise<get
 
 export const getGetApiV1UsersMeExportQueryKey = () => {
     return [
-    `https://api.versum.eduardoaugusto.work/api/v1/users/@me/export`
+    `/api/v1/users/@me/export`
     ] as const;
     }
 

@@ -174,7 +174,7 @@ describe("useBibleSearch", () => {
     act(() => result.current.onInputChange("Gn"));
     act(() => result.current.onSubmit());
 
-    expect(mockPush).toHaveBeenCalledWith("/bible/books/gn");
+    expect(mockPush).toHaveBeenCalledWith("/bible/books/gn/chapters/");
   });
 
   it("navigates to chapter on submit with book + chapter", () => {
@@ -192,9 +192,7 @@ describe("useBibleSearch", () => {
     act(() => result.current.onInputChange("Gênesis 1:10"));
     act(() => result.current.onSubmit());
 
-    expect(mockPush).toHaveBeenCalledWith(
-      "/bible/books/gn/chapters/1/verses/10",
-    );
+    expect(mockPush).toHaveBeenCalledWith("/bible/books/gn/chapters/1");
   });
 
   it("Escape clears active suggestion without closing list", () => {

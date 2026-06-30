@@ -1,7 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { getClientIp } from "@/lib/get-client-ip";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4002";
+const API_URL = (
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:4002"
+).replace(/\/+$/, "");
 
 const FORWARD_HEADERS = new Set([
   "accept",
