@@ -18,11 +18,22 @@ export function NavbarItem({ icon: Icon, label, redirectTo }: NavbarItemProps) {
   return (
     <Link
       href={redirectTo}
-      className="flex flex-col items-center justify-center p-2 text-center"
+      className={cn(
+        "flex flex-col items-center justify-center gap-0.5 rounded-2xl px-4 py-1.5 text-center transition-colors duration-150 ease-out active:scale-90 md:w-16 md:rounded-xl md:py-2.5 md:hover:bg-accent/60",
+        isActive
+          ? "text-primary md:bg-accent md:text-accent-foreground"
+          : "text-muted-foreground",
+      )}
       aria-label={label}
     >
-      <Icon size={24} weight={isActive ? "fill" : "regular"} />
-      <span className={cn("font-instrument-sans")}>{label}</span>
+      <Icon
+        size="1em"
+        weight={isActive ? "fill" : "regular"}
+        className="text-[22px] md:text-[24px]"
+      />
+      <span className="font-instrument-sans text-[10px] font-medium leading-none tracking-tight md:text-[11px]">
+        {label}
+      </span>
     </Link>
   );
 }
