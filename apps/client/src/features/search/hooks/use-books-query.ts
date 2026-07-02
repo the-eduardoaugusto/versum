@@ -3,7 +3,7 @@ import type { Book } from "@/dal/orval/zod/schemas";
 
 export function useBooksQuery(): { books: Book[]; isLoading: boolean } {
   const { data, isLoading } = useGetApiV1PublicBibleBooks(
-    { limit: "100", page: "1" },
+    { limit: "150", page: "1" },
     { query: { staleTime: Infinity } },
   );
 
