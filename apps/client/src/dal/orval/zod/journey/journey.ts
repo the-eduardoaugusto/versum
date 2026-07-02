@@ -47,19 +47,12 @@ export const getApiV1ReadingsJourneyFeedResponseDataProgressTotalChaptersExclusi
 export const getApiV1ReadingsJourneyFeedResponseDataProgressPercentCompleteMin = 0;
 export const getApiV1ReadingsJourneyFeedResponseDataProgressPercentCompleteMax = 100;
 
-export const getApiV1ReadingsJourneyFeedResponsePaginationCurrentPageExclusiveMin = 0;
-
-export const getApiV1ReadingsJourneyFeedResponsePaginationTotalPagesExclusiveMin = 0;
-
-export const getApiV1ReadingsJourneyFeedResponsePaginationTotalItemsMin = 0;
-
-export const getApiV1ReadingsJourneyFeedResponsePaginationItemsPerPageExclusiveMin = 0;
-
 
 
 export const GetApiV1ReadingsJourneyFeedResponse = zod.object({
   "success": zod.boolean().default(getApiV1ReadingsJourneyFeedResponseSuccessDefault).describe('Indica se a requisição foi bem-sucedida'),
-  "message": zod.string().optional().describe('Mensagem opcional de contexto'),
+  "message": zod.string().describe('Mensagem de contexto da resposta'),
+  "code": zod.string().describe('Código da resposta'),
   "data": zod.object({
   "current": zod.object({
   "chapter": zod.object({
@@ -104,15 +97,7 @@ export const GetApiV1ReadingsJourneyFeedResponse = zod.object({
   "percentComplete": zod.number().min(getApiV1ReadingsJourneyFeedResponseDataProgressPercentCompleteMin).max(getApiV1ReadingsJourneyFeedResponseDataProgressPercentCompleteMax).describe('Porcentagem concluída'),
   "isAtEnd": zod.boolean().describe('Se chegou ao fim da Bíblia')
 })
-}).optional().describe('Dados da resposta'),
-  "pagination": zod.object({
-  "currentPage": zod.number().gt(getApiV1ReadingsJourneyFeedResponsePaginationCurrentPageExclusiveMin).describe('Página atual'),
-  "totalPages": zod.number().gt(getApiV1ReadingsJourneyFeedResponsePaginationTotalPagesExclusiveMin).describe('Número total de páginas'),
-  "totalItems": zod.number().min(getApiV1ReadingsJourneyFeedResponsePaginationTotalItemsMin).describe('Número total de itens'),
-  "itemsPerPage": zod.number().gt(getApiV1ReadingsJourneyFeedResponsePaginationItemsPerPageExclusiveMin).describe('Número de itens por página'),
-  "hasNextPage": zod.boolean().describe('Indica se existe próxima página'),
-  "hasPrevPage": zod.boolean().describe('Indica se existe página anterior')
-}).optional().describe('Informações de paginação')
+}).optional().describe('Dados da resposta')
 }).describe('Resposta de sucesso para JourneyFeedResponse')
 
 /**
@@ -124,30 +109,14 @@ export const PostApiV1ReadingsJourneyNextBody = zod.object({
 })
 
 export const postApiV1ReadingsJourneyNextResponseSuccessDefault = true;
-export const postApiV1ReadingsJourneyNextResponsePaginationCurrentPageExclusiveMin = 0;
-
-export const postApiV1ReadingsJourneyNextResponsePaginationTotalPagesExclusiveMin = 0;
-
-export const postApiV1ReadingsJourneyNextResponsePaginationTotalItemsMin = 0;
-
-export const postApiV1ReadingsJourneyNextResponsePaginationItemsPerPageExclusiveMin = 0;
-
-
 
 export const PostApiV1ReadingsJourneyNextResponse = zod.object({
   "success": zod.boolean().default(postApiV1ReadingsJourneyNextResponseSuccessDefault).describe('Indica se a requisição foi bem-sucedida'),
-  "message": zod.string().optional().describe('Mensagem opcional de contexto'),
+  "message": zod.string().describe('Mensagem de contexto da resposta'),
+  "code": zod.string().describe('Código da resposta'),
   "data": zod.object({
   "success": zod.boolean()
-}).optional().describe('Dados da resposta'),
-  "pagination": zod.object({
-  "currentPage": zod.number().gt(postApiV1ReadingsJourneyNextResponsePaginationCurrentPageExclusiveMin).describe('Página atual'),
-  "totalPages": zod.number().gt(postApiV1ReadingsJourneyNextResponsePaginationTotalPagesExclusiveMin).describe('Número total de páginas'),
-  "totalItems": zod.number().min(postApiV1ReadingsJourneyNextResponsePaginationTotalItemsMin).describe('Número total de itens'),
-  "itemsPerPage": zod.number().gt(postApiV1ReadingsJourneyNextResponsePaginationItemsPerPageExclusiveMin).describe('Número de itens por página'),
-  "hasNextPage": zod.boolean().describe('Indica se existe próxima página'),
-  "hasPrevPage": zod.boolean().describe('Indica se existe página anterior')
-}).optional().describe('Informações de paginação')
+}).optional().describe('Dados da resposta')
 }).describe('Resposta de sucesso para JourneyNextProgressResponse')
 
 /**
@@ -164,33 +133,18 @@ export const getApiV1ReadingsJourneyStatusResponseDataTotalChaptersExclusiveMin 
 export const getApiV1ReadingsJourneyStatusResponseDataPercentCompleteMin = 0;
 export const getApiV1ReadingsJourneyStatusResponseDataPercentCompleteMax = 100;
 
-export const getApiV1ReadingsJourneyStatusResponsePaginationCurrentPageExclusiveMin = 0;
-
-export const getApiV1ReadingsJourneyStatusResponsePaginationTotalPagesExclusiveMin = 0;
-
-export const getApiV1ReadingsJourneyStatusResponsePaginationTotalItemsMin = 0;
-
-export const getApiV1ReadingsJourneyStatusResponsePaginationItemsPerPageExclusiveMin = 0;
-
 
 
 export const GetApiV1ReadingsJourneyStatusResponse = zod.object({
   "success": zod.boolean().default(getApiV1ReadingsJourneyStatusResponseSuccessDefault).describe('Indica se a requisição foi bem-sucedida'),
-  "message": zod.string().optional().describe('Mensagem opcional de contexto'),
+  "message": zod.string().describe('Mensagem de contexto da resposta'),
+  "code": zod.string().describe('Código da resposta'),
   "data": zod.object({
   "chaptersRead": zod.number().min(getApiV1ReadingsJourneyStatusResponseDataChaptersReadMin).describe('Capítulos lidos'),
   "chaptersRemaining": zod.number().min(getApiV1ReadingsJourneyStatusResponseDataChaptersRemainingMin).describe('Capítulos restantes'),
   "totalChapters": zod.number().gt(getApiV1ReadingsJourneyStatusResponseDataTotalChaptersExclusiveMin).describe('Total de capítulos'),
   "percentComplete": zod.number().min(getApiV1ReadingsJourneyStatusResponseDataPercentCompleteMin).max(getApiV1ReadingsJourneyStatusResponseDataPercentCompleteMax).describe('Porcentagem concluída'),
   "isAtEnd": zod.boolean().describe('Se chegou ao fim da Bíblia')
-}).optional().describe('Dados da resposta'),
-  "pagination": zod.object({
-  "currentPage": zod.number().gt(getApiV1ReadingsJourneyStatusResponsePaginationCurrentPageExclusiveMin).describe('Página atual'),
-  "totalPages": zod.number().gt(getApiV1ReadingsJourneyStatusResponsePaginationTotalPagesExclusiveMin).describe('Número total de páginas'),
-  "totalItems": zod.number().min(getApiV1ReadingsJourneyStatusResponsePaginationTotalItemsMin).describe('Número total de itens'),
-  "itemsPerPage": zod.number().gt(getApiV1ReadingsJourneyStatusResponsePaginationItemsPerPageExclusiveMin).describe('Número de itens por página'),
-  "hasNextPage": zod.boolean().describe('Indica se existe próxima página'),
-  "hasPrevPage": zod.boolean().describe('Indica se existe página anterior')
-}).optional().describe('Informações de paginação')
+}).optional().describe('Dados da resposta')
 }).describe('Resposta de sucesso para JourneyStatusResponse')
 

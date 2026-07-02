@@ -3,28 +3,45 @@ import { normalizeText } from "./normalize-text";
 
 const MAX_BOOK_SUGGESTIONS = 5;
 
+type NormalizedBook = {
+  book: Book;
+  slug: string;
+  niceName: string;
+  name: string;
+};
+
+// Order = priority. To add/change a criterion, only change here.
+const MATCH_TIERS: ((b: NormalizedBook, norm: string) => boolean)[] = [
+  (b, norm) => b.slug === norm,
+  (b, norm) => b.slug.startsWith(norm),
+  (b, norm) => b.niceName.startsWith(norm),
+  (b, norm) => b.name.startsWith(norm),
+  (b, norm) => b.niceName.includes(norm),
+  (b, norm) => b.name.includes(norm),
+];
+
 export function matchBooks(partial: string, books: Book[]): Book[] {
-  const norm = normalizeText(partial);
-  if (!norm) return [];
+  const normalizedPartial = normalizeText(partial);
+  if (!normalizedPartial) return [];
 
-  const exactSlug: Book[] = [];
-  const prefixSlug: Book[] = [];
-  const prefixNiceName: Book[] = [];
-  const prefixName: Book[] = [];
+  const normalizedBooks: NormalizedBook[] = books.map((book) => ({
+    book,
+    slug: normalizeText(book.slug),
+    niceName: normalizeText(book.niceName),
+    name: normalizeText(book.name),
+  }));
 
-  for (const book of books) {
-    const slug = normalizeText(book.slug);
-    const niceName = normalizeText(book.niceName);
-    const name = normalizeText(book.name);
+  const tiers: Book[][] = MATCH_TIERS.map(() => []);
+  const matched = new Set<Book>();
 
-    if (slug === norm) exactSlug.push(book);
-    else if (slug.startsWith(norm)) prefixSlug.push(book);
-    else if (niceName.startsWith(norm)) prefixNiceName.push(book);
-    else if (name.startsWith(norm)) prefixName.push(book);
+  for (const b of normalizedBooks) {
+    const tierIndex = MATCH_TIERS.findIndex((matches) =>
+      matches(b, normalizedPartial),
+    );
+    if (tierIndex === -1 || matched.has(b.book)) continue;
+    tiers[tierIndex].push(b.book);
+    matched.add(b.book);
   }
 
-  return [...exactSlug, ...prefixSlug, ...prefixNiceName, ...prefixName].slice(
-    0,
-    MAX_BOOK_SUGGESTIONS,
-  );
+  return tiers.flat().slice(0, MAX_BOOK_SUGGESTIONS);
 }

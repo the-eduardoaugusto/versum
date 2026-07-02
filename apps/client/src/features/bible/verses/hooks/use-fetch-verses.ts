@@ -31,7 +31,7 @@ export const useVerses = cache(
         getApiV1PublicBibleBooksDynamicIdChaptersNumberVerses(
           bookSlug,
           chapterStr,
-          { page: pageInt.toString() },
+          { page: pageInt },
         ),
       );
     }

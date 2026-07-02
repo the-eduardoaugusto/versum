@@ -4,7 +4,6 @@
  * Versum API
  * OpenAPI spec version: 1.3.2
  */
-import type { PaginationViewModel } from './paginationViewModel';
 import type { Verse } from './verse';
 
 /**
@@ -13,8 +12,9 @@ import type { Verse } from './verse';
 export interface GetVerseResponse {
   /** Indica se a requisição foi bem-sucedida */
   success?: boolean;
-  /** Mensagem opcional de contexto */
-  message?: string;
+  /** Mensagem de contexto da resposta */
+  message: string;
+  /** Código da resposta */
+  code: string;
   data?: Verse & unknown;
-  pagination?: PaginationViewModel;
 }

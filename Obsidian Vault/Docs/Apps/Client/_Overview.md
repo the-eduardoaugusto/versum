@@ -36,10 +36,12 @@ apps/client/
 │   │   ├── orval/            # Orval-generated (fetch, TanStack Query, Zod)
 │   │   └── profiles/         # Profile cache
 │   ├── features/             # Feature modules
+│   │   ├── bible/            # Navegação bíblica (livros, capítulos, versículos)
 │   │   ├── feed/journey/     # Journey feed (components, hooks, contexts)
 │   │   ├── login/            # Magic link login
 │   │   ├── onboarding/       # Onboarding flow (consent, form steps)
-│   │   └── profile/          # Profile edit
+│   │   ├── profile/          # Profile edit
+│   │   └── search/           # Busca de livros, capítulos e versículos
 │   └── lib/                  # Utilities (api-fetcher, auth, utils)
 ├── public/                   # Assets estáticos
 └── package.json
@@ -49,6 +51,7 @@ apps/client/
 
 | Feature | Localização | Descrição |
 |:--|:--|:--|
+| **Bible** | `features/bible/` | Navegação bíblica (livros, capítulos, versículos) |
 | **Feed/Journey** | `features/feed/journey/` | [[Docs/Apps/Client/Journey Feed Features|Feed infinito de leitura bíblica com scroll snap]] |
 | **Login** | `features/login/` | Autenticação via magic link |
 | **Onboarding** | `features/onboarding/` | Fluxo de boas-vindas e setup inicial |

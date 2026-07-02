@@ -1,6 +1,7 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { CacheMiddleware } from "../../../middlewares/cache-reqs/middleware.ts";
 import { validationErrorHook } from "../../../utils/app/errors/validation.hook.ts";
+import { paginationQuerySchema } from "../../../utils/app/schemas/pagination.ts";
 import type { BibleControllerV1 } from "../controllers/bible.v1.controller.ts";
 import {
   getBookByDynamicIdResponses,
@@ -13,7 +14,6 @@ import {
 import {
   chapterNumberParamSchema,
   dynamicIdParamSchema,
-  paginationQuerySchema,
   verseNumberParamSchema,
 } from "../schemas/bible.v1.common.schema.ts";
 import {

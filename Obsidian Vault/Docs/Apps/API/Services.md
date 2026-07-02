@@ -53,7 +53,6 @@ createSession(userId: string): Promise<Session>
 **Responsabilidades:**
 - Armazenar e consultar versículos
 - Organizar por livro/capítulo/versículo
-- Suportar múltiplas traduções
 - Busca e indexação
 
 ---
