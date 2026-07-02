@@ -3,5 +3,7 @@ export { ChapterSkeleton } from "./chapter-skeleton";
 export { ChapterView } from "./chapter-view";
 export { FeedEmpty } from "./feed-empty";
 export { JourneyFeed } from "./journey-feed";
+export { NextChapterHint } from "./next-chapter-hint";
+export { PageArrows } from "./page-arrows";
 export { PageDots } from "./page-dots";
 export { VersesPage } from "./verses-page";
