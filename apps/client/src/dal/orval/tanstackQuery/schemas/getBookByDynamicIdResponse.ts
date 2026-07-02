@@ -5,7 +5,6 @@
  * OpenAPI spec version: 1.3.2
  */
 import type { Book } from './book';
-import type { PaginationViewModel } from './paginationViewModel';
 
 /**
  * Resposta de sucesso para GetBookByDynamicIdResponse
@@ -13,8 +12,9 @@ import type { PaginationViewModel } from './paginationViewModel';
 export interface GetBookByDynamicIdResponse {
   /** Indica se a requisição foi bem-sucedida */
   success?: boolean;
-  /** Mensagem opcional de contexto */
-  message?: string;
+  /** Mensagem de contexto da resposta */
+  message: string;
+  /** Código da resposta */
+  code: string;
   data?: Book & unknown;
-  pagination?: PaginationViewModel;
 }
