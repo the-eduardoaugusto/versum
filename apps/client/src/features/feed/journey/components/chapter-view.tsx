@@ -2,8 +2,11 @@
 
 import { useLayoutEffect, useRef, useState } from "react";
 import { useChapterPagination } from "../hooks/use-chapter-pagination";
+import { useNextChapterHint } from "../hooks/use-next-chapter-hint";
 import type { FeedChapter, VerseData, VersePage } from "../types";
 import { ChapterHeader } from "./chapter-header";
+import { NextChapterHint } from "./next-chapter-hint";
+import { PageArrows } from "./page-arrows";
 import { VersesPage } from "./verses-page";
 
 interface ChapterViewProps {
@@ -56,10 +59,19 @@ function packPages(
 }
 
 export function ChapterView({ chapter }: ChapterViewProps) {
-  console.log("ChapterView render:", chapter.id);
   const pagesContainerRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
   const [pages, setPages] = useState<VersePage[]>([]);
+  const [prefersReducedMotion] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      : false,
+  );
+  const [isTouch] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia("(pointer: coarse)").matches
+      : false,
+  );
 
   const measureRefCallback = useRef<() => void>(() => {});
 
@@ -93,8 +105,25 @@ export function ChapterView({ chapter }: ChapterViewProps) {
   }, []);
 
   const { activePage } = useChapterPagination(pagesContainerRef);
+  const { visible: hintVisible, trigger: triggerHint } = useNextChapterHint();
   const pageCount = pages.length;
   const currentPage = pages[activePage];
+
+  const scrollByPage = (dir: -1 | 1) => {
+    const el = pagesContainerRef.current;
+    if (!el) return;
+    // Derive the current page from live scrollLeft (not React state, which
+    // lags behind fast clicks via the rAF-throttled scroll listener).
+    const current = Math.round(el.scrollLeft / el.clientWidth);
+    const target = Math.max(0, Math.min(current + dir, pageCount - 1));
+    el.scrollTo({
+      left: target * el.clientWidth,
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+    });
+    // After a sideways page change, nudge the reader toward the vertical
+    // "next chapter" gesture (one-time; the hook no-ops once seen).
+    triggerHint();
+  };
 
   const cardStyle: React.CSSProperties = {
     height: "calc(100svh - var(--navbar-height))",
@@ -117,46 +146,64 @@ export function ChapterView({ chapter }: ChapterViewProps) {
         activePage={activePage}
         pageCount={pageCount}
       />
-      <div
-        ref={pagesContainerRef}
-        className="flex-1 flex min-h-0"
-        style={{
-          overflowX: "auto",
-          overflowY: "hidden",
-          scrollSnapType: "x mandatory",
-          position: "relative",
-        }}
-      >
+      <div className="relative flex-1 min-h-0">
         <div
-          ref={measureRef}
+          ref={pagesContainerRef}
+          className="hide-scrollbar flex h-full w-full min-h-0"
           style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            visibility: "hidden",
-            pointerEvents: "none",
-            paddingLeft: "1.5rem",
-            paddingRight: "1.5rem",
-            boxSizing: "border-box",
+            overflowX: "auto",
+            overflowY: "hidden",
+            scrollSnapType: "x mandatory",
+            position: "relative",
           }}
         >
-          {chapter.verses.map((v) => (
-            <p
-              key={v.id}
-              data-verse-id={v.id}
-              className="mb-4 text-sm md:text-base leading-relaxed"
-            >
-              <sup className="mr-1 text-[0.6rem] md:text-xs text-muted-foreground select-none">
-                {v.number}
-              </sup>
-              {v.text}
-            </p>
+          <div
+            ref={measureRef}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              visibility: "hidden",
+              pointerEvents: "none",
+              paddingLeft: "1.5rem",
+              paddingRight: "1.5rem",
+              boxSizing: "border-box",
+            }}
+          >
+            {chapter.verses.map((v) => (
+              <p
+                key={v.id}
+                data-verse-id={v.id}
+                className="mb-4 text-sm md:text-base leading-relaxed"
+              >
+                <sup className="mr-1 text-[0.6rem] md:text-xs text-muted-foreground select-none">
+                  {v.number}
+                </sup>
+                {v.text}
+              </p>
+            ))}
+          </div>
+          {pages.map((page) => (
+            <VersesPage
+              key={`${page.startVerse}-${page.endVerse}`}
+              page={page}
+            />
           ))}
         </div>
-        {pages.map((page) => (
-          <VersesPage key={`${page.startVerse}-${page.endVerse}`} page={page} />
-        ))}
+        {pageCount > 1 && (
+          <PageArrows
+            canPrev={activePage > 0}
+            canNext={activePage < pageCount - 1}
+            onPrev={() => scrollByPage(-1)}
+            onNext={() => scrollByPage(1)}
+          />
+        )}
+        <NextChapterHint
+          visible={hintVisible}
+          reducedMotion={prefersReducedMotion}
+          isTouch={isTouch}
+        />
       </div>
     </div>
   );
