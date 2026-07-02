@@ -8,11 +8,9 @@ import { useBibleSearch } from "../hooks/use-bible-search";
 const mockPush = vi.fn();
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: mockPush }) }));
 
-vi.mock("@/dal/orval/tanstackQuery/bíblia/bíblia", () => ({
-  useGetApiV1PublicBibleBooks: vi.fn(),
+vi.mock("@/features/bible/books/hooks/use-fetch-books", () => ({
+  useBooks: vi.fn(),
 }));
-
-import { useGetApiV1PublicBibleBooks } from "@/dal/orval/tanstackQuery/bíblia/bíblia";
 
 const makeBook = (overrides: Partial<Book> = {}): Book => ({
   id: "1",
@@ -37,21 +35,23 @@ const BOOKS: Book[] = [
   }),
 ];
 
+let queryClient: QueryClient;
+
 function wrapper({ children }: { children: React.ReactNode }) {
-  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  return createElement(QueryClientProvider, { client: qc }, children);
+  return createElement(QueryClientProvider, { client: queryClient }, children);
 }
 
 describe("useBibleSearch", () => {
   beforeEach(() => {
-    vi.mocked(useGetApiV1PublicBibleBooks).mockReturnValue({
-      data: {
-        status: 200,
-        data: { data: BOOKS, success: true },
-        headers: new Headers(),
-      },
-      isLoading: false,
-    } as ReturnType<typeof useGetApiV1PublicBibleBooks>);
+    queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
+    queryClient.setQueryData(["bible-books"], {
+      allBooks: BOOKS,
+      newTestament: [],
+      oldTestament: [],
+    });
 
     Object.defineProperty(window, "matchMedia", {
       writable: true,
