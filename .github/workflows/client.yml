@@ -11,7 +11,40 @@ on:
       - "apps/client/**"
 
 jobs:
+  generate-orval:
+    env:
+      NEXT_PUBLIC_API_URL: https://api.versum.eduardoaugusto.work
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Orval
+        run: cd apps/client && bun add orval -D
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Cache Orval Client
+        uses: actions/cache@v4
+        with:
+          path: apps/client/src/dal/orval
+          key: ${{ runner.os }}-orval-${{ github.sha }}
+
+      - name: Generate OpenAPI Client
+        run: cd apps/client && bun orval
+
   lint:
+    needs: generate-orval
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -28,6 +61,12 @@ jobs:
           key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
           restore-keys: |
             ${{ runner.os }}-bun-
+
+      - name: Restore Orval Client Cache
+        uses: actions/cache@v4
+        with:
+          path: apps/client/src/dal/orval
+          key: ${{ runner.os }}-orval-${{ github.sha }}
 
       - name: Install dependencies
         run: bun install
@@ -39,7 +78,7 @@ jobs:
         run: cd apps/client && bunx tsc --noEmit
 
   test:
-    needs: lint
+    needs: [lint, generate-orval]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -56,6 +95,12 @@ jobs:
           key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
           restore-keys: |
             ${{ runner.os }}-bun-
+
+      - name: Restore Orval Client Cache
+        uses: actions/cache@v4
+        with:
+          path: apps/client/src/dal/orval
+          key: ${{ runner.os }}-orval-${{ github.sha }}
 
       - name: Install dependencies
         run: bun install

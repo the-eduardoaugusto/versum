@@ -17,7 +17,7 @@ export const getPostApiV1ConsentUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/consent`
+  return `https://localhost:4002/api/v1/consent`
 }
 
 /**
@@ -41,7 +41,7 @@ export const getGetApiV1ConsentUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/consent`
+  return `https://localhost:4002/api/v1/consent`
 }
 
 /**

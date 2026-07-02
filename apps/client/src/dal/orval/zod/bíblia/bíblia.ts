@@ -11,12 +11,16 @@ import * as zod from 'zod';
  * Retorna uma lista paginada de todos os livros da Bíblia, com informações como nome, slug, testamento e número de capítulos.
  * @summary Listar livros da Bíblia
  */
-export const getApiV1PublicBibleBooksQueryPageDefault = `1`;
-export const getApiV1PublicBibleBooksQueryLimitDefault = `10`;
+export const getApiV1PublicBibleBooksQueryPageDefault = 1;
+
+export const getApiV1PublicBibleBooksQueryLimitDefault = 10;
+export const getApiV1PublicBibleBooksQueryLimitMax = 50;
+
+
 
 export const GetApiV1PublicBibleBooksQueryParams = zod.object({
-  "page": zod.string().default(getApiV1PublicBibleBooksQueryPageDefault).describe('Número da página (padrão: 1)'),
-  "limit": zod.string().default(getApiV1PublicBibleBooksQueryLimitDefault).describe('Limite de itens por página (padrão: 10)')
+  "page": zod.number().min(1).default(getApiV1PublicBibleBooksQueryPageDefault).describe('Número da página (padrão: 1)'),
+  "limit": zod.number().min(1).max(getApiV1PublicBibleBooksQueryLimitMax).default(getApiV1PublicBibleBooksQueryLimitDefault).describe('Limite de itens por página (padrão: 10)')
 })
 
 export const getApiV1PublicBibleBooksResponseSuccessDefault = true;
@@ -42,7 +46,8 @@ export const getApiV1PublicBibleBooksResponsePaginationItemsPerPageExclusiveMin 
 
 export const GetApiV1PublicBibleBooksResponse = zod.object({
   "success": zod.boolean().default(getApiV1PublicBibleBooksResponseSuccessDefault).describe('Indica se a requisição foi bem-sucedida'),
-  "message": zod.string().optional().describe('Mensagem opcional de contexto'),
+  "message": zod.string().describe('Mensagem de contexto da resposta'),
+  "code": zod.string().describe('Código da resposta'),
   "data": zod.array(zod.object({
   "id": zod.uuid().describe('ID único do livro'),
   "order": zod.number().gt(getApiV1PublicBibleBooksResponseDataItemOrderExclusiveMin).describe('Ordem canônica do livro (1-73)'),
@@ -84,19 +89,12 @@ export const getApiV1PublicBibleBooksDynamicIdResponseDataOneNiceNameMax = 100;
 
 export const getApiV1PublicBibleBooksDynamicIdResponseDataOneTotalChaptersExclusiveMin = 0;
 
-export const getApiV1PublicBibleBooksDynamicIdResponsePaginationCurrentPageExclusiveMin = 0;
-
-export const getApiV1PublicBibleBooksDynamicIdResponsePaginationTotalPagesExclusiveMin = 0;
-
-export const getApiV1PublicBibleBooksDynamicIdResponsePaginationTotalItemsMin = 0;
-
-export const getApiV1PublicBibleBooksDynamicIdResponsePaginationItemsPerPageExclusiveMin = 0;
-
 
 
 export const GetApiV1PublicBibleBooksDynamicIdResponse = zod.object({
   "success": zod.boolean().default(getApiV1PublicBibleBooksDynamicIdResponseSuccessDefault).describe('Indica se a requisição foi bem-sucedida'),
-  "message": zod.string().optional().describe('Mensagem opcional de contexto'),
+  "message": zod.string().describe('Mensagem de contexto da resposta'),
+  "code": zod.string().describe('Código da resposta'),
   "data": zod.object({
   "id": zod.uuid().describe('ID único do livro'),
   "order": zod.number().gt(getApiV1PublicBibleBooksDynamicIdResponseDataOneOrderExclusiveMin).describe('Ordem canônica do livro (1-73)'),
@@ -105,15 +103,7 @@ export const GetApiV1PublicBibleBooksDynamicIdResponse = zod.object({
   "niceName": zod.string().max(getApiV1PublicBibleBooksDynamicIdResponseDataOneNiceNameMax).describe('Nome amigável do livro'),
   "testament": zod.enum(['OLD', 'NEW']).describe('Testamento ao qual o livro pertence'),
   "totalChapters": zod.number().gt(getApiV1PublicBibleBooksDynamicIdResponseDataOneTotalChaptersExclusiveMin).describe('Número total de capítulos')
-}).describe('Livro da Bíblia').and(zod.unknown().describe('Dados da resposta')).optional(),
-  "pagination": zod.object({
-  "currentPage": zod.number().gt(getApiV1PublicBibleBooksDynamicIdResponsePaginationCurrentPageExclusiveMin).describe('Página atual'),
-  "totalPages": zod.number().gt(getApiV1PublicBibleBooksDynamicIdResponsePaginationTotalPagesExclusiveMin).describe('Número total de páginas'),
-  "totalItems": zod.number().min(getApiV1PublicBibleBooksDynamicIdResponsePaginationTotalItemsMin).describe('Número total de itens'),
-  "itemsPerPage": zod.number().gt(getApiV1PublicBibleBooksDynamicIdResponsePaginationItemsPerPageExclusiveMin).describe('Número de itens por página'),
-  "hasNextPage": zod.boolean().describe('Indica se existe próxima página'),
-  "hasPrevPage": zod.boolean().describe('Indica se existe página anterior')
-}).optional().describe('Informações de paginação')
+}).describe('Livro da Bíblia').and(zod.unknown().describe('Dados da resposta')).optional()
 }).describe('Resposta de sucesso para GetBookByDynamicIdResponse')
 
 /**
@@ -127,12 +117,16 @@ export const GetApiV1PublicBibleBooksDynamicIdChaptersParams = zod.object({
   "dynamicId": zod.string().min(1).describe('Slug ou nome do livro (ex: \'genesis\' ou \'Gênesis\')')
 })
 
-export const getApiV1PublicBibleBooksDynamicIdChaptersQueryPageDefault = `1`;
-export const getApiV1PublicBibleBooksDynamicIdChaptersQueryLimitDefault = `10`;
+export const getApiV1PublicBibleBooksDynamicIdChaptersQueryPageDefault = 1;
+
+export const getApiV1PublicBibleBooksDynamicIdChaptersQueryLimitDefault = 10;
+export const getApiV1PublicBibleBooksDynamicIdChaptersQueryLimitMax = 50;
+
+
 
 export const GetApiV1PublicBibleBooksDynamicIdChaptersQueryParams = zod.object({
-  "page": zod.string().default(getApiV1PublicBibleBooksDynamicIdChaptersQueryPageDefault).describe('Número da página (padrão: 1)'),
-  "limit": zod.string().default(getApiV1PublicBibleBooksDynamicIdChaptersQueryLimitDefault).describe('Limite de itens por página (padrão: 10)')
+  "page": zod.number().min(1).default(getApiV1PublicBibleBooksDynamicIdChaptersQueryPageDefault).describe('Número da página (padrão: 1)'),
+  "limit": zod.number().min(1).max(getApiV1PublicBibleBooksDynamicIdChaptersQueryLimitMax).default(getApiV1PublicBibleBooksDynamicIdChaptersQueryLimitDefault).describe('Limite de itens por página (padrão: 10)')
 })
 
 export const getApiV1PublicBibleBooksDynamicIdChaptersResponseSuccessDefault = true;
@@ -152,7 +146,8 @@ export const getApiV1PublicBibleBooksDynamicIdChaptersResponsePaginationItemsPer
 
 export const GetApiV1PublicBibleBooksDynamicIdChaptersResponse = zod.object({
   "success": zod.boolean().default(getApiV1PublicBibleBooksDynamicIdChaptersResponseSuccessDefault).describe('Indica se a requisição foi bem-sucedida'),
-  "message": zod.string().optional().describe('Mensagem opcional de contexto'),
+  "message": zod.string().describe('Mensagem de contexto da resposta'),
+  "code": zod.string().describe('Código da resposta'),
   "data": zod.array(zod.object({
   "id": zod.uuid().describe('ID único do capítulo'),
   "bookId": zod.uuid().describe('ID do livro ao qual o capítulo pertence'),
@@ -187,33 +182,18 @@ export const getApiV1PublicBibleBooksDynamicIdChaptersNumberResponseDataOneNumbe
 
 export const getApiV1PublicBibleBooksDynamicIdChaptersNumberResponseDataOneTotalVersesExclusiveMin = 0;
 
-export const getApiV1PublicBibleBooksDynamicIdChaptersNumberResponsePaginationCurrentPageExclusiveMin = 0;
-
-export const getApiV1PublicBibleBooksDynamicIdChaptersNumberResponsePaginationTotalPagesExclusiveMin = 0;
-
-export const getApiV1PublicBibleBooksDynamicIdChaptersNumberResponsePaginationTotalItemsMin = 0;
-
-export const getApiV1PublicBibleBooksDynamicIdChaptersNumberResponsePaginationItemsPerPageExclusiveMin = 0;
-
 
 
 export const GetApiV1PublicBibleBooksDynamicIdChaptersNumberResponse = zod.object({
   "success": zod.boolean().default(getApiV1PublicBibleBooksDynamicIdChaptersNumberResponseSuccessDefault).describe('Indica se a requisição foi bem-sucedida'),
-  "message": zod.string().optional().describe('Mensagem opcional de contexto'),
+  "message": zod.string().describe('Mensagem de contexto da resposta'),
+  "code": zod.string().describe('Código da resposta'),
   "data": zod.object({
   "id": zod.uuid().describe('ID único do capítulo'),
   "bookId": zod.uuid().describe('ID do livro ao qual o capítulo pertence'),
   "number": zod.number().gt(getApiV1PublicBibleBooksDynamicIdChaptersNumberResponseDataOneNumberExclusiveMin).describe('Número do capítulo'),
   "totalVerses": zod.number().gt(getApiV1PublicBibleBooksDynamicIdChaptersNumberResponseDataOneTotalVersesExclusiveMin).describe('Número total de versículos')
-}).describe('Capítulo de um livro da Bíblia').and(zod.unknown().describe('Dados da resposta')).optional(),
-  "pagination": zod.object({
-  "currentPage": zod.number().gt(getApiV1PublicBibleBooksDynamicIdChaptersNumberResponsePaginationCurrentPageExclusiveMin).describe('Página atual'),
-  "totalPages": zod.number().gt(getApiV1PublicBibleBooksDynamicIdChaptersNumberResponsePaginationTotalPagesExclusiveMin).describe('Número total de páginas'),
-  "totalItems": zod.number().min(getApiV1PublicBibleBooksDynamicIdChaptersNumberResponsePaginationTotalItemsMin).describe('Número total de itens'),
-  "itemsPerPage": zod.number().gt(getApiV1PublicBibleBooksDynamicIdChaptersNumberResponsePaginationItemsPerPageExclusiveMin).describe('Número de itens por página'),
-  "hasNextPage": zod.boolean().describe('Indica se existe próxima página'),
-  "hasPrevPage": zod.boolean().describe('Indica se existe página anterior')
-}).optional().describe('Informações de paginação')
+}).describe('Capítulo de um livro da Bíblia').and(zod.unknown().describe('Dados da resposta')).optional()
 }).describe('Resposta de sucesso para GetChapterResponse')
 
 /**
@@ -229,12 +209,16 @@ export const GetApiV1PublicBibleBooksDynamicIdChaptersNumberVersesParams = zod.o
   "number": zod.string().regex(getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesPathNumberRegExp).describe('Número do capítulo')
 })
 
-export const getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesQueryPageDefault = `1`;
-export const getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesQueryLimitDefault = `10`;
+export const getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesQueryPageDefault = 1;
+
+export const getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesQueryLimitDefault = 10;
+export const getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesQueryLimitMax = 50;
+
+
 
 export const GetApiV1PublicBibleBooksDynamicIdChaptersNumberVersesQueryParams = zod.object({
-  "page": zod.string().default(getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesQueryPageDefault).describe('Número da página (padrão: 1)'),
-  "limit": zod.string().default(getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesQueryLimitDefault).describe('Limite de itens por página (padrão: 10)')
+  "page": zod.number().min(1).default(getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesQueryPageDefault).describe('Número da página (padrão: 1)'),
+  "limit": zod.number().min(1).max(getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesQueryLimitMax).default(getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesQueryLimitDefault).describe('Limite de itens por página (padrão: 10)')
 })
 
 export const getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesResponseSuccessDefault = true;
@@ -252,7 +236,8 @@ export const getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesResponsePagina
 
 export const GetApiV1PublicBibleBooksDynamicIdChaptersNumberVersesResponse = zod.object({
   "success": zod.boolean().default(getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesResponseSuccessDefault).describe('Indica se a requisição foi bem-sucedida'),
-  "message": zod.string().optional().describe('Mensagem opcional de contexto'),
+  "message": zod.string().describe('Mensagem de contexto da resposta'),
+  "code": zod.string().describe('Código da resposta'),
   "data": zod.array(zod.object({
   "id": zod.uuid().describe('ID único do versículo'),
   "chapterId": zod.uuid().describe('ID do capítulo ao qual o versículo pertence'),
@@ -287,32 +272,17 @@ export const GetApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseParams = 
 export const getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseResponseSuccessDefault = true;
 export const getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseResponseDataOneNumberExclusiveMin = 0;
 
-export const getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseResponsePaginationCurrentPageExclusiveMin = 0;
-
-export const getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseResponsePaginationTotalPagesExclusiveMin = 0;
-
-export const getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseResponsePaginationTotalItemsMin = 0;
-
-export const getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseResponsePaginationItemsPerPageExclusiveMin = 0;
-
 
 
 export const GetApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseResponse = zod.object({
   "success": zod.boolean().default(getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseResponseSuccessDefault).describe('Indica se a requisição foi bem-sucedida'),
-  "message": zod.string().optional().describe('Mensagem opcional de contexto'),
+  "message": zod.string().describe('Mensagem de contexto da resposta'),
+  "code": zod.string().describe('Código da resposta'),
   "data": zod.object({
   "id": zod.uuid().describe('ID único do versículo'),
   "chapterId": zod.uuid().describe('ID do capítulo ao qual o versículo pertence'),
   "number": zod.number().gt(getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseResponseDataOneNumberExclusiveMin).describe('Número do versículo'),
   "text": zod.string().describe('Texto do versículo')
-}).describe('Versículo de um capítulo da Bíblia').and(zod.unknown().describe('Dados da resposta')).optional(),
-  "pagination": zod.object({
-  "currentPage": zod.number().gt(getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseResponsePaginationCurrentPageExclusiveMin).describe('Página atual'),
-  "totalPages": zod.number().gt(getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseResponsePaginationTotalPagesExclusiveMin).describe('Número total de páginas'),
-  "totalItems": zod.number().min(getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseResponsePaginationTotalItemsMin).describe('Número total de itens'),
-  "itemsPerPage": zod.number().gt(getApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseResponsePaginationItemsPerPageExclusiveMin).describe('Número de itens por página'),
-  "hasNextPage": zod.boolean().describe('Indica se existe próxima página'),
-  "hasPrevPage": zod.boolean().describe('Indica se existe página anterior')
-}).optional().describe('Informações de paginação')
+}).describe('Versículo de um capítulo da Bíblia').and(zod.unknown().describe('Dados da resposta')).optional()
 }).describe('Resposta de sucesso para GetVerseResponse')
 

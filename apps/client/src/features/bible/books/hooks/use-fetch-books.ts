@@ -1,3 +1,5 @@
+"use server";
+
 import { cacheLife, cacheTag } from "next/cache";
 import { cache } from "react";
 import { getApiV1PublicBibleBooks } from "@/dal/orval/fetch/bíblia/bíblia";
@@ -16,13 +18,9 @@ export const useBooks = cache(async () => {
   if (firstReq.pagination?.hasNextPage) {
     const promises: Promise<GetBooksResponse>[] = [];
 
-    for (
-      let pageInt = 2;
-      pageInt <= firstReq.pagination.totalPages;
-      pageInt++
-    ) {
-      console.log(`Fetching page ${pageInt}...`);
-      promises.push(getApiV1PublicBibleBooks({ page: pageInt.toString() }));
+    for (let page = 2; page <= firstReq.pagination.totalPages; page++) {
+      console.log(`Fetching page ${page}...`);
+      promises.push(getApiV1PublicBibleBooks({ page }));
     }
 
     const results = await Promise.all(promises);
