@@ -232,3 +232,23 @@
     --navbar-height: 0px;
   }
 }
+
+@keyframes hint-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+.hint-bounce {
+  animation: hint-bounce 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hint-bounce {
+    animation: none;
+  }
+}
