@@ -16,7 +16,6 @@ export function parseReference(input: string, books: Book[]): ParsedInput {
 
   const bookToken = match[1].trim();
   const chapterPart = match[2];
-  const versePart = match[3];
 
   if (!chapterPart) {
     return { stage: "book", partial: bookToken };
@@ -27,18 +26,9 @@ export function parseReference(input: string, books: Book[]): ParsedInput {
     return { stage: "book", partial: bookToken };
   }
 
-  if (versePart === undefined) {
-    return {
-      stage: "chapter",
-      book: resolvedBook,
-      chapterPartial: chapterPart,
-    };
-  }
-
   return {
-    stage: "verse",
+    stage: "chapter",
     book: resolvedBook,
-    chapterNumber: parseInt(chapterPart, 10),
-    versePartial: versePart,
+    chapterPartial: chapterPart,
   };
 }
