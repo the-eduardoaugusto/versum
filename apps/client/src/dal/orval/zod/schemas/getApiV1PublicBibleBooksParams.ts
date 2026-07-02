@@ -8,10 +8,13 @@
 export type GetApiV1PublicBibleBooksParams = {
 /**
  * Número da página (padrão: 1)
+ * @minimum 1
  */
-page?: string;
+page?: number;
 /**
  * Limite de itens por página (padrão: 10)
+ * @minimum 1
+ * @maximum 50
  */
-limit?: string;
+limit?: number;
 };

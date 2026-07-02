@@ -35,7 +35,7 @@ export const getGetApiV1PublicBibleBooksUrl = (params?: GetApiV1PublicBibleBooks
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `https://api.versum.eduardoaugusto.work/api/v1/public/bible/books?${stringifiedParams}` : `https://api.versum.eduardoaugusto.work/api/v1/public/bible/books`
+  return stringifiedParams.length > 0 ? `https://localhost:4002/api/v1/public/bible/books?${stringifiedParams}` : `https://localhost:4002/api/v1/public/bible/books`
 }
 
 /**
@@ -59,7 +59,7 @@ export const getGetApiV1PublicBibleBooksDynamicIdUrl = (dynamicId: string,) => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/public/bible/books/${dynamicId}`
+  return `https://localhost:4002/api/v1/public/bible/books/${dynamicId}`
 }
 
 /**
@@ -91,7 +91,7 @@ export const getGetApiV1PublicBibleBooksDynamicIdChaptersUrl = (dynamicId: strin
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `https://api.versum.eduardoaugusto.work/api/v1/public/bible/books/${dynamicId}/chapters?${stringifiedParams}` : `https://api.versum.eduardoaugusto.work/api/v1/public/bible/books/${dynamicId}/chapters`
+  return stringifiedParams.length > 0 ? `https://localhost:4002/api/v1/public/bible/books/${dynamicId}/chapters?${stringifiedParams}` : `https://localhost:4002/api/v1/public/bible/books/${dynamicId}/chapters`
 }
 
 /**
@@ -117,7 +117,7 @@ export const getGetApiV1PublicBibleBooksDynamicIdChaptersNumberUrl = (dynamicId:
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/public/bible/books/${dynamicId}/chapters/${number}`
+  return `https://localhost:4002/api/v1/public/bible/books/${dynamicId}/chapters/${number}`
 }
 
 /**
@@ -151,7 +151,7 @@ export const getGetApiV1PublicBibleBooksDynamicIdChaptersNumberVersesUrl = (dyna
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `https://api.versum.eduardoaugusto.work/api/v1/public/bible/books/${dynamicId}/chapters/${number}/verses?${stringifiedParams}` : `https://api.versum.eduardoaugusto.work/api/v1/public/bible/books/${dynamicId}/chapters/${number}/verses`
+  return stringifiedParams.length > 0 ? `https://localhost:4002/api/v1/public/bible/books/${dynamicId}/chapters/${number}/verses?${stringifiedParams}` : `https://localhost:4002/api/v1/public/bible/books/${dynamicId}/chapters/${number}/verses`
 }
 
 /**
@@ -179,7 +179,7 @@ export const getGetApiV1PublicBibleBooksDynamicIdChaptersNumberVersesVerseUrl = 
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/public/bible/books/${dynamicId}/chapters/${number}/verses/${verse}`
+  return `https://localhost:4002/api/v1/public/bible/books/${dynamicId}/chapters/${number}/verses/${verse}`
 }
 
 /**
