@@ -74,7 +74,7 @@ export class MinhaFeatureServiceV1 {
     });
 
     if (!hasConsent) {
-      throw new ForbiddenError(
+      throw new UnauthorizedError(
         "Consentimento não concedido para anotações",
       );
     }

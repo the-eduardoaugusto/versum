@@ -57,57 +57,6 @@ export class BibleCommonSchemasV1 {
       description: "Versículo de um capítulo da Bíblia",
     });
 
-  static readonly paginationViewModelSchema = z
-    .object({
-      currentPage: z.number().int().positive().describe("Página atual"),
-      totalPages: z
-        .number()
-        .int()
-        .positive()
-        .describe("Número total de páginas"),
-      totalItems: z
-        .number()
-        .int()
-        .nonnegative()
-        .describe("Número total de itens"),
-      itemsPerPage: z
-        .number()
-        .int()
-        .positive()
-        .describe("Número de itens por página"),
-      hasNextPage: z.boolean().describe("Indica se existe próxima página"),
-      hasPrevPage: z.boolean().describe("Indica se existe página anterior"),
-    })
-    .openapi("PaginationViewModel", {
-      description: "Informações de paginação",
-    });
-
-  static createSuccessResponseSchema<T extends z.ZodType>(
-    name: string,
-    dataSchema?: T,
-    _includePagination = false,
-  ) {
-    const fields: Record<string, z.ZodType> = {
-      success: z
-        .boolean()
-        .default(true)
-        .describe("Indica se a requisição foi bem-sucedida"),
-      message: z.string().optional().describe("Mensagem opcional de contexto"),
-    };
-
-    if (dataSchema && !(dataSchema instanceof z.ZodUndefined)) {
-      fields.data = dataSchema.optional().describe("Dados da resposta");
-    }
-
-    fields.pagination = BibleCommonSchemasV1.paginationViewModelSchema
-      .optional()
-      .describe("Informações de paginação");
-
-    return z.object(fields).openapi(name, {
-      description: `Resposta de sucesso para ${name}`,
-    });
-  }
-
   static readonly dynamicIdParamSchema = z.object({
     dynamicId: z
       .string()
@@ -152,51 +101,17 @@ export class BibleCommonSchemasV1 {
         description: "Número do versículo",
       }),
   });
-
-  static readonly paginationQuerySchema = z.object({
-    page: z
-      .string()
-      .optional()
-      .default("1")
-      .openapi({
-        param: {
-          name: "page",
-          in: "query",
-          required: false,
-        },
-        example: "1",
-        description: "Número da página (padrão: 1)",
-      }),
-    limit: z
-      .string()
-      .optional()
-      .default("10")
-      .openapi({
-        param: {
-          name: "limit",
-          in: "query",
-          required: false,
-        },
-        example: "10",
-        description: "Limite de itens por página (padrão: 10)",
-      }),
-  });
 }
 
 export const testamentEnum = BibleCommonSchemasV1.testamentEnum;
 export const bookSchema = BibleCommonSchemasV1.bookSchema;
 export const chapterSchema = BibleCommonSchemasV1.chapterSchema;
 export const verseSchema = BibleCommonSchemasV1.verseSchema;
-export const paginationViewModelSchema =
-  BibleCommonSchemasV1.paginationViewModelSchema;
-export const createSuccessResponseSchema =
-  BibleCommonSchemasV1.createSuccessResponseSchema;
 export const dynamicIdParamSchema = BibleCommonSchemasV1.dynamicIdParamSchema;
 export const chapterNumberParamSchema =
   BibleCommonSchemasV1.chapterNumberParamSchema;
 export const verseNumberParamSchema =
   BibleCommonSchemasV1.verseNumberParamSchema;
-export const paginationQuerySchema = BibleCommonSchemasV1.paginationQuerySchema;
 
 export type Book = z.infer<typeof BibleCommonSchemasV1.bookSchema>;
 export type Chapter = z.infer<typeof BibleCommonSchemasV1.chapterSchema>;

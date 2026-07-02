@@ -1,14 +1,14 @@
 import { z } from "@hono/zod-openapi";
 import { createErrorResponses } from "../../../utils/app/errors/openapi.ts";
+import { createSuccessResponseSchema } from "../../../utils/app/schemas/success-response.ts";
 import { BibleCommonSchemasV1 } from "./bible.v1.common.schema.ts";
 
 export class VersesSchemasV1 {
-  static readonly getVersesResponseSchema =
-    BibleCommonSchemasV1.createSuccessResponseSchema(
-      "GetVersesResponse",
-      z.array(BibleCommonSchemasV1.verseSchema),
-      true,
-    );
+  static readonly getVersesResponseSchema = createSuccessResponseSchema(
+    "GetVersesResponse",
+    z.array(BibleCommonSchemasV1.verseSchema),
+    true,
+  );
 
   static readonly getVersesResponses = {
     200: {
@@ -22,12 +22,10 @@ export class VersesSchemasV1 {
     ...createErrorResponses([400, 404, 429, 500]),
   };
 
-  static readonly getVerseResponseSchema =
-    BibleCommonSchemasV1.createSuccessResponseSchema(
-      "GetVerseResponse",
-      BibleCommonSchemasV1.verseSchema,
-      false,
-    );
+  static readonly getVerseResponseSchema = createSuccessResponseSchema(
+    "GetVerseResponse",
+    BibleCommonSchemasV1.verseSchema,
+  );
 
   static readonly getVerseResponses = {
     200: {
