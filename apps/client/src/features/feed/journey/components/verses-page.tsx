@@ -4,18 +4,24 @@ import type { VersePage } from "../types";
 
 interface VersesPageProps {
   page: VersePage;
+  // Extra left/right padding reserving room for the prev/next arrow
+  // buttons so they never sit on top of verse text. Only needed where the
+  // arrows render (non-touch pointers); touch devices swipe instead.
+  sideInset: string;
 }
 
-export function VersesPage({ page }: VersesPageProps) {
+export function VersesPage({ page, sideInset }: VersesPageProps) {
   return (
     <div
       style={{
         scrollSnapAlign: "start",
         scrollSnapStop: "always",
-        width: "100vw",
+        width: "100%",
         flexShrink: 0,
-        padding: "1.5rem",
         paddingTop: "1rem",
+        paddingBottom: "1.5rem",
+        paddingLeft: sideInset,
+        paddingRight: sideInset,
       }}
     >
       {page.verses.map((verse) => (
