@@ -21,7 +21,7 @@ export const getGetApiV1UsersMeUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/users/@me`
+  return `https://localhost:4002/api/v1/users/@me`
 }
 
 /**
@@ -45,7 +45,7 @@ export const getPatchApiV1UsersMeUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/users/@me`
+  return `https://localhost:4002/api/v1/users/@me`
 }
 
 /**
@@ -69,7 +69,7 @@ export const getDeleteApiV1UsersMeUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/users/@me`
+  return `https://localhost:4002/api/v1/users/@me`
 }
 
 /**
@@ -93,7 +93,7 @@ export const getGetApiV1UsersMeExportUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/users/@me/export`
+  return `https://localhost:4002/api/v1/users/@me/export`
 }
 
 /**

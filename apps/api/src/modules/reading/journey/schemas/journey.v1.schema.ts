@@ -1,5 +1,5 @@
 import { z } from "@hono/zod-openapi";
-import { createSuccessResponseSchema } from "../../../bible/schemas/bible.v1.common.schema.ts";
+import { createSuccessResponseSchema } from "../../../../utils/app/schemas/success-response.ts";
 
 export const chapterResponseSchema = z.object({
   id: z.string().uuid().openapi({ description: "ID do capítulo" }),

@@ -72,23 +72,25 @@ All API responses now share a unified envelope with `success`, `message`, and `c
 | POST /auth/logout | `LOGGED_OUT` |
 | GET /users/@me | `USER_RETRIEVED` |
 | PATCH /users/@me | `USER_UPDATED` |
+| DELETE /users/@me | — (204 sem body) |
 | GET /users/@me/export | `USER_DATA_EXPORTED` |
-| POST /users/@me/profile | `PROFILE_CREATED` |
-| GET /users/@me/profile | `PROFILE_RETRIEVED` |
-| PATCH /users/@me/profile | `PROFILE_UPDATED` |
-| GET /users/:username/profile | `PROFILE_RETRIEVED` |
-| PATCH /users/@me/picture | `PROFILE_PICTURE_UPDATED` |
-| GET /bible/books | `BOOKS_RETRIEVED` |
-| GET /bible/books/:id | `BOOK_RETRIEVED` |
-| GET /bible/books/:id/chapters | `CHAPTERS_RETRIEVED` |
-| GET /bible/books/:id/chapters/:n | `CHAPTER_RETRIEVED` |
-| GET /bible/books/:id/chapters/:n/verses | `VERSES_RETRIEVED` |
-| GET /bible/books/:id/chapters/:n/verses/:v | `VERSE_RETRIEVED` |
-| GET /journey/feed | `FEED_RETRIEVED` |
-| POST /journey/read | `MARKED_AS_READ` |
-| GET /journey/status | `STATUS_RETRIEVED` |
-| POST /consent-logs | `CONSENT_RECORDED` |
-| GET /consent-logs | `CONSENT_HISTORY_RETRIEVED` |
+| POST /profiles/@me | `PROFILE_CREATED` |
+| GET /profiles/@me | `PROFILE_RETRIEVED` |
+| PATCH /profiles/@me | `PROFILE_UPDATED` |
+| GET /profiles/{username} | `PROFILE_RETRIEVED` |
+| POST /profiles/@me/avatar | `PROFILE_PICTURE_UPDATED` |
+| DELETE /profiles/@me/avatar | `PROFILE_PICTURE_DELETED` |
+| GET /public/bible/books | `BOOKS_RETRIEVED` |
+| GET /public/bible/books/{dynamicId} | `BOOK_RETRIEVED` |
+| GET /public/bible/books/{dynamicId}/chapters | `CHAPTERS_RETRIEVED` |
+| GET /public/bible/books/{dynamicId}/chapters/{n} | `CHAPTER_RETRIEVED` |
+| GET /public/bible/books/{dynamicId}/chapters/{n}/verses | `VERSES_RETRIEVED` |
+| GET /public/bible/books/{dynamicId}/chapters/{n}/verses/{v} | `VERSE_RETRIEVED` |
+| GET /readings/feed | `FEED_RETRIEVED` |
+| POST /readings/next | `MARKED_AS_READ` |
+| GET /readings/status | `STATUS_RETRIEVED` |
+| POST /consent | `CONSENT_RECORDED` |
+| GET /consent | `CONSENT_HISTORY_RETRIEVED` |
 
 ## Error Codes
 

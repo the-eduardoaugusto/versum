@@ -26,7 +26,7 @@ export const useChapters = cache(
     ) {
       promises.push(
         getApiV1PublicBibleBooksDynamicIdChapters(bookSlug, {
-          page: pageInt.toString(),
+          page: pageInt,
         }),
       );
     }

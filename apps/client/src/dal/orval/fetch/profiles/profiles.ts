@@ -30,7 +30,7 @@ export const getPostApiV1ProfilesMeUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/profiles/@me`
+  return `https://localhost:4002/api/v1/profiles/@me`
 }
 
 /**
@@ -54,7 +54,7 @@ export const getGetApiV1ProfilesMeUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/profiles/@me`
+  return `https://localhost:4002/api/v1/profiles/@me`
 }
 
 /**
@@ -78,7 +78,7 @@ export const getPatchApiV1ProfilesMeUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/profiles/@me`
+  return `https://localhost:4002/api/v1/profiles/@me`
 }
 
 /**
@@ -102,7 +102,7 @@ export const getGetApiV1ProfilesUsernameUrl = (username: string,) => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/profiles/${username}`
+  return `https://localhost:4002/api/v1/profiles/${username}`
 }
 
 /**
@@ -126,7 +126,7 @@ export const getGetApiV1ProfilesCheckUsernameUsernameUrl = (username: string,) =
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/profiles/check-username/${username}`
+  return `https://localhost:4002/api/v1/profiles/check-username/${username}`
 }
 
 /**
@@ -150,7 +150,7 @@ export const getPostApiV1ProfilesMeAvatarUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/profiles/@me/avatar`
+  return `https://localhost:4002/api/v1/profiles/@me/avatar`
 }
 
 /**
@@ -178,7 +178,7 @@ export const getDeleteApiV1ProfilesMeAvatarUrl = () => {
 
 
 
-  return `https://api.versum.eduardoaugusto.work/api/v1/profiles/@me/avatar`
+  return `https://localhost:4002/api/v1/profiles/@me/avatar`
 }
 
 /**
