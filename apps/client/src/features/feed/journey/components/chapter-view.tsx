@@ -14,6 +14,10 @@ interface ChapterViewProps {
 }
 
 const PAGE_VERTICAL_PADDING = 40;
+// Matches the button footprint in PageArrows (h-10/w-10 + pl-2/pr-2 offset)
+// plus breathing room, so verse text never renders under the buttons.
+const PAGE_SIDE_INSET_WITH_ARROWS = "3.5rem";
+const PAGE_SIDE_INSET_DEFAULT = "1.5rem";
 
 function packPages(
   verses: VerseData[],
@@ -108,6 +112,11 @@ export function ChapterView({ chapter }: ChapterViewProps) {
   const { visible: hintVisible, trigger: triggerHint } = useNextChapterHint();
   const pageCount = pages.length;
   const currentPage = pages[activePage];
+  // Arrows only make sense for pointer devices; touch readers already swipe.
+  const showArrows = pageCount > 1 && !isTouch;
+  const sideInset = isTouch
+    ? PAGE_SIDE_INSET_DEFAULT
+    : PAGE_SIDE_INSET_WITH_ARROWS;
 
   const scrollByPage = (dir: -1 | 1) => {
     const el = pagesContainerRef.current;
@@ -166,8 +175,8 @@ export function ChapterView({ chapter }: ChapterViewProps) {
               width: "100%",
               visibility: "hidden",
               pointerEvents: "none",
-              paddingLeft: "1.5rem",
-              paddingRight: "1.5rem",
+              paddingLeft: sideInset,
+              paddingRight: sideInset,
               boxSizing: "border-box",
             }}
           >
@@ -188,15 +197,18 @@ export function ChapterView({ chapter }: ChapterViewProps) {
             <VersesPage
               key={`${page.startVerse}-${page.endVerse}`}
               page={page}
+              sideInset={sideInset}
             />
           ))}
         </div>
-        {pageCount > 1 && (
+        {!isTouch && (
           <PageArrows
+            visible={showArrows}
             canPrev={activePage > 0}
             canNext={activePage < pageCount - 1}
             onPrev={() => scrollByPage(-1)}
             onNext={() => scrollByPage(1)}
+            reducedMotion={prefersReducedMotion}
           />
         )}
         <NextChapterHint
