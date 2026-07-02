@@ -17,7 +17,13 @@ function getButtons(container: HTMLElement) {
 describe("PageArrows", () => {
   it("renders prev and next buttons", () => {
     const { container } = render(
-      <PageArrows canPrev canNext onPrev={() => {}} onNext={() => {}} />,
+      <PageArrows
+        visible
+        canPrev
+        canNext
+        onPrev={() => {}}
+        onNext={() => {}}
+      />,
     );
     const { prev, next } = getButtons(container);
     expect(prev).not.toBeNull();
@@ -27,6 +33,7 @@ describe("PageArrows", () => {
   it("disables prev when canPrev is false", () => {
     const { container } = render(
       <PageArrows
+        visible
         canPrev={false}
         canNext
         onPrev={() => {}}
@@ -41,6 +48,7 @@ describe("PageArrows", () => {
   it("disables next when canNext is false", () => {
     const { container } = render(
       <PageArrows
+        visible
         canPrev
         canNext={false}
         onPrev={() => {}}
@@ -52,11 +60,26 @@ describe("PageArrows", () => {
     expect(prev?.disabled).toBe(false);
   });
 
+  it("disables both buttons when not visible", () => {
+    const { container } = render(
+      <PageArrows
+        visible={false}
+        canPrev
+        canNext
+        onPrev={() => {}}
+        onNext={() => {}}
+      />,
+    );
+    const { prev, next } = getButtons(container);
+    expect(prev?.disabled).toBe(true);
+    expect(next?.disabled).toBe(true);
+  });
+
   it("fires onPrev and onNext on click", () => {
     const onPrev = vi.fn();
     const onNext = vi.fn();
     const { container } = render(
-      <PageArrows canPrev canNext onPrev={onPrev} onNext={onNext} />,
+      <PageArrows visible canPrev canNext onPrev={onPrev} onNext={onNext} />,
     );
     const { prev, next } = getButtons(container);
     if (!prev || !next) throw new Error("buttons not found");

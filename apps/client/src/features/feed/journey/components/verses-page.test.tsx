@@ -15,7 +15,7 @@ const page: VersePage = {
 
 describe("VersesPage", () => {
   it("renders all verses with numbers", () => {
-    const screen = render(<VersesPage page={page} />);
+    const screen = render(<VersesPage page={page} sideInset="1.5rem" />);
     expect(screen.getByText("In the beginning")).toBeDefined();
     expect(screen.getByText("And the earth")).toBeDefined();
     expect(screen.getByText("And God said")).toBeDefined();
