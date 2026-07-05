@@ -1,27 +1,14 @@
 import { defineConfig } from "drizzle-kit";
-import { existsSync, readFileSync } from "fs";
-import { resolve } from "path";
 
-const certPath = resolve(process.cwd(), ".certs/postgre-certificate.pem");
-const cert = existsSync(certPath) ? readFileSync(certPath, "utf-8") : undefined;
+const dbCredentials = {
+  url: process.env.DATABASE_URL!,
+}
 
-const dbUrl = new URL(process.env.DATABASE_URL!);
+console.log("dbCredentials:", dbCredentials);
 
 export default defineConfig({
   out: "./drizzle",
   schema: "./src/infrastructure/db/schema.ts",
   dialect: "postgresql",
-  dbCredentials: {
-    host: dbUrl.hostname,
-    port: parseInt(dbUrl.port, 10),
-    user: dbUrl.username,
-    password: dbUrl.password,
-    database: dbUrl.pathname.replace("/", ""),
-    ssl: cert ? {
-      ca: cert,
-      cert,
-      key: cert,
-      rejectUnauthorized: false,
-    } : undefined,
-  },
+  dbCredentials
 });
