@@ -2,25 +2,12 @@ import { logger } from "@versum/logger";
 import { RedisClient } from "bun";
 import { env } from "../../utils/env/index.ts";
 
-const cert = await Bun.file(".certs/redis-certificate.pem").text();
 
-function buildTlsOptions() {
-  if (!cert) return undefined;
-  return {
-    tls: {
-      key: cert,
-      cert,
-      ca: cert,
-      rejectUnauthorized: false,
-    },
-  };
-}
 
 function createRedisClient() {
   const url = env.REDIS_DATABASE_URL;
   const client = new RedisClient(url, {
     maxRetries: 1,
-    ...buildTlsOptions(),
   });
 
   let keepAliveInterval: ReturnType<typeof setInterval> | null = null;
