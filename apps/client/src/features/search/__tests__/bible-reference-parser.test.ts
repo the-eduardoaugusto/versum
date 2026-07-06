@@ -31,6 +31,25 @@ const BOOKS: Book[] = [
     niceName: "1 João",
     totalChapters: 5,
   }),
+  // Real production niceName shape: contains "." — reproduces the REF_REGEX
+  // bug where the book part's character class rejected punctuation.
+  makeBook({
+    id: "4",
+    order: 71,
+    slug: "3jo",
+    name: "Terceira Epístolas de S. João",
+    niceName: "Terceira Epístolas de S. João",
+    totalChapters: 1,
+  }),
+  // Real production niceName shape: contains "(" and ")".
+  makeBook({
+    id: "5",
+    order: 18,
+    slug: "job",
+    name: "Livro de Job (Jó)",
+    niceName: "Livro de Job (Jó)",
+    totalChapters: 42,
+  }),
 ];
 
 describe("parseReference", () => {
@@ -118,5 +137,39 @@ describe("parseReference", () => {
   it("returns idle for empty books array", () => {
     const result = parseReference("Gênesis 1", []);
     expect(result.stage).toBe("book");
+  });
+
+  it("resolves book stage for full niceName containing a period (e.g. 'S. João')", () => {
+    const result = parseReference("Terceira Epístolas de S. João", BOOKS);
+    expect(result.stage).toBe("book");
+    if (result.stage === "book") {
+      expect(result.partial).toBe("Terceira Epístolas de S. João");
+    }
+  });
+
+  it("resolves chapter stage after a period-containing niceName plus chapter number", () => {
+    const result = parseReference("Terceira Epístolas de S. João 1", BOOKS);
+    expect(result.stage).toBe("chapter");
+    if (result.stage === "chapter") {
+      expect(result.book.slug).toBe("3jo");
+      expect(result.chapterPartial).toBe("1");
+    }
+  });
+
+  it("resolves book stage for niceName containing parentheses (e.g. 'Job (Jó)')", () => {
+    const result = parseReference("Livro de Job (Jó)", BOOKS);
+    expect(result.stage).toBe("book");
+    if (result.stage === "book") {
+      expect(result.partial).toBe("Livro de Job (Jó)");
+    }
+  });
+
+  it("resolves chapter stage after a parentheses-containing niceName plus chapter number", () => {
+    const result = parseReference("Livro de Job (Jó) 5", BOOKS);
+    expect(result.stage).toBe("chapter");
+    if (result.stage === "chapter") {
+      expect(result.book.slug).toBe("job");
+      expect(result.chapterPartial).toBe("5");
+    }
   });
 });
