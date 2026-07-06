@@ -4,10 +4,12 @@ import { useGSAP } from "@gsap/react";
 import { PencilSimpleIcon } from "@phosphor-icons/react";
 import { gsap } from "gsap";
 import { useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import type { FullProfile } from "@/dal/orval/fetch/schemas/fullProfile";
 import type { JourneyStatusResponseData } from "@/dal/orval/fetch/schemas/journeyStatusResponseData";
 import { useCurrentProfile } from "../hooks/use-current-profile";
 import { JourneyProgressSection } from "./journey-progress-section";
+import LogoutButton from "./logout-button";
 import { ProfileEditForm } from "./profile-edit-form";
 import { ProfileHeader } from "./profile-header";
 
@@ -119,14 +121,18 @@ export function ProfileView({
       ref={containerRef}
       className="invisible relative flex flex-col min-h-full"
     >
-      <button
-        type="button"
-        onClick={() => setIsEditing(true)}
-        aria-label="Editar perfil"
-        className="absolute top-4 right-4 p-2 rounded-full text-foreground/50 hover:text-foreground transition-colors"
-      >
-        <PencilSimpleIcon size={20} />
-      </button>
+      <section className="flex justify-between items-center max-w-2xl mx-auto w-full p-2">
+        <LogoutButton />
+        <Button
+          variant="ghost"
+          onClick={() => setIsEditing(true)}
+          aria-label="Editar perfil"
+          className="text-foreground/50 hover:text-foreground transition-colors"
+        >
+          <PencilSimpleIcon size={20} />
+          <span className="hidden md:inline">Editar perfil</span>
+        </Button>
+      </section>
 
       <div className="max-w-2xl mx-auto w-full">
         <ProfileHeader profile={profile ?? profileProp} />
