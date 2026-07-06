@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useChapterPagination } from "../hooks/use-chapter-pagination";
 import { useNextChapterHint } from "../hooks/use-next-chapter-hint";
 import type { FeedChapter, VerseData, VersePage } from "../types";
@@ -129,10 +129,13 @@ export function ChapterView({ chapter }: ChapterViewProps) {
       left: target * el.clientWidth,
       behavior: prefersReducedMotion ? "auto" : "smooth",
     });
-    // After a sideways page change, nudge the reader toward the vertical
-    // "next chapter" gesture (one-time; the hook no-ops once seen).
-    triggerHint();
   };
+
+  useEffect(() => {
+    if (activePage === pageCount - 1) {
+      triggerHint();
+    }
+  }, [activePage, triggerHint, pageCount]);
 
   const cardStyle: React.CSSProperties = {
     height: "calc(100svh - var(--navbar-height))",
