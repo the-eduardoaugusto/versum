@@ -135,7 +135,7 @@ export function ChapterView({ chapter }: ChapterViewProps) {
     if (activePage === pageCount - 1) {
       triggerHint();
     }
-  }, [activePage, triggerHint]);
+  }, [activePage, triggerHint, pageCount]);
 
   const cardStyle: React.CSSProperties = {
     height: "calc(100svh - var(--navbar-height))",
