@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export const HINT_STORAGE_KEY = "versum:hint:next-chapter";
-export const HINT_DELAY_MS = 1 * 1_000 * 60; // 1 minute
+export const HINT_DELAY_MS = 1 * 1_000 * 30; // 30 seconds
 export const HINT_VISIBLE_MS = 10_000; // 10 seconds
 
 /**
