@@ -121,7 +121,7 @@ export function ProfileView({
       ref={containerRef}
       className="invisible relative flex flex-col min-h-full"
     >
-      <section className="flex justify-between items-center max-w-2xl mx-auto w-full">
+      <section className="flex justify-between items-center max-w-2xl mx-auto w-full p-2">
         <LogoutButton />
         <Button
           variant="ghost"
@@ -129,7 +129,8 @@ export function ProfileView({
           aria-label="Editar perfil"
           className="text-foreground/50 hover:text-foreground transition-colors"
         >
-          <PencilSimpleIcon size={20} /> Editar perfil
+          <PencilSimpleIcon size={20} />
+          <span className="hidden md:inline">Editar perfil</span>
         </Button>
       </section>
 
