@@ -131,7 +131,7 @@ export function ChapterView({ chapter }: ChapterViewProps) {
     });
     // After a sideways page change, nudge the reader toward the vertical
     // "next chapter" gesture (one-time; the hook no-ops once seen).
-    if (activePage != pageCount - 1) {
+    if (activePage !== pageCount - 1) {
       triggerHint();
     }
   };
