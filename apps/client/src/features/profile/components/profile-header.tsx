@@ -53,14 +53,14 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
       </div>
 
       <div className="flex flex-col items-center gap-0.5 w-full min-w-0 text-center">
-        <h1 className="text-xl lg:text-2xl font-normal leading-tight w-full break-words">
+        <h1 className="text-xl lg:text-2xl font-normal leading-tight w-full wrap-break-word">
           {profile.name}
         </h1>
-        <p className="text-sm text-muted-foreground break-words">
+        <p className="text-sm text-muted-foreground wrap-break-word">
           @{profile.username}
         </p>
         {profile.bio && (
-          <p className="text-sm text-muted-foreground mt-1 w-full whitespace-pre-wrap break-words">
+          <p className="text-sm text-muted-foreground mt-1 w-full whitespace-pre-wrap wrap-break-word">
             {profile.bio}
           </p>
         )}
