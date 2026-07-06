@@ -10,6 +10,8 @@ import { useCurrentProfile } from "../hooks/use-current-profile";
 import { JourneyProgressSection } from "./journey-progress-section";
 import { ProfileEditForm } from "./profile-edit-form";
 import { ProfileHeader } from "./profile-header";
+import LogoutButton from "./logout-button";
+import { Button } from "@/components/ui/button";
 
 interface ProfileViewProps {
   profile: FullProfile;
@@ -119,14 +121,17 @@ export function ProfileView({
       ref={containerRef}
       className="invisible relative flex flex-col min-h-full"
     >
-      <button
-        type="button"
-        onClick={() => setIsEditing(true)}
-        aria-label="Editar perfil"
-        className="absolute top-4 right-4 p-2 rounded-full text-foreground/50 hover:text-foreground transition-colors"
-      >
-        <PencilSimpleIcon size={20} />
-      </button>
+      <section className="flex justify-between items-center max-w-2xl mx-auto w-full">
+        <LogoutButton />
+        <Button
+        variant="ghost"
+          onClick={() => setIsEditing(true)}
+          aria-label="Editar perfil"
+          className="text-foreground/50 hover:text-foreground transition-colors"
+        >
+          <PencilSimpleIcon size={20} /> Editar perfil
+        </Button>
+      </section>
 
       <div className="max-w-2xl mx-auto w-full">
         <ProfileHeader profile={profile ?? profileProp} />
