@@ -28,12 +28,12 @@ export function useLoginForm({ onSuccess }: UseLoginFormOptions = {}) {
         const fallback =
           res.status === 429
             ? "Muitas tentativas. Por favor, aguarde 1 minuto antes de tentar novamente."
-            : "Ocorreu um erro desconhecido.";
+            : "Ocorreu um erro desconhecido. Por favor, tente novamente mais tarde.";
         toast.error(res.data.message ?? fallback, { id: toastId });
         return;
       }
 
-      toast.success(res.data.message, { id: toastId });
+      toast.success("Magic link enviado com sucesso!", { id: toastId });
       form.reset();
       onSuccess?.();
     },
