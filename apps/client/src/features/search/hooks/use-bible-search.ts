@@ -9,6 +9,11 @@ import { matchBooks } from "../utils/book-matcher";
 import { generateChapterSuggestions } from "../utils/chapter-suggestions";
 import { useBooksQuery } from "./use-books-query";
 
+const debug =
+  process.env.NODE_ENV !== "production"
+    ? (...args: unknown[]) => console.debug("[bible-search:hook]", ...args)
+    : () => {};
+
 export function useBibleSearch() {
   const router = useRouter();
   const [inputValue, setInputValue] = useState("");
@@ -27,8 +32,16 @@ export function useBibleSearch() {
   }, []);
 
   const parsedInput = useMemo(() => {
-    if (!books.length) return { stage: "idle" as const };
-    return parseReference(inputValue, books);
+    if (!books.length) {
+      debug(
+        "books ainda não carregados (books.length === 0) -> stage idle. inputValue:",
+        JSON.stringify(inputValue),
+      );
+      return { stage: "idle" as const };
+    }
+    const parsed = parseReference(inputValue, books);
+    debug("inputValue:", JSON.stringify(inputValue), "-> parsedInput:", parsed);
+    return parsed;
   }, [inputValue, books]);
 
   const suggestions = useMemo((): Suggestion[] => {
@@ -71,24 +84,66 @@ export function useBibleSearch() {
   }, []);
 
   const onSubmit = useCallback(() => {
-    if (!books.length) return;
+    debug(
+      "onSubmit chamado. stage:",
+      parsedInput.stage,
+      "books.length:",
+      books.length,
+    );
+
+    if (!books.length) {
+      debug("onSubmit no-op: books ainda não carregados");
+      return;
+    }
 
     if (parsedInput.stage === "chapter") {
       const n = parseInt(parsedInput.chapterPartial, 10);
       if (n > 0 && n <= parsedInput.book.totalChapters) {
-        router.push(`/bible/books/${parsedInput.book.slug}/chapters/${n}`);
+        const url = `/bible/books/${parsedInput.book.slug}/chapters/${n}`;
+        debug("stage chapter válido -> router.push:", url);
+        router.push(url);
         return;
       }
-      router.push(`/bible/books/${parsedInput.book.slug}/chapters/`);
+      const url = `/bible/books/${parsedInput.book.slug}/chapters/`;
+      debug(
+        "stage chapter com número inválido (n:",
+        n,
+        "totalChapters:",
+        parsedInput.book.totalChapters,
+        ") -> router.push:",
+        url,
+      );
+      router.push(url);
       return;
     }
 
     if (parsedInput.stage === "book") {
       const matches = matchBooks(parsedInput.partial, books);
       if (matches.length > 0) {
-        router.push(`/bible/books/${matches[0].slug}/chapters/`);
+        const url = `/bible/books/${matches[0].slug}/chapters/`;
+        debug(
+          "stage book resolvido. partial:",
+          JSON.stringify(parsedInput.partial),
+          "matches:",
+          matches.map((b) => b.slug),
+          "-> router.push:",
+          url,
+        );
+        router.push(url);
+      } else {
+        debug(
+          "NO-OP: stage book sem nenhum match para partial:",
+          JSON.stringify(parsedInput.partial),
+          "-> nenhuma navegação ocorre",
+        );
       }
+      return;
     }
+
+    debug(
+      "onSubmit no-op: stage não é book nem chapter. stage:",
+      parsedInput.stage,
+    );
   }, [parsedInput, books, router]);
 
   const onKeyDown = useCallback(
@@ -122,12 +177,21 @@ export function useBibleSearch() {
 
       if (e.key === "Enter") {
         if (isMobile && hasSuggestions) {
+          debug(
+            "Enter no mobile com sugestões -> completeWith (não chama onSubmit)",
+          );
           e.preventDefault();
           completeWith(
             suggestions[activeSuggestion >= 0 ? activeSuggestion : 0],
           );
           return;
         }
+        debug(
+          "Enter -> onSubmit direto. isMobile:",
+          isMobile,
+          "hasSuggestions:",
+          hasSuggestions,
+        );
         e.preventDefault();
         onSubmit();
       }
