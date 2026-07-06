@@ -11,7 +11,7 @@ export class EmailProvider {
   async sendEmail(payload: Omit<CreateEmailOptions, "from">) {
     await this.resend.emails.send({
       ...payload,
-      from: "no-reply@send.eduardoaugusto.is-a.dev",
+      from: "no-reply@versum.eduardoaugusto.work",
     } as CreateEmailOptions);
   }
 }
