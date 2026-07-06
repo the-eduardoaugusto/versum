@@ -4,14 +4,14 @@ import { useGSAP } from "@gsap/react";
 import { PencilSimpleIcon } from "@phosphor-icons/react";
 import { gsap } from "gsap";
 import { useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import type { FullProfile } from "@/dal/orval/fetch/schemas/fullProfile";
 import type { JourneyStatusResponseData } from "@/dal/orval/fetch/schemas/journeyStatusResponseData";
 import { useCurrentProfile } from "../hooks/use-current-profile";
 import { JourneyProgressSection } from "./journey-progress-section";
+import LogoutButton from "./logout-button";
 import { ProfileEditForm } from "./profile-edit-form";
 import { ProfileHeader } from "./profile-header";
-import LogoutButton from "./logout-button";
-import { Button } from "@/components/ui/button";
 
 interface ProfileViewProps {
   profile: FullProfile;
@@ -124,7 +124,7 @@ export function ProfileView({
       <section className="flex justify-between items-center max-w-2xl mx-auto w-full">
         <LogoutButton />
         <Button
-        variant="ghost"
+          variant="ghost"
           onClick={() => setIsEditing(true)}
           aria-label="Editar perfil"
           className="text-foreground/50 hover:text-foreground transition-colors"
