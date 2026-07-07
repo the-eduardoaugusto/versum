@@ -11,14 +11,10 @@
             "id": "44803073099aa03c",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Plans/Feature Plans/Avatar S3 Migration/Implementation Plan.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "Implementation Plan"
+              "title": "Nova aba"
             }
           }
         ]
@@ -197,6 +193,9 @@
   },
   "active": "44803073099aa03c",
   "lastOpenFiles": [
+    "Plans/Feature Plans/Avatar S3 Migration/Implementation Plan.md",
+    "Plans/Feature Plans/Avatar S3 Migration/Design.md",
+    "Plans/Feature Plans/Avatar S3 Migration",
     "Plans/Compliance/LGPD Compliance - Next Phases.md.tmp.358958.51e5d895cd16",
     "Plans/Compliance/LGPD Compliance - Next Phases.md.tmp.358958.da30c0d0f542",
     "Plans/Compliance/LGPD Compliance.md.tmp.358958.75e0ddff349b",
@@ -206,11 +205,7 @@
     "Docs/Apps/API/_Overview.md.tmp.358958.ada1f237501f",
     "Docs/Apps/API/_Overview.md.tmp.358958.a3a75b2f28cf",
     "Docs/API Development.md.tmp.358958.4acd6c3cb144",
-    "Plans/Feature Plans/Avatar S3 Migration/Design.md",
-    "Plans/Feature Plans/Avatar S3 Migration/Implementation Plan.md",
     "Docs/_Index.md",
-    "Plans/_Index.md.tmp.48771.a7fab18bc081",
-    "Plans/Feature Plans/_Index.md.tmp.48771.698cd9b273cf",
     "Docs/Guides/Naming Convention.md",
     "Docs/Git Flow.md",
     "Docs/Guides/_Index.md",
