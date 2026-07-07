@@ -1,11 +1,11 @@
 import { BadRequestError } from "@/utils/app/errors";
-import sharp from "sharp";
 
 const DEFAULT_AVATAR_HEIGHT = 512;
 const DEFAULT_AVATAR_WIDTH = 512;
 
 export async function transformAvatarToWebp(bytes: Uint8Array) {
     try {
+        const sharp = (await import("sharp")).default;
         const decoded = sharp(bytes);
         const result = await decoded.toFormat("webp").toBuffer();
         const resultMetadata = await sharp(result).metadata();
@@ -20,6 +20,7 @@ export async function transformAvatarToWebp(bytes: Uint8Array) {
 
 export async function resizeAvatar(bytes: Uint8Array) {
     try {
+        const sharp = (await import("sharp")).default;
         const decoded = sharp(bytes);
         const metadata = await decoded.metadata();
 
