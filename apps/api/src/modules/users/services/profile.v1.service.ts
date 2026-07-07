@@ -15,7 +15,6 @@ import type {
 const USERNAME_REGEX = /^[a-zA-Z0-9_]+$/;
 const MAX_NAME_LENGTH = 100;
 const MAX_BIO_LENGTH = 500;
-const MAX_PICTURE_URL_LENGTH = 500;
 const MIN_USERNAME_LENGTH = 3;
 const MAX_USERNAME_LENGTH = 50;
 
@@ -91,28 +90,6 @@ export class ProfileServiceV1 {
       );
     }
   }
-
-  private validatePictureUrl(url: string | null | undefined): void {
-    if (!url) return;
-
-    if (url.length > MAX_PICTURE_URL_LENGTH) {
-      throw new BadRequestError(
-        `Picture URL must not exceed ${MAX_PICTURE_URL_LENGTH} characters`,
-      );
-    }
-
-    let parsed: URL;
-    try {
-      parsed = new URL(url);
-    } catch {
-      throw new BadRequestError("Picture URL must be a valid URL");
-    }
-
-    if (parsed.protocol !== "https:") {
-      throw new BadRequestError("Picture URL must use HTTPS");
-    }
-  }
-
   private sanitizeAndValidate(
     params: UpdateProfileParams,
   ): UpdateProfileParams {
@@ -131,11 +108,6 @@ export class ProfileServiceV1 {
     if (params.bio !== undefined) {
       this.validateBio(params.bio);
       sanitized.bio = params.bio ? this.sanitizeHtml(params.bio.trim()) : null;
-    }
-
-    if (params.pictureUrl !== undefined) {
-      this.validatePictureUrl(params.pictureUrl);
-      sanitized.pictureUrl = params.pictureUrl?.trim() || null;
     }
 
     return sanitized;
@@ -166,13 +138,11 @@ export class ProfileServiceV1 {
       username: params.username.trim().toLowerCase(),
       name: this.sanitizeHtml(params.name.trim()),
       bio: params.bio ? this.sanitizeHtml(params.bio.trim()) : null,
-      pictureUrl: params.pictureUrl?.trim() || null,
     };
 
     this.validateUsername(sanitizedParams.username);
     this.validateName(sanitizedParams.name);
     this.validateBio(sanitizedParams.bio);
-    this.validatePictureUrl(sanitizedParams.pictureUrl);
 
     const profileWithSelectedUsername = await this.repository.existsByUsername({
       username: sanitizedParams.username,
@@ -260,6 +230,25 @@ export class ProfileServiceV1 {
     return await this.repository.update({
       ...sanitized,
       id: profile.id,
+    });
+  }
+
+  async setAvatarUpdatedAt({
+    userId,
+    avatarUpdatedAt,
+  }: {
+    userId: string;
+    avatarUpdatedAt: Date;
+  }): Promise<Profile> {
+    const profile = await this.assertProfileEditable({ userId });
+    return await this.repository.update({ id: profile.id, avatarUpdatedAt });
+  }
+
+  async clearAvatar({ userId }: { userId: string }): Promise<Profile> {
+    const profile = await this.assertProfileEditable({ userId });
+    return await this.repository.update({
+      id: profile.id,
+      avatarUpdatedAt: null,
     });
   }
 

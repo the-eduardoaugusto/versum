@@ -45,7 +45,7 @@ All API responses MUST use **camelCase** for property names.
 
 ```json
 {
-  "pictureUrl": "https://...",
+  "avatarUrl": "https://...",
   "createdAt": "2024-01-01T00:00:00Z",
   "totalChapters": 50,
   "hasNextPage": true
@@ -56,7 +56,7 @@ All API responses MUST use **camelCase** for property names.
 
 ```json
 {
-  "picture_url": "https://...",
+  "avatar_url": "https://...",
   "created_at": "2024-01-01T00:00:00Z",
   "total_chapters": 50,
   "has_next_page": true
@@ -110,7 +110,7 @@ User:
     id:
       type: string
       format: uuid
-    pictureUrl:
+    avatarUrl:
       type: string
       nullable: true
     createdAt:

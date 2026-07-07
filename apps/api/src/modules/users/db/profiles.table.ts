@@ -12,7 +12,10 @@ export const profiles = pgTable(
     username: varchar("username", { length: 50 }).notNull().unique(),
     name: varchar("name", { length: 100 }).notNull(),
     bio: varchar("bio", { length: 500 }),
-    pictureUrl: varchar("picture_url", { length: 500 }),
+    avatarUpdatedAt: timestamp("avatar_updated_at", {
+      precision: 3,
+      withTimezone: true,
+    }),
     createdAt: timestamp("created_at", {
       precision: 3,
       withTimezone: true,

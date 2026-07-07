@@ -37,7 +37,7 @@ export interface FullProfile {
      * @maxLength 500
      * @nullable
      */
-  pictureUrl?: string | null;
+  avatarUrl?: string | null;
   /** Data de criação */
   createdAt: string;
   /** Data de atualização */

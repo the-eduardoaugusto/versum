@@ -11,7 +11,7 @@ describe("ProfileServiceV1", () => {
     username: "johndoe",
     name: "John Doe",
     bio: "Software developer",
-    pictureUrl: "https://example.com/avatar.jpg",
+    avatarUpdatedAt: null,
     createdAt: new Date("2024-01-01T00:00:00Z"),
     updatedAt: new Date("2024-01-01T00:00:00Z"),
   };
@@ -134,7 +134,6 @@ describe("ProfileServiceV1", () => {
         username: "JohnDoe",
         name: "<script>alert('xss')</script>John Doe",
         bio: null,
-        pictureUrl: null,
       };
 
       const result = await service.createProfile(createParams);
@@ -275,43 +274,6 @@ describe("ProfileServiceV1", () => {
       ).rejects.toThrow("Bio must not exceed 500 characters");
     });
 
-    it("should throw error for invalid picture URL", async () => {
-      const mockRepository = createMockRepository();
-      const mockConsentLogsRepository = createMockConsentLogsRepository();
-      mockConsentLogsRepository.hasConsent.mockResolvedValue(true);
-      mockRepository.findByUserId.mockResolvedValue(null);
-      mockRepository.existsByUsername.mockResolvedValue({ exists: false });
-      mockRepository.create.mockResolvedValue(mockProfile);
-      service = createService({ mockRepository, mockConsentLogsRepository });
-
-      await expect(
-        service.createProfile({
-          userId: mockProfile.userId,
-          username: "johndoe",
-          name: "John Doe",
-          pictureUrl: "not-a-valid-url",
-        }),
-      ).rejects.toThrow("Picture URL must be a valid URL");
-    });
-
-    it("should throw error for non-HTTPS picture URL", async () => {
-      const mockRepository = createMockRepository();
-      const mockConsentLogsRepository = createMockConsentLogsRepository();
-      mockConsentLogsRepository.hasConsent.mockResolvedValue(true);
-      mockRepository.findByUserId.mockResolvedValue(null);
-      mockRepository.existsByUsername.mockResolvedValue({ exists: false });
-      mockRepository.create.mockResolvedValue(mockProfile);
-      service = createService({ mockRepository, mockConsentLogsRepository });
-
-      await expect(
-        service.createProfile({
-          userId: mockProfile.userId,
-          username: "johndoe",
-          name: "John Doe",
-          pictureUrl: "http://example.com/avatar.jpg",
-        }),
-      ).rejects.toThrow("Picture URL must use HTTPS");
-    });
   });
 
   describe("updateProfile", () => {
@@ -418,6 +380,73 @@ describe("ProfileServiceV1", () => {
       });
 
       expect(result).toEqual(mockProfile);
+    });
+  });
+
+  describe("setAvatarUpdatedAt", () => {
+    it("updates avatarUpdatedAt for the editable profile", async () => {
+      const mockRepository = createMockRepository();
+      const mockConsentLogsRepository = createMockConsentLogsRepository();
+      mockConsentLogsRepository.hasConsent.mockResolvedValue(true);
+      mockRepository.findByUserId.mockResolvedValue(mockProfile);
+      const avatarUpdatedAt = new Date("2024-06-01T00:00:00Z");
+      mockRepository.update.mockResolvedValue({
+        ...mockProfile,
+        avatarUpdatedAt,
+      });
+      service = createService({ mockRepository, mockConsentLogsRepository });
+
+      const result = await service.setAvatarUpdatedAt({
+        userId: mockProfile.userId,
+        avatarUpdatedAt,
+      });
+
+      expect(result.avatarUpdatedAt).toEqual(avatarUpdatedAt);
+      expect(mockRepository.update).toHaveBeenCalledWith({
+        id: mockProfile.id,
+        avatarUpdatedAt,
+      });
+    });
+
+    it("throws when consent has not been granted", async () => {
+      const mockRepository = createMockRepository();
+      const mockConsentLogsRepository = createMockConsentLogsRepository();
+      mockConsentLogsRepository.hasConsent.mockResolvedValue(false);
+      service = createService({ mockRepository, mockConsentLogsRepository });
+
+      await expect(
+        service.setAvatarUpdatedAt({
+          userId: mockProfile.userId,
+          avatarUpdatedAt: new Date(),
+        }),
+      ).rejects.toThrow(
+        "Consentimento para armazenar conteúdo do perfil não foi concedido",
+      );
+    });
+  });
+
+  describe("clearAvatar", () => {
+    it("sets avatarUpdatedAt back to null", async () => {
+      const mockRepository = createMockRepository();
+      const mockConsentLogsRepository = createMockConsentLogsRepository();
+      mockConsentLogsRepository.hasConsent.mockResolvedValue(true);
+      mockRepository.findByUserId.mockResolvedValue({
+        ...mockProfile,
+        avatarUpdatedAt: new Date("2024-06-01T00:00:00Z"),
+      });
+      mockRepository.update.mockResolvedValue({
+        ...mockProfile,
+        avatarUpdatedAt: null,
+      });
+      service = createService({ mockRepository, mockConsentLogsRepository });
+
+      const result = await service.clearAvatar({ userId: mockProfile.userId });
+
+      expect(result.avatarUpdatedAt).toBeNull();
+      expect(mockRepository.update).toHaveBeenCalledWith({
+        id: mockProfile.id,
+        avatarUpdatedAt: null,
+      });
     });
   });
 

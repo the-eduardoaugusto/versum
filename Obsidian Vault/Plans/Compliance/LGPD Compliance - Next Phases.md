@@ -43,7 +43,7 @@ depth: 2
 2. Controller chama `UserServiceV1.exportUserData({ userId })`
 3. Service busca todos os dados do usuário em paralelo:
    - `users` — email, createdAt
-   - `profiles` — username, name, bio, pictureUrl
+   - `profiles` — username, name, bio, avatarUpdatedAt
    - `sessions` — createdAt, ip, userAgent, expiresAt (excluir tokenHash)
    - `journey_readings` + `discovery_readings` — histórico de leitura
    - `marks` — anotações
@@ -65,7 +65,7 @@ depth: 2
     "username": "john",
     "name": "John Doe",
     "bio": "Bio text",
-    "pictureUrl": "https://..."
+    "avatarUpdatedAt": "2026-05-10T00:00:00.000Z"
   },
   "sessions": [
     {
