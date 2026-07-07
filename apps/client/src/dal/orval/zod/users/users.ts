@@ -76,7 +76,7 @@ export const GetApiV1UsersMeExportResponse = zod.object({
   "username": zod.string(),
   "name": zod.string(),
   "bio": zod.string().nullable(),
-  "pictureUrl": zod.string().nullable()
+  "avatarUpdatedAt": zod.iso.datetime({"offset":true}).nullable()
 }).nullable().describe('Perfil do usuário'),
   "sessions": zod.array(zod.object({
   "createdAt": zod.iso.datetime({"offset":true}),

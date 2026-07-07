@@ -28,7 +28,7 @@ describe("UserServiceV1", () => {
       username: "john",
       name: "John Doe",
       bio: "Bio text",
-      pictureUrl: "https://example.com/avatar.jpg",
+      avatarUpdatedAt: new Date("2024-01-01T00:00:00Z"),
       createdAt: new Date("2024-01-01T00:00:00Z"),
       updatedAt: new Date("2024-01-01T00:00:00Z"),
     },

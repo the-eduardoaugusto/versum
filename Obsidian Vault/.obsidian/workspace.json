@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Docs/_Index.md",
+                "file": "Plans/Feature Plans/Avatar S3 Migration/Implementation Plan.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "_Index"
+              "title": "Implementation Plan"
             }
           }
         ]
@@ -195,21 +195,23 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "36c9a9864d4e6747",
+  "active": "44803073099aa03c",
   "lastOpenFiles": [
-    "Docs/Guides/_Index.md.tmp.39875.5a7459c40a13",
-    "Docs/Guides/_Index.md.tmp.39875.f5fb4cd8efc1",
-    "Docs/Guides/Naming Convention.md",
-    "Docs/Apps/Packages/_Index.md.tmp.39875.7f353c985288",
-    "Plans/_Index.md.tmp.39875.136625bdb676",
-    "Rules/_Index.md.tmp.39875.d4e11889e13e",
-    "Docs/_Index.md.tmp.39875.829ea6556934",
-    "Docs/Guides/_Index.md.tmp.39875.ecc8b1d617a4",
-    "Docs/Apps/_Index.md.tmp.39875.dda3f928c77d",
-    "Docs/Decisions/_Index.md.tmp.39875.951b78d14c0f",
-    "Plans/Compliance/_Index.md.tmp.39875.6276d6d31b4e",
-    "Plans/Feature Plans/_Index.md.tmp.39875.c4494ca8ffeb",
+    "Plans/Compliance/LGPD Compliance - Next Phases.md.tmp.358958.51e5d895cd16",
+    "Plans/Compliance/LGPD Compliance - Next Phases.md.tmp.358958.da30c0d0f542",
+    "Plans/Compliance/LGPD Compliance.md.tmp.358958.75e0ddff349b",
+    "Docs/Naming Convention.md.tmp.358958.224a2e735af5",
+    "Docs/Naming Convention.md.tmp.358958.f090a8c61e9b",
+    "Docs/Apps/API/Services.md.tmp.358958.4d0bafa0e11c",
+    "Docs/Apps/API/_Overview.md.tmp.358958.ada1f237501f",
+    "Docs/Apps/API/_Overview.md.tmp.358958.a3a75b2f28cf",
+    "Docs/API Development.md.tmp.358958.4acd6c3cb144",
+    "Plans/Feature Plans/Avatar S3 Migration/Design.md",
+    "Plans/Feature Plans/Avatar S3 Migration/Implementation Plan.md",
     "Docs/_Index.md",
+    "Plans/_Index.md.tmp.48771.a7fab18bc081",
+    "Plans/Feature Plans/_Index.md.tmp.48771.698cd9b273cf",
+    "Docs/Guides/Naming Convention.md",
     "Docs/Git Flow.md",
     "Docs/Guides/_Index.md",
     "Docs/Guides/Git Flow.md",
@@ -230,8 +232,6 @@
     "Docs/Decisions/Incident Response Plan.md",
     "Docs/Apps/Packages/Logger/_Overview.md",
     "Docs/Apps/Packages/_Index.md",
-    "Docs/Apps/Landing Page/_Overview.md",
-    "Docs/Apps/Client/_Overview.md",
-    "Docs/Apps/Client/State Management.md"
+    "Docs/Apps/Landing Page/_Overview.md"
   ]
 }

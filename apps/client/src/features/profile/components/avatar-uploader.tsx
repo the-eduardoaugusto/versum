@@ -41,7 +41,7 @@ export function AvatarUploader({
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    e.target.value = ""; // allow re-selecting the same file
+    e.target.value = "";
     if (!file) return;
 
     const error = validateAvatarFile(file);

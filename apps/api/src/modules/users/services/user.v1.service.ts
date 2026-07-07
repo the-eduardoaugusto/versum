@@ -213,7 +213,7 @@ export class UserServiceV1 {
             username: data.profile.username,
             name: data.profile.name,
             bio: data.profile.bio ?? null,
-            pictureUrl: data.profile.pictureUrl ?? null,
+            avatarUpdatedAt: data.profile.avatarUpdatedAt ?? null,
           }
         : null,
       sessions: (data.sessions ?? []).map(mapSessions),

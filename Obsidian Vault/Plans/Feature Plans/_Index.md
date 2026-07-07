@@ -19,6 +19,7 @@ Designs e roadmaps de implementação para features.
 | Feature | Status | Links |
 |:--|:--|:--|
 | **Profile Edit System** | In Progress | [[Plans/Feature Plans/Profile Edit System/Design\|Design]] · [[Plans/Feature Plans/Profile Edit System/Implementation Plan\|Plan]] |
+| **Avatar S3 Migration** | Planned | [[Plans/Feature Plans/Avatar S3 Migration/Design\|Design]] · [[Plans/Feature Plans/Avatar S3 Migration/Implementation Plan\|Plan]] |
 
 ---
 

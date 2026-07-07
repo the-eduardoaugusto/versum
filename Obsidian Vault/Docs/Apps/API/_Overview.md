@@ -39,7 +39,7 @@ apps/api/src/
 │   └── debug-requests.middleware
 ├── infrastructure/       # Integrações externas
 │   ├── db/              # Drizzle, schemas, migrações
-│   ├── cloudinary/      # Upload de imagens
+│   ├── s3/              # Upload de imagens (Bun S3Client, Railway bucket)
 │   ├── redis/           # Cache
 │   └── resend/          # Email
 ├── view-models/         # Envelopes de resposta
@@ -80,7 +80,7 @@ modules/<feature>/
 
 ### Infrastructure
 - **db/** — Drizzle ORM, schemas, migrações PostgreSQL
-- **cloudinary/** — Upload e otimização de imagens
+- **s3/** — Upload de avatares via Bun `S3Client` (bucket S3-compatible na Railway), com presigned URLs on-demand cacheadas no Redis
 - **redis/** — Cache distribuído
 - **resend/** — Envio de emails
 

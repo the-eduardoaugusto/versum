@@ -12,15 +12,22 @@ export default function LogoutButton() {
       window.location.href = "/login";
     },
   });
+
+  const disabled = mutation.isPending || mutation.isSuccess;
+
   return (
     <Button
-      disabled={mutation.isPending}
+      disabled={disabled}
       onClick={() => mutation.mutate()}
       variant="ghost"
       className="justify-start text-foreground/50 hover:text-foreground transition-colors"
     >
       <SignOutIcon />
-      {mutation.isPending ? "Saindo..." : "Sair"}
+      {mutation.isPending ? (
+        "Saindo..."
+      ) : (
+        <span className="hidden md:inline">Sair</span>
+      )}
     </Button>
   );
 }
