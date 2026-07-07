@@ -1,0 +1,5 @@
+[build]
+buildCommand = "bun install --include=optional && npm rebuild sharp --build-from-source && cd apps/api && bun build src/server.ts --outdir dist --target bun --external:sharp"
+
+[deploy]
+startCommand = "cd apps/api && bun run dist/server.js"
