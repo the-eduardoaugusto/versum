@@ -1,5 +1,5 @@
 [build]
-buildCommand = "rm -rf node_modules apps/*/node_modules packages/*/node_modules && bun install --include=optional && cd apps/api && bun run scripts/verify-sharp.mjs && bun build src/server.ts --outdir dist --target bun --external:sharp"
+buildCommand = "rm -rf node_modules apps/*/node_modules packages/*/node_modules && bun install --include=optional --linker=hoisted && cd apps/api && bun run scripts/verify-sharp.mjs && bun build src/server.ts --outdir dist --target bun --external:sharp"
 
 [deploy]
-startCommand = "cd apps/api && bun run dist/server.js"
+startCommand = "cd apps/api && bun run scripts/verify-sharp.mjs && bun run dist/server.js"
