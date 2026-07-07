@@ -88,7 +88,7 @@ getProgress(userId: string): Promise<ProgressData>
 **Responsabilidades:**
 - CRUD de perfis (nome, username, bio, avatar)
 - Preferências de leitura (tamanho fonte, tema, etc.)
-- Avatar upload via Cloudinary
+- Avatar upload via S3 (Bun `S3Client`, bucket Railway), servido por presigned URL on-demand cacheada no Redis
 - Deleção de conta (LGPD)
 
 **Métodos principais:**

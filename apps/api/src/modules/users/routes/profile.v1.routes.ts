@@ -198,7 +198,7 @@ export const createProfileRoutesV1 = (controller: ProfileControllerV1) => {
         },
         description: "Foto de perfil removida com sucesso",
       },
-      ...createErrorResponses([401, 404, 429, 500]),
+      ...createErrorResponses([400, 401, 404, 429, 500]),
     },
   });
 

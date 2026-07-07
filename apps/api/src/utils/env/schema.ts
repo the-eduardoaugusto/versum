@@ -12,7 +12,9 @@ export const envSchema = z.object({
   DISCORD_WEBHOOK_URL: z.string("Discord webhook URL is required"),
   CRON_ENABLED: z.string().default("true"),
   METADATA_HASH_SECRET: z.string().min(32),
-  CLOUDINARY_CLOUD_NAME: z.string("Cloudinary cloud name is required"),
-  CLOUDINARY_API_KEY: z.string("Cloudinary API key is required"),
-  CLOUDINARY_API_SECRET: z.string("Cloudinary API secret is required"),
+  AWS_ACCESS_KEY_ID: z.string("AWS access key ID is required"),
+  AWS_DEFAULT_REGION: z.string("AWS default region is required"),
+  AWS_ENDPOINT_URL: z.string("AWS endpoint URL is required"),
+  AWS_S3_BUCKET_NAME: z.string("AWS S3 bucket name is required"),
+  AWS_SECRET_ACCESS_KEY: z.string("AWS secret access key is required"),
 });

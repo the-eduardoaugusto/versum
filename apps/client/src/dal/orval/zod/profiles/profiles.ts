@@ -20,15 +20,12 @@ export const postApiV1ProfilesMeBodyNameMax = 100;
 
 export const postApiV1ProfilesMeBodyBioMax = 500;
 
-export const postApiV1ProfilesMeBodyPictureUrlMax = 500;
-
 
 
 export const PostApiV1ProfilesMeBody = zod.object({
   "username": zod.string().min(postApiV1ProfilesMeBodyUsernameMin).max(postApiV1ProfilesMeBodyUsernameMax).regex(postApiV1ProfilesMeBodyUsernameRegExp).describe('Username único'),
   "name": zod.string().min(1).max(postApiV1ProfilesMeBodyNameMax).describe('Nome de exibição'),
-  "bio": zod.string().max(postApiV1ProfilesMeBodyBioMax).nullish().describe('Biografia do usuário'),
-  "pictureUrl": zod.url().max(postApiV1ProfilesMeBodyPictureUrlMax).nullish().describe('URL da foto de perfil')
+  "bio": zod.string().max(postApiV1ProfilesMeBodyBioMax).nullish().describe('Biografia do usuário')
 }).describe('Payload para criar o perfil do usuário')
 
 /**
@@ -45,7 +42,7 @@ export const getApiV1ProfilesMeResponseDataNameMax = 100;
 
 export const getApiV1ProfilesMeResponseDataBioMax = 500;
 
-export const getApiV1ProfilesMeResponseDataPictureUrlMax = 500;
+export const getApiV1ProfilesMeResponseDataAvatarUrlMax = 500;
 
 
 
@@ -59,7 +56,7 @@ export const GetApiV1ProfilesMeResponse = zod.object({
   "username": zod.string().min(getApiV1ProfilesMeResponseDataUsernameMin).max(getApiV1ProfilesMeResponseDataUsernameMax).regex(getApiV1ProfilesMeResponseDataUsernameRegExp).describe('Username único'),
   "name": zod.string().min(1).max(getApiV1ProfilesMeResponseDataNameMax).describe('Nome de exibição'),
   "bio": zod.string().max(getApiV1ProfilesMeResponseDataBioMax).nullish().describe('Biografia do usuário'),
-  "pictureUrl": zod.url().max(getApiV1ProfilesMeResponseDataPictureUrlMax).nullish().describe('URL da foto de perfil'),
+  "avatarUrl": zod.url().max(getApiV1ProfilesMeResponseDataAvatarUrlMax).nullish().describe('URL da foto de perfil'),
   "createdAt": zod.iso.datetime({"offset":true}).describe('Data de criação'),
   "updatedAt": zod.iso.datetime({"offset":true}).describe('Data de atualização')
 }).optional().describe('Dados da resposta')
@@ -78,15 +75,12 @@ export const patchApiV1ProfilesMeBodyNameMax = 100;
 
 export const patchApiV1ProfilesMeBodyBioMax = 500;
 
-export const patchApiV1ProfilesMeBodyPictureUrlMax = 500;
-
 
 
 export const PatchApiV1ProfilesMeBody = zod.object({
   "username": zod.string().min(patchApiV1ProfilesMeBodyUsernameMin).max(patchApiV1ProfilesMeBodyUsernameMax).regex(patchApiV1ProfilesMeBodyUsernameRegExp).optional().describe('Username único'),
   "name": zod.string().min(1).max(patchApiV1ProfilesMeBodyNameMax).optional().describe('Nome de exibição'),
-  "bio": zod.string().max(patchApiV1ProfilesMeBodyBioMax).nullish().describe('Biografia do usuário'),
-  "pictureUrl": zod.url().max(patchApiV1ProfilesMeBodyPictureUrlMax).nullish().describe('URL da foto de perfil')
+  "bio": zod.string().max(patchApiV1ProfilesMeBodyBioMax).nullish().describe('Biografia do usuário')
 }).describe('Payload para atualizar o perfil do usuário autenticado')
 
 export const patchApiV1ProfilesMeResponseSuccessDefault = true;
@@ -99,7 +93,7 @@ export const patchApiV1ProfilesMeResponseDataNameMax = 100;
 
 export const patchApiV1ProfilesMeResponseDataBioMax = 500;
 
-export const patchApiV1ProfilesMeResponseDataPictureUrlMax = 500;
+export const patchApiV1ProfilesMeResponseDataAvatarUrlMax = 500;
 
 
 
@@ -113,7 +107,7 @@ export const PatchApiV1ProfilesMeResponse = zod.object({
   "username": zod.string().min(patchApiV1ProfilesMeResponseDataUsernameMin).max(patchApiV1ProfilesMeResponseDataUsernameMax).regex(patchApiV1ProfilesMeResponseDataUsernameRegExp).describe('Username único'),
   "name": zod.string().min(1).max(patchApiV1ProfilesMeResponseDataNameMax).describe('Nome de exibição'),
   "bio": zod.string().max(patchApiV1ProfilesMeResponseDataBioMax).nullish().describe('Biografia do usuário'),
-  "pictureUrl": zod.url().max(patchApiV1ProfilesMeResponseDataPictureUrlMax).nullish().describe('URL da foto de perfil'),
+  "avatarUrl": zod.url().max(patchApiV1ProfilesMeResponseDataAvatarUrlMax).nullish().describe('URL da foto de perfil'),
   "createdAt": zod.iso.datetime({"offset":true}).describe('Data de criação'),
   "updatedAt": zod.iso.datetime({"offset":true}).describe('Data de atualização')
 }).optional().describe('Dados da resposta')
@@ -143,7 +137,7 @@ export const getApiV1ProfilesUsernameResponseDataNameMax = 100;
 
 export const getApiV1ProfilesUsernameResponseDataBioMax = 500;
 
-export const getApiV1ProfilesUsernameResponseDataPictureUrlMax = 500;
+export const getApiV1ProfilesUsernameResponseDataAvatarUrlMax = 500;
 
 
 
@@ -157,7 +151,7 @@ export const GetApiV1ProfilesUsernameResponse = zod.object({
   "username": zod.string().min(getApiV1ProfilesUsernameResponseDataUsernameMin).max(getApiV1ProfilesUsernameResponseDataUsernameMax).regex(getApiV1ProfilesUsernameResponseDataUsernameRegExp).describe('Username único'),
   "name": zod.string().min(1).max(getApiV1ProfilesUsernameResponseDataNameMax).describe('Nome de exibição'),
   "bio": zod.string().max(getApiV1ProfilesUsernameResponseDataBioMax).nullish().describe('Biografia do usuário'),
-  "pictureUrl": zod.url().max(getApiV1ProfilesUsernameResponseDataPictureUrlMax).nullish().describe('URL da foto de perfil'),
+  "avatarUrl": zod.url().max(getApiV1ProfilesUsernameResponseDataAvatarUrlMax).nullish().describe('URL da foto de perfil'),
   "createdAt": zod.iso.datetime({"offset":true}).describe('Data de criação'),
   "updatedAt": zod.iso.datetime({"offset":true}).describe('Data de atualização')
 }).optional().describe('Dados da resposta')
@@ -206,7 +200,7 @@ export const postApiV1ProfilesMeAvatarResponseDataNameMax = 100;
 
 export const postApiV1ProfilesMeAvatarResponseDataBioMax = 500;
 
-export const postApiV1ProfilesMeAvatarResponseDataPictureUrlMax = 500;
+export const postApiV1ProfilesMeAvatarResponseDataAvatarUrlMax = 500;
 
 
 
@@ -220,7 +214,7 @@ export const PostApiV1ProfilesMeAvatarResponse = zod.object({
   "username": zod.string().min(postApiV1ProfilesMeAvatarResponseDataUsernameMin).max(postApiV1ProfilesMeAvatarResponseDataUsernameMax).regex(postApiV1ProfilesMeAvatarResponseDataUsernameRegExp).describe('Username único'),
   "name": zod.string().min(1).max(postApiV1ProfilesMeAvatarResponseDataNameMax).describe('Nome de exibição'),
   "bio": zod.string().max(postApiV1ProfilesMeAvatarResponseDataBioMax).nullish().describe('Biografia do usuário'),
-  "pictureUrl": zod.url().max(postApiV1ProfilesMeAvatarResponseDataPictureUrlMax).nullish().describe('URL da foto de perfil'),
+  "avatarUrl": zod.url().max(postApiV1ProfilesMeAvatarResponseDataAvatarUrlMax).nullish().describe('URL da foto de perfil'),
   "createdAt": zod.iso.datetime({"offset":true}).describe('Data de criação'),
   "updatedAt": zod.iso.datetime({"offset":true}).describe('Data de atualização')
 }).optional().describe('Dados da resposta')
@@ -240,7 +234,7 @@ export const deleteApiV1ProfilesMeAvatarResponseDataNameMax = 100;
 
 export const deleteApiV1ProfilesMeAvatarResponseDataBioMax = 500;
 
-export const deleteApiV1ProfilesMeAvatarResponseDataPictureUrlMax = 500;
+export const deleteApiV1ProfilesMeAvatarResponseDataAvatarUrlMax = 500;
 
 
 
@@ -254,7 +248,7 @@ export const DeleteApiV1ProfilesMeAvatarResponse = zod.object({
   "username": zod.string().min(deleteApiV1ProfilesMeAvatarResponseDataUsernameMin).max(deleteApiV1ProfilesMeAvatarResponseDataUsernameMax).regex(deleteApiV1ProfilesMeAvatarResponseDataUsernameRegExp).describe('Username único'),
   "name": zod.string().min(1).max(deleteApiV1ProfilesMeAvatarResponseDataNameMax).describe('Nome de exibição'),
   "bio": zod.string().max(deleteApiV1ProfilesMeAvatarResponseDataBioMax).nullish().describe('Biografia do usuário'),
-  "pictureUrl": zod.url().max(deleteApiV1ProfilesMeAvatarResponseDataPictureUrlMax).nullish().describe('URL da foto de perfil'),
+  "avatarUrl": zod.url().max(deleteApiV1ProfilesMeAvatarResponseDataAvatarUrlMax).nullish().describe('URL da foto de perfil'),
   "createdAt": zod.iso.datetime({"offset":true}).describe('Data de criação'),
   "updatedAt": zod.iso.datetime({"offset":true}).describe('Data de atualização')
 }).optional().describe('Dados da resposta')

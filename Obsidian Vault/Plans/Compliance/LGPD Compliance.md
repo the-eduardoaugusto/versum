@@ -117,7 +117,7 @@ export const consentLogs = pgTable("consent_logs", {
     "username": "john",
     "name": "John Doe",
     "bio": "Bio text",
-    "pictureUrl": "https://..."
+    "avatarUpdatedAt": "2026-05-10T00:00:00.000Z"
   },
   "sessions": [
     {

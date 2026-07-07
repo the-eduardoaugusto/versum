@@ -28,10 +28,4 @@ export interface CreateProfileBody {
      * @nullable
      */
   bio?: string | null;
-  /**
-     * URL da foto de perfil
-     * @maxLength 500
-     * @nullable
-     */
-  pictureUrl?: string | null;
 }

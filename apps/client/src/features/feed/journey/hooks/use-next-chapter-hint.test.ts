@@ -9,7 +9,7 @@ import {
 
 describe("useNextChapterHint", () => {
   beforeEach(() => {
-    localStorage.clear();
+    sessionStorage.clear();
     vi.useFakeTimers();
   });
 
@@ -33,7 +33,7 @@ describe("useNextChapterHint", () => {
     });
 
     expect(result.current.visible).toBe(true);
-    expect(localStorage.getItem(HINT_STORAGE_KEY)).toBe("1");
+    expect(sessionStorage.getItem(HINT_STORAGE_KEY)).toBe("1");
   });
 
   it("does not show before the delay elapses", () => {
@@ -50,7 +50,7 @@ describe("useNextChapterHint", () => {
   });
 
   it("never shows again once seen", () => {
-    localStorage.setItem(HINT_STORAGE_KEY, "1");
+    sessionStorage.setItem(HINT_STORAGE_KEY, "1");
     const { result } = renderHook(() => useNextChapterHint());
 
     act(() => {
@@ -133,6 +133,6 @@ describe("useNextChapterHint", () => {
       vi.advanceTimersByTime(HINT_DELAY_MS);
     });
 
-    expect(localStorage.getItem(HINT_STORAGE_KEY)).toBeNull();
+    expect(sessionStorage.getItem(HINT_STORAGE_KEY)).toBeNull();
   });
 });

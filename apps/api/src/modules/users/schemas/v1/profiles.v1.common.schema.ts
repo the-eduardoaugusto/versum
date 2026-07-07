@@ -37,11 +37,11 @@ export class ProfilesCommonSchemasV1 {
       example: "Software developer and open source enthusiast",
     });
 
-  static readonly pictureUrlSchema = z
+  static readonly avatarUrlSchema = z
     .string()
-    .max(500, "Picture URL must not exceed 500 characters")
-    .url("Picture URL must be a valid URL")
-    .startsWith("https://", "Picture URL must use HTTPS")
+    .max(500, "Avatar URL must not exceed 500 characters")
+    .url("Avatar URL must be a valid URL")
+    .startsWith("https://", "Avatar URL must use HTTPS")
     .nullable()
     .optional()
     .openapi({
@@ -56,7 +56,7 @@ export class ProfilesCommonSchemasV1 {
       username: this.usernameSchema,
       name: this.nameSchema,
       bio: this.bioSchema,
-      pictureUrl: this.pictureUrlSchema,
+      avatarUrl: this.avatarUrlSchema,
       createdAt: z.string().datetime().describe("Data de criação"),
       updatedAt: z.string().datetime().describe("Data de atualização"),
     })
@@ -69,7 +69,7 @@ export class ProfilesCommonSchemasV1 {
       username: this.usernameSchema,
       name: this.nameSchema,
       bio: this.bioSchema,
-      pictureUrl: this.pictureUrlSchema,
+      avatarUrl: this.avatarUrlSchema,
     })
     .openapi("Profile", {
       description: "Representação pública do perfil",
@@ -80,7 +80,6 @@ export class ProfilesCommonSchemasV1 {
       username: this.usernameSchema,
       name: this.nameSchema,
       bio: this.bioSchema,
-      pictureUrl: this.pictureUrlSchema,
     })
     .openapi("CreateProfileBody", {
       description: "Payload para criar o perfil do usuário",
@@ -102,7 +101,6 @@ export class ProfilesCommonSchemasV1 {
       username: this.usernameSchema.optional(),
       name: this.nameSchema.optional(),
       bio: this.bioSchema,
-      pictureUrl: this.pictureUrlSchema,
     })
     .openapi("UpdateAuthenticatedProfileBody", {
       description: "Payload para atualizar o perfil do usuário autenticado",
