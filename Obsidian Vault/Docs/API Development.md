@@ -36,7 +36,7 @@ apps/api/src/
 ├── middlewares/               # Hono middlewares
 └── infrastructure/
     ├── db/                   # DB config + schema central
-    ├── cloudinary/           # Upload de imagens
+    ├── s3/                   # Upload de imagens (Bun S3Client, Railway bucket)
     ├── redis/                # Redis client
     └── resend/               # Email provider
 ```

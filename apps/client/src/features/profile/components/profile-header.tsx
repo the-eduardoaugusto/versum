@@ -28,10 +28,10 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
           "bg-muted",
         )}
       >
-        {profile.pictureUrl ? (
+        {profile.avatarUrl ? (
           <Avatar className="w-full h-full">
             <AvatarImage
-              src={profile.pictureUrl}
+              src={profile.avatarUrl}
               alt={profile.name}
               className="w-full h-full object-cover"
             />

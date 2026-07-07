@@ -15,5 +15,5 @@ export type ExportProfile = {
   /** @nullable */
   bio: string | null;
   /** @nullable */
-  pictureUrl: string | null;
+  avatarUpdatedAt: string | null;
 } | null;

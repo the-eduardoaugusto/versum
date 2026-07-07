@@ -13,9 +13,11 @@ const env = {
   METADATA_HASH_SECRET: "test-metadata-hash-secret-32chars!",
   RESEND_API_KEY: "test",
   WEB_CLIENT_APP_URL: "http://localhost:3000",
-  CLOUDINARY_CLOUD_NAME: "test-cloud",
-  CLOUDINARY_API_KEY: "test-key",
-  CLOUDINARY_API_SECRET: "test-secret",
+  AWS_ACCESS_KEY_ID: "test-access-key-id",
+  AWS_SECRET_ACCESS_KEY: "test-secret-access-key",
+  AWS_DEFAULT_REGION: "us-east-1",
+  AWS_ENDPOINT_URL: "https://s3.test.internal",
+  AWS_S3_BUCKET_NAME: "test-bucket",
 };
 
 Object.defineProperty(globalThis, "Bun", {

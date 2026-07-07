@@ -43,13 +43,16 @@ class Response {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const apiOrigin = apiUrl ? new URL(apiUrl).origin : "";
 
+    const avatarCdnUrl = process.env.NEXT_PUBLIC_AVATAR_CDN_ORIGIN;
+    const avatarCdnOrigin = avatarCdnUrl ? new URL(avatarCdnUrl).origin : "";
+
     res.headers.set(
       "Content-Security-Policy",
       [
         "default-src 'self'",
         "script-src 'self' 'unsafe-inline'",
         "style-src 'self' 'unsafe-inline'",
-        "img-src 'self' data: blob: https://res.cloudinary.com",
+        `img-src 'self' data: blob: ${avatarCdnOrigin}`.trim(),
         "font-src 'self'",
         `connect-src 'self' ${apiOrigin}`.trim(),
         "frame-ancestors 'none'",

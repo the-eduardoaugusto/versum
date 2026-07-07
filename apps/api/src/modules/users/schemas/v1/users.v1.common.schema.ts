@@ -102,7 +102,7 @@ export class UsersCommonSchemasV1 {
           username: z.string(),
           name: z.string(),
           bio: z.string().nullable(),
-          pictureUrl: z.string().nullable(),
+          avatarUpdatedAt: z.date().nullable(),
         })
         .nullable()
         .openapi("ExportProfile", {

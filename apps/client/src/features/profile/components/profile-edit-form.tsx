@@ -161,7 +161,7 @@ export function ProfileEditForm({ profile, onDone }: ProfileEditFormProps) {
 
       <AvatarUploader
         name={profile.name}
-        pictureUrl={profile.pictureUrl ?? null}
+        pictureUrl={profile.avatarUrl ?? null}
         isUploading={avatarUploading}
         onSelectFile={handleAvatarSelect}
         onRemove={handleAvatarRemove}

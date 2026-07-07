@@ -1,21 +1,38 @@
 import type { Context } from "hono";
-import { CloudinaryService } from "@/infrastructure/cloudinary/cloudinary.service.ts";
 import type { Session } from "@/modules/auth/repositories/auth.types.repository";
 import { BadRequestError, NotFoundError } from "@/utils/app/errors/index";
 import { SuccessViewModel } from "@/view-models/default/success.view-model";
 import { ProfileServiceV1 } from "../services/profile.v1.service";
 import { assertValidAvatar } from "../utils/avatar-validation.ts";
+import { S3Service } from "@/infrastructure/s3/s3.service.ts";
+import { prepareAvatar } from "../utils/avatar-image.ts";
+import type { Profile } from "../repositories/profile.types.repository.ts";
 
 export class ProfileControllerV1 {
   private readonly service: ProfileServiceV1;
-  private readonly cloudinary: CloudinaryService;
+  private readonly s3: S3Service;
 
   constructor({
     service,
-    cloudinary,
-  }: { service?: ProfileServiceV1; cloudinary?: CloudinaryService } = {}) {
+    s3,
+  }: { service?: ProfileServiceV1; s3?: S3Service } = {}) {
     this.service = service ?? new ProfileServiceV1();
-    this.cloudinary = cloudinary ?? new CloudinaryService();
+    this.s3 = s3 ?? new S3Service();
+  }
+
+  private async toProfileResponse(profile: Profile): Promise<(Omit<Profile, "avatarUpdatedAt"> & { avatarUrl: string | null })> {
+    if (profile.avatarUpdatedAt === null) {
+      return { ...profile, avatarUrl: null };
+    }
+
+    const avatarUrl = await this.s3.getAvatarUrl({
+      userId: profile.userId,
+      avatarUpdatedAt: profile.avatarUpdatedAt,
+    });
+
+    const { avatarUpdatedAt, ...profileWithoutAvatarUpdatedAt } = profile;
+
+    return { ...profileWithoutAvatarUpdatedAt, avatarUrl };
   }
 
   createProfile = async (c: Context) => {
@@ -29,7 +46,7 @@ export class ProfileControllerV1 {
 
     return c.json(
       SuccessViewModel.create({
-        data: profile,
+        data: await this.toProfileResponse(profile),
         message: "Profile created",
         code: "PROFILE_CREATED",
       }),
@@ -50,7 +67,7 @@ export class ProfileControllerV1 {
 
     return c.json(
       SuccessViewModel.create({
-        data: profile,
+        data: await this.toProfileResponse(profile),
         message: "Profile retrieved",
         code: "PROFILE_RETRIEVED",
       }),
@@ -69,7 +86,7 @@ export class ProfileControllerV1 {
 
     return c.json(
       SuccessViewModel.create({
-        data: profile,
+        data: await this.toProfileResponse(profile),
         message: "Profile updated",
         code: "PROFILE_UPDATED",
       }),
@@ -94,7 +111,7 @@ export class ProfileControllerV1 {
 
     return c.json(
       SuccessViewModel.create({
-        data: profile,
+        data: await this.toProfileResponse(profile),
         message: "Profile retrieved",
         code: "PROFILE_RETRIEVED",
       }),
@@ -142,19 +159,28 @@ export class ProfileControllerV1 {
 
     await this.service.assertProfileEditable({ userId: session.userId });
 
-    const secureUrl = await this.cloudinary.uploadAvatar({
-      userId: session.userId,
-      bytes: Buffer.from(arrayBuffer),
-    });
+    const preparedBytes = await prepareAvatar(bytes);
+    const oldProfile = await this.service.getProfileByUserId({ userId: session.userId });
 
-    const profile = await this.service.updateProfile({
+    if (oldProfile?.avatarUpdatedAt) {
+      await this.s3.destroyAvatar({ userId: session.userId, avatarUpdatedAt: oldProfile.avatarUpdatedAt });
+    }
+
+    const avatarUpdatedAt = new Date();
+    await this.s3.uploadAvatarWebp({
       userId: session.userId,
-      pictureUrl: secureUrl,
+      bytes: preparedBytes,
+      avatarUpdatedAt
+    })
+
+    const profile = await this.service.setAvatarUpdatedAt({
+      userId: session.userId,
+      avatarUpdatedAt
     });
 
     return c.json(
       SuccessViewModel.create({
-        data: profile,
+        data: await this.toProfileResponse(profile),
         message: "Avatar updated",
         code: "AVATAR_UPDATED",
       }),
@@ -165,16 +191,19 @@ export class ProfileControllerV1 {
   deleteAvatar = async (c: Context) => {
     const session = c.get("session") as Session;
 
-    const profile = await this.service.updateProfile({
+    const profile = await this.service.assertProfileEditable({
       userId: session.userId,
-      pictureUrl: null,
     });
 
-    await this.cloudinary.destroyAvatar({ userId: session.userId });
+    if (!profile.avatarUpdatedAt) {
+      throw new BadRequestError("No avatar to delete");
+    }
+    await this.s3.destroyAvatar({ userId: session.userId, avatarUpdatedAt: profile.avatarUpdatedAt });
+    const updatedProfile = await this.service.clearAvatar({ userId: session.userId });
 
     return c.json(
       SuccessViewModel.create({
-        data: profile,
+        data: await this.toProfileResponse(updatedProfile),
         message: "Avatar removed",
         code: "AVATAR_REMOVED",
       }),
