@@ -1,3 +1,4 @@
+import { logger } from "@versum/logger";
 import { BadRequestError } from "@/utils/app/errors";
 
 const DEFAULT_AVATAR_HEIGHT = 512;
@@ -13,7 +14,12 @@ export async function transformAvatarToWebp(bytes: Uint8Array) {
             throw new BadRequestError("Failed to convert avatar to WebP format");
         }
         return result;
-    } catch (_error) {
+    } catch (error) {
+        logger(
+            { level: "error" },
+            "[AVATAR]",
+            `transformAvatarToWebp failed: ${error instanceof Error ? error.stack ?? error.message : error}`,
+        );
         throw new BadRequestError("Error transforming avatar to WebP");
     }
 }
@@ -36,7 +42,12 @@ export async function resizeAvatar(bytes: Uint8Array) {
             position: sharp.strategy.attention,
         }).toBuffer();
         return result;
-    } catch (_error) {
+    } catch (error) {
+        logger(
+            { level: "error" },
+            "[AVATAR]",
+            `resizeAvatar failed: ${error instanceof Error ? error.stack ?? error.message : error}`,
+        );
         throw new BadRequestError("Error resizing avatar");
     }
 
