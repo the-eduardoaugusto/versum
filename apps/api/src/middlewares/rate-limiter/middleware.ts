@@ -114,6 +114,9 @@ export class MagicLinkSendRateLimiter extends RateLimiterMiddleware {
       keyGenerator: async (c) => {
         try {
           const body = await c.req.json<{ email?: string }>();
+          // Cache the parsed body in context so the route handler can read it
+          // without consuming the request stream a second time.
+          c.set("cachedBody", body);
           if (body?.email && typeof body.email === "string") {
             return `email:${body.email.toLowerCase().trim()}`;
           }

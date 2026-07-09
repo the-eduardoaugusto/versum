@@ -22,8 +22,6 @@ export const createAuthRoutesV1 = (controller: AuthControllerV1) => {
 
   const magicLinkSendRateLimiter = new MagicLinkSendRateLimiter();
   const magicLinkConsumeRateLimiter = new MagicLinkConsumeRateLimiter();
-  router.post("/magic-link", magicLinkSendRateLimiter.middleware);
-  router.get("/magic-link", magicLinkConsumeRateLimiter.middleware);
 
   const sendMagicLinkRouteV1 = createRoute({
     method: "post",
@@ -41,6 +39,7 @@ export const createAuthRoutesV1 = (controller: AuthControllerV1) => {
       },
     },
     responses: createAndSendMagicLinkResponses,
+    middleware: [magicLinkSendRateLimiter.middleware] as const,
   });
 
   router.openapi(sendMagicLinkRouteV1, controller.createAndSendMagicLink);
@@ -55,6 +54,7 @@ export const createAuthRoutesV1 = (controller: AuthControllerV1) => {
       query: magicLinkTokenQuerySchema,
     },
     responses: authenticateWithMagicLinkResponses,
+    middleware: [magicLinkConsumeRateLimiter.middleware] as const,
   });
 
   router.openapi(
