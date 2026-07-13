@@ -28,6 +28,7 @@ Planos de implementação, designs de features e roadmaps de conformidade.
 - **Profile Edit System** — [[Plans/Feature Plans/Profile Edit System/Design|Design]] · [[Plans/Feature Plans/Profile Edit System/Implementation Plan|Plan]]
 - **Avatar S3 Migration** — [[Plans/Feature Plans/Avatar S3 Migration/Design|Design]] · [[Plans/Feature Plans/Avatar S3 Migration/Implementation Plan|Plan]]
 - **Clean Architecture Refactor** — [[Plans/Feature Plans/Clean Architecture Refactor/_Index|Abrir]]
+- **Port para Go** (aprendizado) — [[Plans/Feature Plans/Port para Go/_Index|Abrir]]
 
 ---
 

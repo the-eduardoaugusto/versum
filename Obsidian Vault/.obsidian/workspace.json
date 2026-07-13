@@ -11,10 +11,14 @@
             "id": "44803073099aa03c",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "Plans/Feature Plans/Port para Go/04 - Roadmap e Status.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "Nova aba"
+              "title": "04 - Roadmap e Status"
             }
           }
         ]
@@ -193,6 +197,17 @@
   },
   "active": "44803073099aa03c",
   "lastOpenFiles": [
+    "Plans/Feature Plans/Port para Go/03 - Módulo Seed/_Index.md",
+    "Plans/Feature Plans/Port para Go/_Index.md",
+    "Plans/Feature Plans/Port para Go/02 - Módulo Bible/03 - Repository (Implementação Postgres).md",
+    "Plans/Feature Plans/Port para Go/03 - Roadmap e Status.md.tmp.3247.4e611efbfabe",
+    "Plans/Feature Plans/Port para Go/03 - Roadmap e Status.md.tmp.3247.c394e65b153d",
+    "Plans/Feature Plans/Port para Go/03 - Roadmap e Status.md",
+    "Plans/Feature Plans/Port para Go/02 - Módulo Bible/02 - Repository (Interface).md",
+    "Plans/Feature Plans/Port para Go/03 - Roadmap e Status.md.tmp.3247.ca096212f901",
+    "Plans/Feature Plans/Port para Go/03 - Roadmap e Status.md.tmp.3247.48bc6c652ef7",
+    "Plans/Feature Plans/Port para Go/02 - Módulo Bible/01 - Camada de Domínio.md",
+    "Plans/Feature Plans/Port para Go/02 - Módulo Bible/_Index.md",
     "Plans/Feature Plans/Avatar S3 Migration/Implementation Plan.md",
     "Plans/Feature Plans/Avatar S3 Migration/Design.md",
     "Plans/Feature Plans/Avatar S3 Migration",
@@ -201,10 +216,6 @@
     "Plans/Compliance/LGPD Compliance.md.tmp.358958.75e0ddff349b",
     "Docs/Naming Convention.md.tmp.358958.224a2e735af5",
     "Docs/Naming Convention.md.tmp.358958.f090a8c61e9b",
-    "Docs/Apps/API/Services.md.tmp.358958.4d0bafa0e11c",
-    "Docs/Apps/API/_Overview.md.tmp.358958.ada1f237501f",
-    "Docs/Apps/API/_Overview.md.tmp.358958.a3a75b2f28cf",
-    "Docs/API Development.md.tmp.358958.4acd6c3cb144",
     "Docs/_Index.md",
     "Docs/Guides/Naming Convention.md",
     "Docs/Git Flow.md",
@@ -221,12 +232,6 @@
     "Plans/Compliance/LGPD Compliance - Next Phases.md",
     "Docs/Journey Feed Data Flow Examples.md",
     "Docs/Journey Feed Client Architecture.md",
-    "Docs/Journey Feed - Progress Confirmation.md",
-    "Docs/Decisions/_Index.md",
-    "Docs/Decisions/Journey Feed - Progress Confirmation.md",
-    "Docs/Decisions/Incident Response Plan.md",
-    "Docs/Apps/Packages/Logger/_Overview.md",
-    "Docs/Apps/Packages/_Index.md",
-    "Docs/Apps/Landing Page/_Overview.md"
+    "Docs/Journey Feed - Progress Confirmation.md"
   ]
 }
