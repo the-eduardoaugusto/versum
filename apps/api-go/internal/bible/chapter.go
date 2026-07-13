@@ -1,7 +1,11 @@
 package bible
 
+type RawChapter struct {
+	BookID string `json:"bookID"`
+	Number int    `json:"number"`
+}
+
 type Chapter struct {
-	ID     string
-	BookID string
-	Number int
+	ID string `json:"id"`
+	RawChapter
 }

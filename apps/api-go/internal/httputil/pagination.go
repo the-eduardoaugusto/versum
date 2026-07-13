@@ -11,6 +11,10 @@ type Pagination struct {
 	Total int `json:"total"`
 }
 
+const (
+	MAX_LIMIT = 50
+)
+
 func ParsePagination(r *http.Request) (page, limit int) {
 	q := r.URL.Query()
 	pageRaw := q.Get("page")
@@ -22,6 +26,10 @@ func ParsePagination(r *http.Request) (page, limit int) {
 	l, err := strconv.Atoi(limitRaw)
 	if err != nil {
 		return p, 1
+	}
+
+	if l > MAX_LIMIT {
+		l = 50
 	}
 
 	return p, l

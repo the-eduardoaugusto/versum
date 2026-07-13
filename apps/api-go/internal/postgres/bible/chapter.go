@@ -23,7 +23,7 @@ func NewChapterRepository(pool *pgxpool.Pool, books bible.BookRepository) *Chapt
 }
 
 const (
-	findChaptersPaginatedByBookDynamicIDQuery = `SELECT id, book_id, \"number\" FROM bible_chapters WHERE book_id = $1 ORDER BY \"number\" LIMIT $2 OFFSET $3;`
+	findChaptersPaginatedByBookDynamicIDQuery = `SELECT id, book_id, "number" FROM bible_chapters WHERE book_id = $1 ORDER BY "number" LIMIT $2 OFFSET $3;`
 
 	countChaptersQuery = `SELECT count(*) FROM bible_chapters WHERE book_id = $1;`
 
@@ -31,7 +31,7 @@ const (
 
 	createChapterQuery = `INSERT INTO bible_chapters (id, book_id, "number")
 		VALUES ($1, $2, $3)
-		ON CONFLICT (id) DO NOTHING
+		ON CONFLICT (book_id, "number") DO NOTHING
 		RETURNING id, book_id, "number";`
 )
 

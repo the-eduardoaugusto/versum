@@ -1,4 +1,4 @@
-package database
+package postgres
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 )
 
 type Database struct {
-	pool *pgxpool.Pool
+	Pool *pgxpool.Pool
 }
 
 // New creates a Database, opening a connection pool and verifying it is reachable.
@@ -21,10 +21,10 @@ func New(ctx context.Context, dbURL string) (*Database, error) {
 		return nil, err
 	}
 
-	return &Database{pool: pool}, nil
+	return &Database{Pool: pool}, nil
 }
 
 // Close closes the Database's connection pool
 func (db *Database) Close() {
-	db.pool.Close()
+	db.Pool.Close()
 }

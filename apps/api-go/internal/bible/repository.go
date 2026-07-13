@@ -41,5 +41,5 @@ type VerseRepository interface {
 	// bookDynamicID (the book's slug or name).
 	FindVerseByChapterNumberAndBookDynamicIDAndVerseNumber(ctx context.Context, bookDynamicID string, chapterNumber, verseNumber int) (*Verse, error)
 	CreateVerse(ctx context.Context, v *Verse) (*Verse, error)
-	CreateVerses(ctx context.Context, rawVerses []*Verse) ([]*Verse, int, error)
+	CreateVerses(ctx context.Context, verses []*Verse) ([]*Verse, int, error)
 }

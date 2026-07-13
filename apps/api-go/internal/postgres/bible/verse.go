@@ -31,7 +31,7 @@ const (
 
 	createVerseQuery = `INSERT INTO bible_verses (id, chapter_id, "number", "text")
 		VALUES ($1, $2, $3, $4)
-		ON CONFLICT (id) DO NOTHING
+		ON CONFLICT (chapter_id, "number") DO NOTHING
 		RETURNING id, chapter_id, "number", "text";`
 )
 
@@ -100,18 +100,18 @@ func (r *VerseRepository) CreateVerse(ctx context.Context, raw *bible.Verse) (*b
 	return v, nil
 }
 
-func (r *VerseRepository) CreateVerses(ctx context.Context, rawVerses []*bible.Verse) ([]*bible.Verse, int, error) {
+func (r *VerseRepository) CreateVerses(ctx context.Context, verses []*bible.Verse) ([]*bible.Verse, int, error) {
 	batch := &pgx.Batch{}
-	for _, v := range rawVerses {
+	for _, v := range verses {
 		batch.Queue(createVerseQuery, v.ID, v.ChapterID, v.Number, v.Text)
 	}
 
 	br := r.pool.SendBatch(ctx, batch)
 	defer br.Close()
 
-	var verses []*bible.Verse
+	var resultVerses []*bible.Verse
 	var versesErr []error
-	for range rawVerses {
+	for range verses {
 		v := &bible.Verse{}
 		if err := br.QueryRow().Scan(&v.ID, &v.ChapterID, &v.Number, &v.Text); err != nil {
 			if errors.Is(err, pgx.ErrNoRows) {
@@ -123,12 +123,12 @@ func (r *VerseRepository) CreateVerses(ctx context.Context, rawVerses []*bible.V
 			continue
 		}
 
-		verses = append(verses, v)
+		resultVerses = append(resultVerses, v)
 	}
 
 	if len(versesErr) > 0 {
-		return verses, len(verses), errors.Join(versesErr...)
+		return resultVerses, len(resultVerses), errors.Join(versesErr...)
 	}
 
-	return verses, len(verses), nil
+	return resultVerses, len(resultVerses), nil
 }

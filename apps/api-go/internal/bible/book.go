@@ -7,10 +7,14 @@ const (
 	NewTestament BookTestament = "new"
 )
 
+type RawBook struct {
+	Order        int           `json:"order"`
+	Name         string        `json:"name"`
+	Abbreviation string        `json:"abbreviation"`
+	Testament    BookTestament `json:"testament"`
+}
+
 type Book struct {
-	ID           string
-	Order        int
-	Name         string
-	Abbreviation string
-	Testament    BookTestament
+	ID string `json:"id"`
+	RawBook
 }

@@ -1,0 +1,5 @@
+/api
+/seed
+/bin/
+*.exe
+*.test

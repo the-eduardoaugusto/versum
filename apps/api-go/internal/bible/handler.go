@@ -16,13 +16,13 @@ func NewHandler(service *BibleService) *Handler {
 	return &Handler{service: service}
 }
 
-func RegisterRoutes(m *http.ServeMux, h *Handler) {
-	m.HandleFunc("GET /books", h.GetPaginatedBooks)
-	m.HandleFunc("GET /books/{dynamicID}", h.GetBook)
-	m.HandleFunc("GET /books/{dynamicID}/chapters", h.GetPaginatedChapters)
-	m.HandleFunc("GET /books/{dynamicID}/chapters/{chapterNumber}", h.GetChapter)
-	m.HandleFunc("GET /books/{dynamicID}/chapters/{chapterNumber}/verses", h.GetPaginatedVerses)
-	m.HandleFunc("GET /books/{dynamicID}/chapters/{chapterNumber}/verses/{verseNumber}", h.GetVerse)
+func RegisterRoutes(m *http.ServeMux, h *Handler, prefix string) {
+	m.HandleFunc("GET "+prefix+"/books", h.GetPaginatedBooks)
+	m.HandleFunc("GET "+prefix+"/books/{dynamicID}", h.GetBook)
+	m.HandleFunc("GET "+prefix+"/books/{dynamicID}/chapters", h.GetPaginatedChapters)
+	m.HandleFunc("GET "+prefix+"/books/{dynamicID}/chapters/{chapterNumber}", h.GetChapter)
+	m.HandleFunc("GET "+prefix+"/books/{dynamicID}/chapters/{chapterNumber}/verses", h.GetPaginatedVerses)
+	m.HandleFunc("GET "+prefix+"/books/{dynamicID}/chapters/{chapterNumber}/verses/{verseNumber}", h.GetVerse)
 }
 
 func (h *Handler) GetPaginatedBooks(w http.ResponseWriter, r *http.Request) {
