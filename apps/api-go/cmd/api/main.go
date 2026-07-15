@@ -10,6 +10,7 @@ import (
 	"github.com/eduardoaugustolb/versum/apps/api-go/internal/config"
 	"github.com/eduardoaugustolb/versum/apps/api-go/internal/postgres"
 	postgres_bible "github.com/eduardoaugustolb/versum/apps/api-go/internal/postgres/bible"
+	"github.com/eduardoaugustolb/versum/apps/api-go/internal/redis"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -20,13 +21,16 @@ func main() {
 	}
 
 	ctx := context.Background()
-	db, err := postgres.New(ctx, cfg.PostgresURL)
-	if err != nil {
-		log.Fatalf("error on create pg pool: %v", err)
-	}
+	postgresDB := postgres.New(ctx, cfg.PostgresURL)
+
+	log.Printf(`Postgres connected on database "%v"`, postgresDB.Pool.Config().ConnConfig.Database)
+
+	redis.New(ctx, cfg.RedisURL)
+	log.Printf("Redis connected!")
+
 	mux := http.NewServeMux()
 
-	setupBibleModule(mux, db.Pool)
+	setupBibleModule(mux, postgresDB.Pool)
 	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode("Pong!")

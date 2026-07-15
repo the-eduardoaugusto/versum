@@ -3,6 +3,7 @@ package config
 type Config struct {
 	PostgresURL string
 	Port        string
+	RedisURL    string
 }
 
 func Load() (*Config, error) {

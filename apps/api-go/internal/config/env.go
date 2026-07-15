@@ -25,6 +25,10 @@ func loadEnv(c *Config) error {
 			name: "PORT",
 			dest: &c.Port,
 		},
+		{
+			name: "REDIS_URL",
+			dest: &c.RedisURL,
+		},
 	}
 
 	var missing []string
