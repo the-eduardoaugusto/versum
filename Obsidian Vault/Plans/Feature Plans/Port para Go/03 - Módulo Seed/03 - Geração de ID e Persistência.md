@@ -2,7 +2,7 @@
 title: "Módulo Seed — Geração de ID e Persistência"
 section: "Plans"
 subsection: "Feature Plans"
-tags: [versum, plans, go, aprendizado, bible, seed]
+tags: [versum, plans, go, aprendizado, bible, seed, clean-architecture]
 up: "[[Plans/Feature Plans/Port para Go/03 - Módulo Seed/_Index]]"
 prev: "[[Plans/Feature Plans/Port para Go/03 - Módulo Seed/02 - Fetch Concorrente e Integrity Check]]"
 next: "[[Plans/Feature Plans/Port para Go/03 - Módulo Seed/04 - Log no Discord]]"
@@ -16,44 +16,31 @@ depth: 3
 
 ---
 
+> **Atualização:** esta página mudou depois da implementação real. O `id-gen` e a geração de ID já foram parar no lugar certo — o `BibleService`, não o `cmd/seed` — sem precisar de planejamento adicional. O que faltava era clareza sobre **quem chama o quê**: o `seed.go` não deve falar com `BookRepository`/`ChapterRepository`/`VerseRepository` diretamente, só com o `BibleService`. Essa página documenta o estado atual e fecha esse ponto.
+
 ## Por que precisa gerar ID no Go
 
-No TS, `db.insert(bibleBooks).values({...}).returning()` deixa o Postgres/Drizzle decidir o `id` (schema Drizzle com `.$defaultFn(() => crypto.randomUUID())` ou similar) e devolve a linha completa. Em Go não tem ORM — e a migration (`db/migrations/000001_create-bible-tables.up.sql`) não tem `DEFAULT` nenhum na coluna `id varchar(36)`. Os métodos já existentes `BookRepository.CreateBook`, `ChapterRepository.CreateChapter` e `VerseRepository.CreateVerse(s)` (`internal/postgres/bible/*.go`) já assumem isso: recebem um `*bible.Book`/`*bible.Chapter`/`*bible.Verse` com `ID` **já preenchido**. O seed é o primeiro lugar do projeto Go que precisa gerar esse ID.
+A migration (`db/migrations/000001_create-bible-tables.up.sql`) não tem `DEFAULT` na coluna `id varchar(36)` — diferente do Drizzle no TS, que decide o `id` via `.returning()`. Em Go, quem gera o ID é a camada de aplicação, antes de persistir.
 
-## `internal/idgen/uuid.go` — UUID v4 sem dependência externa
+## Onde o ID já é gerado: `BibleService`, não o seed
 
-Consistente com a decisão de "sem ORM, sem lib escondendo o fundamento" já tomada pro resto do port ([[Plans/Feature Plans/Port para Go/00 - Contexto e Objetivo|Contexto e Objetivo]]): em vez de importar `google/uuid`, um UUID v4 é só 16 bytes aleatórios com 2 bits fixados por especificação (RFC 4122) — dá pra gerar com `crypto/rand` da própria `stdlib`.
+Isso já está resolvido no código (`internal/bible/service.go`), e do jeito certo: `BibleService.CreateBook`/`CreateChapter`/`CreateVerse`/`CreateVerses` recebem um `RawBook`/`RawChapter`/`RawVerse` (o dado ainda **sem** ID — struct embutida em `Book`/`Chapter`/`Verse`, ver `internal/bible/book.go`), geram o `ID` com `internal/id-gen` (pacote `idgen`) e só então chamam o repository:
 
 ```go
-package idgen
-
-import (
-	"crypto/rand"
-	"fmt"
-)
-
-// New gera um UUID v4 (aleatório), formatado como
-// "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".
-func New() string {
-	var b [16]byte
-	// crypto/rand.Read só falha se o SO não tiver fonte de entropia
-	// disponível — praticamente nunca acontece em produção, mas o erro
-	// não pode ser silenciado: panic é aceitável aqui porque não há
-	// como continuar sem um ID válido.
-	if _, err := rand.Read(b[:]); err != nil {
-		panic(fmt.Sprintf("idgen: falha ao ler bytes aleatórios: %v", err))
-	}
-
-	b[6] = (b[6] & 0x0f) | 0x40 // versão 4
-	b[8] = (b[8] & 0x3f) | 0x80 // variante RFC 4122
-
-	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:16])
+// internal/bible/service.go (already exists)
+func (s *BibleService) CreateBook(ctx context.Context, b RawBook) (*Book, error) {
+	book := &Book{ID: idgen.New(), RawBook: b}
+	return s.books.CreateBook(ctx, book)
 }
 ```
 
-## `seed.go` — `processBook` e `Run`
+Isso é exatamente a divisão de responsabilidade que faltava no módulo do Discord (ver [[Plans/Feature Plans/Port para Go/03 - Módulo Seed/04 - Log no Discord|próxima página]]): **o Service decide o que persistir e como montar a entidade** (aqui, "gerar um ID novo"); **o Repository só sabe fazer `INSERT`/`SELECT`**, sem tomar nenhuma decisão de negócio. `BookRepository.CreateBook` nunca gera ID sozinho, nunca decide nada — só recebe um `*Book` já completo e grava.
 
-Porta de `processBook` + `seedBibleFromRemote` do TS. A diferença estrutural principal: o TS consulta `existingBooks` (um slice carregado uma vez no início) e também faz `select count(*)` antes/depois de inserir versículos pra saber quantos foram realmente inseridos (por causa do `onConflictDoNothing`). Em Go, como os repositories já devolvem `bible.ErrBookAlreadyExists`/`ErrChapterAlreadyExists`/`ErrVerseAlreadyExists` quando o `ON CONFLICT (id) DO NOTHING` não insere nada, o "já existe?" é resolvido tentando buscar primeiro (mesma estratégia do TS: busca, se não achou, cria) — sem precisar carregar a tabela inteira em memória.
+> Pequeno ajuste de nomenclatura de pacote pra manter consistência: o diretório está como `internal/id-gen/` mas a declaração dentro do arquivo é `package idgen` (sem hífen). Go não proíbe isso — quem importa usa o nome do `package`, não o nome da pasta — mas deixa confuso pra quem for procurar o arquivo pelo nome do pacote. Renomear a pasta pra `internal/idgen/` (sem hífen) deixa os dois iguais, sem mudar nenhuma linha de código que já importa `idgen "…/internal/id-gen"`.
+
+## O que falta: `cmd/seed/bible/seed.go`
+
+Essa é a parte que ainda não foi escrita. A regra: **`seed.go` não importa `bible.BookRepository`/`ChapterRepository`/`VerseRepository`, só `*bible.BibleService`.** O `cmd/` é a "raiz de composição" (quem monta as dependências concretas, ver [[Plans/Feature Plans/Port para Go/03 - Módulo Seed/05 - Montagem Final (main.go)|página 5]]) — mas a *orquestração* do caso de uso (baixar → checar → criar) fala só com a API pública do service, do mesmo jeito que `internal/bible/handler.go` fala só com `BibleService`, nunca com os repositories.
 
 ```go
 package main
@@ -62,9 +49,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/eduardoaugustolb/versum/apps/api-go/internal/bible"
-	"github.com/eduardoaugustolb/versum/apps/api-go/internal/idgen"
+	remotelog "github.com/eduardoaugustolb/versum/apps/api-go/internal/remote-log"
+	"github.com/eduardoaugustolb/versum/apps/api-go/internal/taskrun"
 )
 
 type seedCounters struct {
@@ -73,62 +62,53 @@ type seedCounters struct {
 	Verses   int
 }
 
-type seedDeps struct {
-	Books    bible.BookRepository
-	Chapters bible.ChapterRepository
-	Verses   bible.VerseRepository
-	Discord  *discordLogger
-}
+func processBook(ctx context.Context, service *bible.BibleService, run *taskrun.Run, book normalizedBook, testament bible.BookTestament, counters *seedCounters) error {
+	fmt.Printf("📖 %s (%s) - %s\n", book.Name, book.Abbreviation, testament)
 
-func processBook(ctx context.Context, deps seedDeps, book normalizedBook, testament bible.BookTestament, counters *seedCounters) error {
-	fmt.Printf("📖 %s (%s) - %s\n", book.Name, book.Slug, testament)
-
-	existing, err := deps.Books.FindBookByDynamicID(ctx, book.Slug)
+	existing, err := service.FindBookByDynamicID(ctx, book.Abbreviation)
 	if err != nil && !errors.Is(err, bible.ErrBookNotFound) {
-		return fmt.Errorf("buscando livro %q: %w", book.Slug, err)
+		return fmt.Errorf("buscando livro %q: %w", book.Abbreviation, err)
 	}
 
 	if existing != nil {
-		deps.Discord.addLog(ctx, fmt.Sprintf("♻️ [%s] %s - já existe", testament, book.Name))
+		run.Append(ctx, remotelog.LevelInfo, fmt.Sprintf("♻️ [%s] %s - já existe", testament, book.Name))
 	} else {
-		created, err := deps.Books.CreateBook(ctx, &bible.Book{
-			ID:           idgen.New(),
+		created, err := service.CreateBook(ctx, bible.RawBook{
 			Order:        book.Order,
 			Name:         book.Name,
-			Abbreviation: book.Slug,
+			Abbreviation: book.Abbreviation,
 			Testament:    testament,
 		})
 		if err != nil && !errors.Is(err, bible.ErrBookAlreadyExists) {
-			return fmt.Errorf("criando livro %q: %w", book.Slug, err)
+			return fmt.Errorf("criando livro %q: %w", book.Abbreviation, err)
 		}
 		if created != nil {
 			existing = created
 			counters.Books++
-			deps.Discord.addLog(ctx, fmt.Sprintf(
-				"📖 [%s] %s (%s) - %d caps", testament, book.Name, book.Slug, len(book.Chapters),
+			run.Append(ctx, remotelog.LevelInfo, fmt.Sprintf(
+				"📖 [%s] %s (%s) - %d caps", testament, book.Name, book.Abbreviation, len(book.Chapters),
 			))
 		}
 	}
 
 	if existing == nil {
-		deps.Discord.addLog(ctx, fmt.Sprintf("❌ Livro não encontrado após tentativa de inserção: %s", book.Name))
+		run.Append(ctx, remotelog.LevelAlert, fmt.Sprintf("❌ Livro não encontrado após tentativa de inserção: %s", book.Name))
 		return nil
 	}
 
 	for _, chapterData := range book.Chapters {
-		chapter, err := deps.Chapters.FindChapterByNumberAndBookDynamicID(ctx, chapterData.Number, book.Slug)
+		chapter, err := service.FindChapterByNumberAndBookDynamicID(ctx, chapterData.Number, book.Abbreviation)
 		if err != nil && !errors.Is(err, bible.ErrChapterNotFound) {
-			return fmt.Errorf("buscando capítulo %d de %q: %w", chapterData.Number, book.Slug, err)
+			return fmt.Errorf("buscando capítulo %d de %q: %w", chapterData.Number, book.Abbreviation, err)
 		}
 
 		if chapter == nil {
-			created, err := deps.Chapters.CreateChapter(ctx, &bible.Chapter{
-				ID:     idgen.New(),
+			created, err := service.CreateChapter(ctx, bible.RawChapter{
 				BookID: existing.ID,
 				Number: chapterData.Number,
 			})
 			if err != nil && !errors.Is(err, bible.ErrChapterAlreadyExists) {
-				return fmt.Errorf("criando capítulo %d de %q: %w", chapterData.Number, book.Slug, err)
+				return fmt.Errorf("criando capítulo %d de %q: %w", chapterData.Number, book.Abbreviation, err)
 			}
 			chapter = created
 			if chapter != nil {
@@ -140,23 +120,22 @@ func processBook(ctx context.Context, deps seedDeps, book normalizedBook, testam
 			continue
 		}
 
-		verses := make([]*bible.Verse, 0, len(chapterData.Verses))
+		rawVerses := make([]bible.RawVerse, 0, len(chapterData.Verses))
 		for _, v := range chapterData.Verses {
-			verses = append(verses, &bible.Verse{
-				ID:        idgen.New(),
+			rawVerses = append(rawVerses, bible.RawVerse{
 				ChapterID: chapter.ID,
 				Number:    v.Number,
 				Text:      v.Text,
 			})
 		}
 
-		if len(verses) == 0 {
+		if len(rawVerses) == 0 {
 			continue
 		}
 
-		_, inserted, err := deps.Verses.CreateVerses(ctx, verses)
+		_, inserted, err := service.CreateVerses(ctx, rawVerses)
 		if err != nil && !errors.Is(err, bible.ErrVerseAlreadyExists) {
-			return fmt.Errorf("criando versículos do capítulo %d de %q: %w", chapterData.Number, book.Slug, err)
+			return fmt.Errorf("criando versículos do capítulo %d de %q: %w", chapterData.Number, book.Abbreviation, err)
 		}
 		counters.Verses += inserted
 	}
@@ -164,17 +143,18 @@ func processBook(ctx context.Context, deps seedDeps, book normalizedBook, testam
 	return nil
 }
 
-func runSeed(ctx context.Context, deps seedDeps) error {
-	deps.Discord.start(ctx)
+func runSeed(ctx context.Context, service *bible.BibleService, run *taskrun.Run) error {
+	startedAt := time.Now()
+	run.Start(ctx)
 
 	fmt.Printf("⬇️  Baixando %d livros do GitHub...\n", len(bibleBooks))
-	deps.Discord.addLog(ctx, fmt.Sprintf("⬇️  Baixando %d livros do GitHub...", len(bibleBooks)))
+	run.Append(ctx, remotelog.LevelInfo, fmt.Sprintf("⬇️  Baixando %d livros do GitHub...", len(bibleBooks)))
 
 	results := fetchAllBibleBooks(ctx)
 	passed, integrityErrs := integrityCheck(results)
 	if !passed {
 		msg := fmt.Sprintf("❌ INTEGRITY CHECK FALHOU:\n%s", joinLines(integrityErrs))
-		deps.Discord.finish(ctx, true, msg)
+		run.Finish(ctx, remotelog.LevelError, msg, summaryMeta(startedAt, true))
 		return errors.New(msg)
 	}
 
@@ -184,33 +164,49 @@ func runSeed(ctx context.Context, deps seedDeps) error {
 			okCount++
 		}
 	}
-	deps.Discord.addLog(ctx, fmt.Sprintf("✅ Integrity OK — %d livros recebidos", okCount))
+	run.Append(ctx, remotelog.LevelInfo, fmt.Sprintf("✅ Integrity OK — %d livros recebidos", okCount))
 
 	counters := &seedCounters{}
-	deps.Discord.addLog(ctx, "📜 Processando livros...")
+	run.Append(ctx, remotelog.LevelInfo, "📜 Processando livros...")
 
 	for _, r := range results {
-		if err := processBook(ctx, deps, r.book, r.testament, counters); err != nil {
-			deps.Discord.finish(ctx, true, fmt.Sprintf("❌ ERRO: %v", err))
+		if err := processBook(ctx, service, run, r.book, r.testament, counters); err != nil {
+			run.Finish(ctx, remotelog.LevelError, fmt.Sprintf("❌ ERRO: %v", err), summaryMeta(startedAt, true))
 			return err
 		}
 	}
 
-	deps.Discord.addLog(ctx, "🎉 FINALIZADO!")
-	deps.Discord.finish(ctx, false, fmt.Sprintf(
+	run.Append(ctx, remotelog.LevelInfo, "🎉 FINALIZADO!")
+	run.Finish(ctx, remotelog.LevelSuccess, fmt.Sprintf(
 		"📊 Livros: %d | Capítulos: %d | Versículos: %d", counters.Books, counters.Chapters, counters.Verses,
-	))
+	), summaryMeta(startedAt, false))
 	fmt.Println("✅ FINALIZADO")
 
 	return nil
 }
+
+// summaryMeta is the seed's own choice of what to show in the final
+// Discord embed — taskrun.Run doesn't know these field names exist.
+func summaryMeta(startedAt time.Time, hasError bool) []remotelog.MetaField {
+	errValue := "Não"
+	if hasError {
+		errValue = "Sim"
+	}
+	return []remotelog.MetaField{
+		{Key: "Começou em", Value: startedAt.Format("02/01/2006 - 15h04")},
+		{Key: "Terminou em", Value: time.Now().Format("02/01/2006 - 15h04")},
+		{Key: "Houve erros?", Value: errValue},
+	}
+}
 ```
 
-`joinLines` é um helper trivial (`strings.Join(lines, "\n")`) — declarado junto de `seed.go` mesmo, não merece arquivo próprio.
+`joinLines` é um helper trivial (`strings.Join(errs, "\n")`) — declarado junto de `seed.go` mesmo, não merece arquivo próprio.
+
+Repare a diferença de responsabilidade em relação à primeira versão desta página: `run.Finish` não sabe mais o que é `"Começou em"` — é `summaryMeta`, uma função do próprio `seed.go`, que decide isso. `seed.go` não sabe nada sobre Discord, embed, webhook, cor ou limite de caracteres — só chama `run.Append`/`run.Start`/`run.Finish`, métodos de `*taskrun.Run` (ver [[Plans/Feature Plans/Port para Go/03 - Módulo Seed/04 - Log no Discord|próxima página]]). Se amanhã o log de progresso for pra Slack em vez de Discord, `seed.go` não muda uma linha — só troca o que é injetado no `main.go`. E se amanhã o resumo final quiser um campo a mais, é `summaryMeta` que muda — nunca `taskrun`.
 
 ### Diferença de comportamento a documentar: contagem de versículos
 
-O TS conta versículos **antes** e **depois** do insert (`beforeCount`/`afterCount`) pra saber quantos entraram de fato, porque `onConflictDoNothing()` do Drizzle não informa quantas linhas afetou. Em Go, `VerseRepository.CreateVerses` já devolve `inserted int` (contagem de linhas que o `RETURNING` do batch realmente trouxe de volta — as que bateram em conflito não aparecem no resultado). Resultado observável é o mesmo (contagem de versículos novos), só o caminho pra chegar lá é mais direto.
+O TS conta versículos **antes** e **depois** do insert (`beforeCount`/`afterCount`), porque `onConflictDoNothing()` do Drizzle não informa quantas linhas afetou. Em Go, `VerseRepository.CreateVerses` já devolve `inserted int` (linhas que o `RETURNING` do batch trouxe de volta — as que bateram em conflito não aparecem). Resultado observável é o mesmo, só o caminho é mais direto.
 
 ---
 

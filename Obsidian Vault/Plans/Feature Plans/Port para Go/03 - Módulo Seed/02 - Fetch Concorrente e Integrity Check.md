@@ -39,7 +39,7 @@ type fetchResult struct {
 	ok        bool
 	book      normalizedBook
 	testament bible.BookTestament
-	slug      string
+	abbreviation      string
 	reason    string
 }
 
@@ -48,7 +48,7 @@ func bookURL(entry bibleBookEntry) string {
 	if entry.Testament == bible.NewTestament {
 		dir = "novotestamento"
 	}
-	return fmt.Sprintf("%s/%s/%s.json", baseRawURL, dir, entry.Slug)
+	return fmt.Sprintf("%s/%s/%s.json", baseRawURL, dir, entry.Abbreviation)
 }
 
 func fetchBook(ctx context.Context, client *http.Client, entry bibleBookEntry, index int) fetchResult {
@@ -56,42 +56,42 @@ func fetchBook(ctx context.Context, client *http.Client, entry bibleBookEntry, i
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
-		return fetchResult{ok: false, slug: entry.Slug, reason: err.Error()}
+		return fetchResult{ok: false, abbreviation: entry.Abbreviation, reason: err.Error()}
 	}
 
 	res, err := client.Do(req)
 	if err != nil {
-		return fetchResult{ok: false, slug: entry.Slug, reason: err.Error()}
+		return fetchResult{ok: false, abbreviation: entry.Abbreviation, reason: err.Error()}
 	}
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		return fetchResult{ok: false, slug: entry.Slug, reason: fmt.Sprintf("HTTP %d em %s", res.StatusCode, url)}
+		return fetchResult{ok: false, abbreviation: entry.Abbreviation, reason: fmt.Sprintf("HTTP %d em %s", res.StatusCode, url)}
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return fetchResult{ok: false, slug: entry.Slug, reason: err.Error()}
+		return fetchResult{ok: false, abbreviation: entry.Abbreviation, reason: err.Error()}
 	}
 
-	book, err := normalizeLivroBibliaDB(body, entry, index)
+	book, err := normalizeBibleBookDB(body, entry, index)
 	if err != nil {
-		return fetchResult{ok: false, slug: entry.Slug, reason: err.Error()}
+		return fetchResult{ok: false, abbreviation: entry.Abbreviation, reason: err.Error()}
 	}
 
 	return fetchResult{ok: true, book: book, testament: entry.Testament}
 }
 
-// fetchAllBibleBooks baixa os 73 livros concorrentemente. O resultado guarda
-// sucesso e falha lado a lado, na ordem de bibleBooks — quem chama decide o
-// que fazer com as falhas via integrityCheck.
+// fetchAllBibleBooks downloads the 73 books concurrently. The result keeps
+// successes and failures side by side, in bibleBooks order — the caller
+// decides what to do with the failures via integrityCheck.
 func fetchAllBibleBooks(ctx context.Context) []fetchResult {
 	client := &http.Client{}
 	results := make([]fetchResult, len(bibleBooks))
 
 	g, ctx := errgroup.WithContext(ctx)
 	for i, entry := range bibleBooks {
-		i, entry := i, entry // captura por valor (ver Conceitos de Go)
+		i, entry := i, entry // capture by value (see Conceitos de Go)
 		g.Go(func() error {
 			results[i] = fetchBook(ctx, client, entry, i)
 			return nil
@@ -119,7 +119,7 @@ func integrityCheck(results []fetchResult) (passed bool, errs []string) {
 			okCount++
 			continue
 		}
-		slugErrors = append(slugErrors, fmt.Sprintf("[%s] %s", r.slug, r.reason))
+		slugErrors = append(slugErrors, fmt.Sprintf("[%s] %s", r.abbreviation, r.reason))
 	}
 
 	if len(slugErrors) > 0 {
