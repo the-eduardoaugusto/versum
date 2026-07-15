@@ -17,12 +17,12 @@ Guias de desenvolvimento, convenções, arquitetura e documentação de apps/pac
 
 ## Seções
 
-| Seção | Conteúdo |
-|:--|:--|
-| 📖 [[Docs/Guides/_Index|Guides]] | Convenções, padrões técnicos, fluxos (Naming, API Dev, Git Flow, LGPD) |
-| 📱 [[Docs/Apps/_Index|Apps]] | Documentação de API, Client, Landing Page e packages |
-| 🎯 [[Docs/Decisions/_Index|Decisions]] | Decisões arquiteturais permanentes (ADRs) |
-| 🔗 [[Docs/Journey Feed Client Architecture|Journey Feed]] | Arquitetura completa da feature de leitura (tipos, componentes, hooks, fluxos) |
+| Seção                                      | Conteúdo       |                                                                                |
+| :----------------------------------------- | :------------- | ------------------------------------------------------------------------------ |
+| 📖 [[Docs/Guides/_Index                    | Guides]]       | Convenções, padrões técnicos, fluxos (Naming, API Dev, Git Flow, LGPD)         |
+| 📱 [[Docs/Apps/_Index                      | Apps]]         | Documentação de API, Client, Landing Page e packages                           |
+| 🎯 [[Docs/Decisions/_Index                 | Decisions]]    | Decisões arquiteturais permanentes (ADRs)                                      |
+| 🔗 [[Docs/Journey Feed Client Architecture | Journey Feed]] | Arquitetura completa da feature de leitura (tipos, componentes, hooks, fluxos) |
 
 ---
 
