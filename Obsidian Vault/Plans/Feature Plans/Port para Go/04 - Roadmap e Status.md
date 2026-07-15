@@ -5,6 +5,7 @@ subsection: "Feature Plans"
 tags: [versum, plans, go, aprendizado, roadmap]
 up: "[[Plans/Feature Plans/Port para Go/_Index]]"
 prev: "[[Plans/Feature Plans/Port para Go/03 - Módulo Seed/_Index]]"
+next: "[[Plans/Feature Plans/Port para Go/05 - Módulo Rate Limit/_Index]]"
 related: []
 depth: 2
 ---
@@ -59,10 +60,23 @@ Migração do CLI interativo `apps/api/src/cli/modules/bible/seed/*` (TypeScript
 | 4 | [[Plans/Feature Plans/Port para Go/03 - Módulo Seed/04 - Log no Discord\|Log no Discord]] — `discord.go` | ⬜ Planejado |
 | 5 | [[Plans/Feature Plans/Port para Go/03 - Módulo Seed/05 - Montagem Final (main.go)\|Montagem Final]] — `main.go` | ⬜ Planejado |
 
+## Módulo `rate limit` (global) — plano de migração
+
+Migração do rate limiter global (`apps/api/src/middlewares/rate-limiter/middleware.ts`, TS, fixed window via Redis) pro pacote `apps/api-go/internal/ratelimit` + `internal/redis`, usando `go-redis/v9`. Detalhe completo em [[Plans/Feature Plans/Port para Go/05 - Módulo Rate Limit/_Index|Módulo Rate Limit]].
+
+| # | Etapa | Status |
+|:--|:--|:--|
+| 1 | [[Plans/Feature Plans/Port para Go/05 - Módulo Rate Limit/01 - Camada de Domínio\|Camada de Domínio]] — `limiter.go`, `keys.go` | ⬜ Planejado |
+| 2 | [[Plans/Feature Plans/Port para Go/05 - Módulo Rate Limit/02 - Middleware HTTP\|Middleware HTTP]] — `middleware.go`, `httputil.TooManyRequests`/`ServiceUnavailable` | ⬜ Planejado |
+| 3 | [[Plans/Feature Plans/Port para Go/05 - Módulo Rate Limit/03 - Cliente Redis e Store Concreto\|Cliente Redis e Store Concreto]] — `internal/redis`, `internal/redis/ratelimit` | ⬜ Planejado |
+| 4 | [[Plans/Feature Plans/Port para Go/05 - Módulo Rate Limit/04 - Config e Montagem Final\|Config e Montagem Final]] — `RedisURL`, wiring em `main.go` | ⬜ Planejado |
+
+Escopo desta leva: só o limitador global (IP, 100 req/60s). Os três limitadores por rota do TS (magic-link send/consume, avatar upload) ficam pra quando as rotas de auth/users forem portadas — a camada de domínio já nasce genérica o bastante pra suportar isso sem retrabalho, ver [[Plans/Feature Plans/Port para Go/05 - Módulo Rate Limit/_Index|Módulo Rate Limit]].
+
 ## Nada tem prazo
 
 Esse roadmap existe pra saber "onde parei" caso o trabalho fique pausado por um tempo — não é uma cobrança de ritmo. Se decidir parar depois da etapa 3 e nunca voltar, o aprendizado até ali já valeu.
 
 ---
 
-◀ [[Plans/Feature Plans/Port para Go/03 - Módulo Seed/_Index|Módulo Seed]] · 🐹 [[Plans/Feature Plans/Port para Go/_Index|Port para Go]]
+◀ [[Plans/Feature Plans/Port para Go/03 - Módulo Seed/_Index|Módulo Seed]] · [[Plans/Feature Plans/Port para Go/05 - Módulo Rate Limit/_Index|Módulo Rate Limit]] ▶

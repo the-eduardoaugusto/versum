@@ -21,6 +21,7 @@ Registro de aprendizado e plano de organização do port da API (`apps/api`, hoj
 3. Veja a arquitetura do primeiro módulo em **[[Plans/Feature Plans/Port para Go/02 - Módulo Bible/_Index|Módulo Bible]]**.
 4. Veja o plano de migração do seed em **[[Plans/Feature Plans/Port para Go/03 - Módulo Seed/_Index|Módulo Seed]]**.
 5. Acompanhe o progresso em **[[Plans/Feature Plans/Port para Go/04 - Roadmap e Status|Roadmap e Status]]**.
+6. Veja o plano do rate limit global em **[[Plans/Feature Plans/Port para Go/05 - Módulo Rate Limit/_Index|Módulo Rate Limit]]**.
 
 ## Conteúdo
 
@@ -31,6 +32,7 @@ Registro de aprendizado e plano de organização do port da API (`apps/api`, hoj
 | 📜 Módulo Bible | Primeiro módulo portado — estrutura de pastas e camadas | [[Plans/Feature Plans/Port para Go/02 - Módulo Bible/_Index\|Abrir]] |
 | 🌱 Módulo Seed | Migração do CLI de seed (TS) pro binário `go run cmd/seed/bible` | [[Plans/Feature Plans/Port para Go/03 - Módulo Seed/_Index\|Abrir]] |
 | 🗺️ Roadmap e Status | O que já foi feito, o que falta, em que ordem | [[Plans/Feature Plans/Port para Go/04 - Roadmap e Status\|Abrir]] |
+| 🚦 Módulo Rate Limit | Plano do rate limit global (Redis, fixed window) para `apps/api-go` | [[Plans/Feature Plans/Port para Go/05 - Módulo Rate Limit/_Index\|Abrir]] |
 
 ---
 
