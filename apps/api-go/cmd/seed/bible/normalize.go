@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"regexp"
+	"strings"
 )
 
 type normalizedVerse struct {
@@ -58,7 +59,7 @@ func normalizeBibleBookDB(raw []byte, entry bibleBookEntry, index int) (normaliz
 		for _, verse := range chapter.Verses {
 			verses = append(verses, normalizedVerse{
 				Number: verse.Number,
-				Text:   stripVerseNumberPrefix(verse.Text),
+				Text:   strings.TrimSpace(stripVerseNumberPrefix(verse.Text)),
 			})
 		}
 		chapters = append(chapters, normalizedChapter{

@@ -3,12 +3,11 @@ services:
     image: postgres:16-alpine
     container_name: versum-postgres
     restart: unless-stopped
+    network_mode: host
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
       # POSTGRES_DB: admin
-    ports:
-      - "8922:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     mem_limit: 2g
@@ -22,8 +21,7 @@ services:
     image: redis:7-alpine
     container_name: versum-redis
     restart: unless-stopped
-    ports:
-      - "2289:6379"
+    network_mode: host
     mem_limit: 1g
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]

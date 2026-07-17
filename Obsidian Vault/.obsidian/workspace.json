@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Plans/Feature Plans/Port para Go/05 - Módulo Rate Limit/02 - Middleware HTTP.md",
+                "file": "Plans/Feature Plans/Port para Go/05 - Módulo Rate Limit/04 - Config e Montagem Final.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "02 - Middleware HTTP"
+              "title": "04 - Config e Montagem Final"
             }
           }
         ]
@@ -197,8 +197,10 @@
   },
   "active": "44803073099aa03c",
   "lastOpenFiles": [
-    "Plans/Feature Plans/Port para Go/05 - Módulo Rate Limit/01 - Camada de Domínio.md",
+    "Plans/Feature Plans/Port para Go/05 - Módulo Rate Limit/03 - Cliente Redis e Store Concreto.md",
+    "Plans/Feature Plans/Port para Go/05 - Módulo Rate Limit/04 - Config e Montagem Final.md",
     "Plans/Feature Plans/Port para Go/05 - Módulo Rate Limit/02 - Middleware HTTP.md",
+    "Plans/Feature Plans/Port para Go/05 - Módulo Rate Limit/01 - Camada de Domínio.md",
     "Plans/Feature Plans/Port para Go/_Index.md",
     "Plans/Feature Plans/Port para Go/05 - Módulo Rate Limit/_Index.md",
     "Plans/Feature Plans/Port para Go/03 - Módulo Seed/04 - Log no Discord.md",
@@ -230,8 +232,6 @@
     "Plans/Feature Plans/Port para Go/02 - Módulo Bible/_Index.md",
     "Plans/Feature Plans/Avatar S3 Migration/Implementation Plan.md",
     "Plans/Feature Plans/Avatar S3 Migration/Design.md",
-    "Docs/Guides/Naming Convention.md",
-    "Docs/Git Flow.md",
-    "Docs/Guides/Git Flow.md"
+    "Docs/Guides/Naming Convention.md"
   ]
 }

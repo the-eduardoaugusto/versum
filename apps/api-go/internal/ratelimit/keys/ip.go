@@ -1,4 +1,4 @@
-package ratelimit_keys
+package keys
 
 import (
 	"net"

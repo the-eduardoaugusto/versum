@@ -10,7 +10,7 @@ import (
 	"github.com/eduardoaugustolb/versum/apps/api-go/internal/bible"
 	"github.com/eduardoaugustolb/versum/apps/api-go/internal/discord/webhook"
 	"github.com/eduardoaugustolb/versum/apps/api-go/internal/postgres"
-	postgres_bible "github.com/eduardoaugustolb/versum/apps/api-go/internal/postgres/bible"
+	pgbible "github.com/eduardoaugustolb/versum/apps/api-go/internal/postgres/bible"
 	remotelog "github.com/eduardoaugustolb/versum/apps/api-go/internal/remote-log"
 	"github.com/eduardoaugustolb/versum/apps/api-go/internal/taskrun"
 	"github.com/joho/godotenv"
@@ -44,16 +44,13 @@ func main() {
 	}
 
 	ctx := context.Background()
-	db, err := postgres.New(ctx, postgresURL)
-	if err != nil {
-		log.Fatalf("erro ao criar pool do Postgres: %v", err)
-	}
+	db := postgres.New(ctx, postgresURL)
 	defer db.Close()
 
 	// --- bible module: domain + repository (Postgres) + service ---
-	bookRepo := postgres_bible.NewBookRepository(db.Pool)
-	chapterRepo := postgres_bible.NewChapterRepository(db.Pool, bookRepo)
-	verseRepo := postgres_bible.NewVerseRepository(db.Pool, chapterRepo)
+	bookRepo := pgbible.NewBookRepository(db.Pool)
+	chapterRepo := pgbible.NewChapterRepository(db.Pool, bookRepo)
+	verseRepo := pgbible.NewVerseRepository(db.Pool, chapterRepo)
 	bibleService := bible.NewBibleService(bookRepo, chapterRepo, verseRepo)
 
 	// --- discord/webhook: raw client + adapter for remote-log ---

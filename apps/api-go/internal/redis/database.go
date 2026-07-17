@@ -7,9 +7,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-type Database struct {
-	client *redis.Client
-}
+type Database = redis.Client
 
 // New creates a Database, opening a connection and verifying it is reachable.
 func New(ctx context.Context, dbURL string) *Database {
@@ -24,11 +22,5 @@ func New(ctx context.Context, dbURL string) *Database {
 		log.Fatalf("sending redis ping request: %v", err)
 	}
 
-	return &Database{
-		client: client,
-	}
-}
-
-func (d *Database) Close() {
-	d.client.Close()
+	return client
 }

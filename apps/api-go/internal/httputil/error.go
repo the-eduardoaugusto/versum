@@ -29,6 +29,14 @@ func NotFound(message string) *Error {
 	}
 }
 
+func TooManyRequests(message string) *Error {
+	return &Error{Status: http.StatusTooManyRequests, Message: message}
+}
+
+func ServiceUnavailable(message string) *Error {
+	return &Error{Status: http.StatusServiceUnavailable, Message: message}
+}
+
 func WriteError(w http.ResponseWriter, err error) {
 	w.Header().Set("Content-Type", "application/json")
 	if target, ok := errors.AsType[*Error](err); ok {

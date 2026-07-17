@@ -1,4 +1,4 @@
-package postgres_bible
+package bible
 
 import (
 	"context"
