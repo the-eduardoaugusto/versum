@@ -19,5 +19,6 @@ func SetupGlobalRateLimit(chain *httputil.HandlerChain, rdb *redis.Database) {
 		Prefix:  "global",
 	}
 	limiter := ratelimit.NewLimiter(c, s)
-	chain.Use(ratelimit.Middleware(limiter))
+	rateLimitMW := ratelimit.NewRateLimitMiddleware(limiter)
+	chain.Use(rateLimitMW.Wrap)
 }

@@ -14,7 +14,7 @@ func Setup(mux *http.ServeMux, pgdb *postgres.Database, rdb *redis.Database) *ht
 	chain := httputil.NewChain(mux)
 
 	middlewares.SetupGlobalRateLimit(chain, rdb)
-	routes.SetupBibleModule(mux, pgdb.Pool)
+	routes.SetupBibleModule(mux, pgdb.Pool, rdb)
 
 	return chain
 }
