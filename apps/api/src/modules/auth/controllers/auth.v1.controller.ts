@@ -44,7 +44,12 @@ export class AuthControllerV1 {
   };
 
   createAndSendMagicLink = async (c: Context) => {
-    const { email } = (await c.req.json()) as { email: string };
+    // The rate limiter middleware reads the body to extract the email for
+    // key generation and caches it in context. Use the cached value when
+    // available to avoid consuming the request stream a second time.
+    const body = (c.get("cachedBody") as { email?: string } | undefined) ??
+      ((await c.req.json()) as { email: string });
+    const { email } = body as { email: string };
     const magicLink = await this.service.createMagicLink({
       email,
     });
